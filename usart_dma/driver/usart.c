@@ -276,12 +276,12 @@ static uint8_t gRxHexPacketFlag[MAX_USART_NUM];						//接收HEX数据包标志�
 
 /*USART私有数据结构体*/
 typedef struct {
-	USART_GPIO_Port txPort;			//发送端口
-	USART_GPIO_Port rxPort;			//接收端口
-	uint32_t txPin;					//发送引脚
-	uint32_t rxPin;					//接收引脚
-	uint32_t irqn;					//中断号
-	uint8_t index;					//索引
+	USART_GPIO_Port txPort;			// 发送端口
+	USART_GPIO_Port rxPort;			// 接收端口
+	uint32_t txPin;					// 发送引脚
+	uint32_t rxPin;					// 接收引脚
+	uint32_t irqn;					// 中断号
+	uint8_t index;					// 索引
 }USARTPrivData_t;
 
 /* 函数声明 */
