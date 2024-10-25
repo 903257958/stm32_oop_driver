@@ -410,26 +410,6 @@
               <FilePath>..\driver\delay.c</FilePath>
             </File>
             <File>
-              <FileName>led.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\driver\led.h</FilePath>
-            </File>
-            <File>
-              <FileName>led.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\driver\led.c</FilePath>
-            </File>
-            <File>
-              <FileName>key.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\driver\key.h</FilePath>
-            </File>
-            <File>
-              <FileName>key.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\driver\key.c</FilePath>
-            </File>
-            <File>
               <FileName>spi.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\driver\spi.h</FilePath>
