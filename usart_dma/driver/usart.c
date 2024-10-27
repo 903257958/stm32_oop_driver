@@ -52,14 +52,6 @@
 												else						{usart_log("usart clock no enable\r\n");} \
 											}
 
-#define	__usart_config_clock_disable(USARTx)	{	if (USARTx == USART1)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, DISABLE);} \
-													else if (USARTx == USART2)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, DISABLE);} \
-													else if (USARTx == USART3)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, DISABLE);} \
-													else if (USARTx == UART4)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART4, DISABLE);} \
-													else if (USARTx == UART5)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART5, DISABLE);} \
-													else						{usart_log("usart clock no disable\r\n");} \
-												}
-
 #define	__usart_config_gpio_clock_enable(port)	{	if (port == GPIOA)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);} \
 													else if (port == GPIOB)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);} \
 													else if (port == GPIOC)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);} \
@@ -70,28 +62,11 @@
 													else					{usart_log("usart gpio clock no enable\r\n");} \
 												}
 
-#define	__usart_config_gpio_clock_disable(port)	{	if (port == GPIOA)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, DISABLE);} \
-													else if (port == GPIOB)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, DISABLE);} \
-													else if (port == GPIOC)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, DISABLE);} \
-													else if (port == GPIOD)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, DISABLE);} \
-													else if (port == GPIOE)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, DISABLE);} \
-													else if (port == GPIOF)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, DISABLE);} \
-													else if (port == GPIOG)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, DISABLE);} \
-													else					{usart_log("usart gpio clock no disable\r\n");} \
-												}
-
 #define	__usart_config_dma_clock_enable(USARTx)	{	if (USARTx == USART1)		{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);} \
 													else if (USARTx == USART2)	{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);} \
 													else if (USARTx == USART3)	{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);} \
 													else if (USARTx == UART4)	{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA2, ENABLE);} \
 													else						{usart_log("usart clock no enable\r\n");} \
-												}
-
-#define	__usart_config_dma_clock_disable(USARTx){	if (USARTx == USART1)		{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, DISABLE);} \
-													else if (USARTx == USART2)	{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, DISABLE);} \
-													else if (USARTx == USART3)	{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, DISABLE);} \
-													else if (USARTx == UART4)	{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA2, DISABLE);} \
-													else						{usart_log("usart clock no disable\r\n");} \
 												}
 
 #define	__usart_config_io_af_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -107,8 +82,6 @@
 												GPIO_InitStructure.GPIO_Pin = pin ; \
 												GPIO_Init(port, &GPIO_InitStructure); \
 											}
-
-#define __usart_gpio_deinit(port)	GPIO_DeInit(port)
 
 #elif defined(STM32F40_41xxx)
 
@@ -169,15 +142,6 @@
 												else						{usart_log("usart clock no enable\r\n");} \
 											}
 
-#define	__usart_config_clock_disable(USARTx)	{	if (USARTx == USART1)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, DISABLE);} \
-													else if (USARTx == USART2)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, DISABLE);} \
-													else if (USARTx == USART3)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, DISABLE);} \
-													else if (USARTx == UART4)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART4, DISABLE);} \
-													else if (USARTx == UART5)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART5, DISABLE);} \
-													else if (USARTx == USART6)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART6, DISABLE);} \
-													else						{usart_log("usart clock no disable\r\n");} \
-												}
-
 #define	__usart_config_gpio_clock_enable(port)	{	if (port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);} \
 													else if (port == GPIOB)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);} \
 													else if (port == GPIOC)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);} \
@@ -188,16 +152,6 @@
 													else					{usart_log("usart gpio clock no enable\r\n");} \
 												}
 
-#define	__usart_config_gpio_clock_disable(port)	{	if (port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, DISABLE);} \
-													else if (port == GPIOB)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, DISABLE);} \
-													else if (port == GPIOC)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, DISABLE);} \
-													else if (port == GPIOD)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, DISABLE);} \
-													else if (port == GPIOE)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, DISABLE);} \
-													else if (port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, DISABLE);} \
-													else if (port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, DISABLE);} \
-													else					{usart_log("usart gpio clock no disable\r\n");} \
-												}
-
 #define	__usart_config_dma_clock_enable(USARTx)	{	if (USARTx == USART1)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);} \
 													else if (USARTx == USART2)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);} \
 													else if (USARTx == USART3)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);} \
@@ -205,15 +159,6 @@
 													else if (USARTx == UART5)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);} \
 													else if (USARTx == USART6)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);} \
 													else						{usart_log("usart clock no enable\r\n");} \
-												}
-
-#define	__usart_config_dma_clock_disable(USARTx){	if (USARTx == USART1)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, DISABLE);} \
-													else if (USARTx == USART2)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, DISABLE);} \
-													else if (USARTx == USART3)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, DISABLE);} \
-													else if (USARTx == UART4)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, DISABLE);} \
-													else if (USARTx == UART5)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, DISABLE);} \
-													else if (USARTx == USART6)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, DISABLE);} \
-													else						{usart_log("usart clock no disable\r\n");} \
 												}
 
 #define	__usart_config_io_af_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -256,8 +201,6 @@
 												usartx == UART5 ? DMA_FLAG_TCIF0 : \
 												usartx == USART6 ? DMA_FLAG_TCIF1 : \
 												(int)0)
-
-#define __usart_gpio_deinit(port)	GPIO_DeInit(port)
 
 #endif
 
@@ -783,26 +726,11 @@ static int __usart_deinit(USARTDev_t *pDev)
 	if (!pDev || !pDev->initFlag)
 		return -1;
 	
-	USARTPrivData_t *pPrivData = (USARTPrivData_t *)pDev->pPrivData;
-	
-	/*关闭时钟*/
-	__usart_config_clock_disable(pDev->info.usartx);
-	__usart_config_gpio_clock_disable(pPrivData->txPort);
-	__usart_config_gpio_clock_disable(pPrivData->rxPort);
-	if (pDev->DMAFlag)
-	{
-		__usart_config_dma_clock_disable(pDev->info.usartx);
-	}
-	
-	/*复位GPIO*/
-	__usart_gpio_deinit(pPrivData->txPort);
-	__usart_gpio_deinit(pPrivData->rxPort);
-	
 	/*释放私有数据内存*/
 	free(pDev->pPrivData);
     pDev->pPrivData = NULL;
 	
-	pDev->DMAFlag = false;	//修改初始化标志
+	pDev->DMAFlag = false;	// 修改初始化标志
 	pDev->initFlag = false;
 	
 	return 0;

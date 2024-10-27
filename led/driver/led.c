@@ -12,16 +12,6 @@
 													else					{Led_Log("gpio clock no enable\r\n");} \
 												}
 
-#define	__led_config_gpio_clock_disable(port)	{	if(port == GPIOA)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, DISABLE);} \
-													else if(port == GPIOB)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, DISABLE);} \
-													else if(port == GPIOC)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, DISABLE);} \
-													else if(port == GPIOD)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, DISABLE);} \
-													else if(port == GPIOE)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, DISABLE);} \
-													else if(port == GPIOF)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, DISABLE);} \
-													else if(port == GPIOG)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, DISABLE);} \
-													else					{Led_Log("gpio clock no disable\r\n");} \
-												}
-
 #define	__led_config_io_out_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
 												GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; \
 												GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; \
@@ -30,8 +20,6 @@
 											}
 
 #define	__led_io_write(port, pin, value)	GPIO_WriteBit(port, pin, (BitAction)value)
-										
-#define __led_gpio_deinit(port)	GPIO_DeInit(port)
 
 #elif defined(STM32F40_41xxx)
 
@@ -44,16 +32,6 @@
 													else if(port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);} \
 													else					{Led_Log("gpio clock no enable\r\n");} \
 												}
-	
-#define	__led_config_gpio_clock_disable(port)	{	if(port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, DISABLE);} \
-													else if(port == GPIOB)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, DISABLE);} \
-													else if(port == GPIOC)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, DISABLE);} \
-													else if(port == GPIOD)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, DISABLE);} \
-													else if(port == GPIOE)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, DISABLE);} \
-													else if(port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, DISABLE);} \
-													else if(port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, DISABLE);} \
-													else					{Led_Log("gpio clock no disable\r\n");} \
-												}
 
 #define	__led_config_io_out_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
 												GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT; \
@@ -65,8 +43,6 @@
 											}
 
 #define	__led_io_write(port, pin, value)	GPIO_WriteBit(port, pin, (BitAction)value)
-
-#define __led_gpio_deinit(port)	GPIO_DeInit(port)
 
 #endif
 
@@ -199,12 +175,6 @@ static int __led_deinit(LEDDev_t *pDev)
 {
 	if (!pDev || !pDev->initFlag)
 		return -1;
-	
-	/*关闭时钟*/
-	__led_config_gpio_clock_disable(pDev->info.port);
-	
-	/*复位GPIO*/
-	__led_gpio_deinit(pDev->info.port);
 	
 	/*释放私有数据内存*/
 	free(pDev->pPrivData);

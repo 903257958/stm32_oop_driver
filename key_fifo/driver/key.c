@@ -13,16 +13,6 @@
 													else					{key_log("key clock no enable\r\n");} \
 												}
 
-#define	__key_config_gpio_clock_disable(port)	{	if(port == GPIOA)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, DISABLE);} \
-													else if(port == GPIOB)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, DISABLE);} \
-													else if(port == GPIOC)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, DISABLE);} \
-													else if(port == GPIOD)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, DISABLE);} \
-													else if(port == GPIOE)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, DISABLE);} \
-													else if(port == GPIOF)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, DISABLE);} \
-													else if(port == GPIOG)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, DISABLE);} \
-													else					{key_log("key clock no disable\r\n");} \
-												}
-
 #define	__key_config_io_in_pd(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
 												GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD; \
 												GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; \
@@ -38,8 +28,6 @@
 											}
 
 #define __key_io_read(port, pin)	GPIO_ReadInputDataBit(port, pin)
-
-#define __key_gpio_deinit(port)	GPIO_DeInit(port)
 
 	#if !FREERTOS
 	static void __key_delay_ms(uint32_t ms)
@@ -71,16 +59,6 @@
 													else if(port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);} \
 													else					{key_log("gpio clock no enable\r\n");} \
 												}
-	
-#define	__key_config_gpio_clock_disable(port)	{	if(port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, DISABLE);} \
-													else if(port == GPIOB)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, DISABLE);} \
-													else if(port == GPIOC)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, DISABLE);} \
-													else if(port == GPIOD)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, DISABLE);} \
-													else if(port == GPIOE)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, DISABLE);} \
-													else if(port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, DISABLE);} \
-													else if(port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, DISABLE);} \
-													else					{key_log("gpio clock no disable\r\n");} \
-												}
 
 #define	__key_config_io_in_pd(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
 												GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN; \
@@ -99,8 +77,6 @@
 											}
 
 #define __key_io_read(port, pin)	GPIO_ReadInputDataBit(port, pin)
-
-#define __key_gpio_deinit(port)	GPIO_DeInit(port)
 
 	#if !FREERTOS
 	static void __key_delay_ms(uint32_t ms)
@@ -294,12 +270,6 @@ static int __key_deinit(KeyDev_t *pDev)
 {
 	if (!pDev || !pDev->initFlag)
 		return -1;
-	
-	/*关闭时钟*/
-	__key_config_gpio_clock_disable(pDev->info.port);
-	
-	/*复位GPIO*/
-	__key_gpio_deinit(pDev->info.port);
 	
 	pDev->initFlag = false;	//修改初始化标志
 	

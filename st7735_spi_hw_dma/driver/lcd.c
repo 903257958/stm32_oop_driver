@@ -12,28 +12,12 @@
 													else if(port == GPIOG)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, ENABLE);} \
 													else					{lcd_log("lcd gpio clock no enable\r\n");} \
 												}
-
-#define	__lcd_config_gpio_clock_disable(port)	{	if(port == GPIOA)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, DISABLE);} \
-													else if(port == GPIOB)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, DISABLE);} \
-													else if(port == GPIOC)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, DISABLE);} \
-													else if(port == GPIOD)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, DISABLE);} \
-													else if(port == GPIOE)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, DISABLE);} \
-													else if(port == GPIOF)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, DISABLE);} \
-													else if(port == GPIOG)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, DISABLE);} \
-													else					{lcd_log("lcd gpio clock no disable\r\n");} \
-												}
 													
 #define	__lcd_config_dma_clock_enable(spix)	{	if(spix == SPI1)		{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);} \
 												else if(spix == SPI2)	{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);} \
 												else if(spix == SPI3)	{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA2, ENABLE);} \
 												else					{lcd_log("lcd dma clock no enable\r\n");} \
 											}
-
-#define	__lcd_config_dma_clock_disable(spix)	{	if(spix == SPI1)		{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, DISABLE);} \
-													else if(spix == SPI2)	{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, DISABLE);} \
-													else if(spix == SPI3)	{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA2, DISABLE);} \
-													else					{lcd_log("lcd dma clock no disable\r\n");} \
-												}
 													
 #define	__lcd_config_io_out_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
 												GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; \
@@ -53,8 +37,6 @@
 											spix == SPI2 ? DMA1_FLAG_TC5 : \
 											spix == SPI3 ? DMA2_FLAG_TC2 : \
 											(int)0)
-
-#define __lcd_gpio_deinit(port)	GPIO_DeInit(port)
 											
 	#if !FREERTOS
 	static void __lcd_delay_ms(uint32_t ms)
@@ -87,27 +69,11 @@
 													else					{lcd_log("lcd gpio clock no enable\r\n");} \
 												}
 
-#define	__lcd_config_gpio_clock_disable(port)	{	if(port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, DISABLE);} \
-													else if(port == GPIOB)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, DISABLE);} \
-													else if(port == GPIOC)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, DISABLE);} \
-													else if(port == GPIOD)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, DISABLE);} \
-													else if(port == GPIOE)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, DISABLE);} \
-													else if(port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, DISABLE);} \
-													else if(port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, DISABLE);} \
-													else					{lcd_log("lcd gpio clock no disable\r\n");} \
-												}
-
 #define	__lcd_config_dma_clock_enable(spix)	{	if(spix == SPI1)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);} \
 												else if(spix == SPI2)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);} \
 												else if(spix == SPI3)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);} \
 												else					{lcd_log("lcd dma clock no enable\r\n");} \
 											}
-
-#define	__lcd_config_dma_clock_disable(spix)	{	if(spix == SPI1)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, DISABLE);} \
-													else if(spix == SPI2)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, DISABLE);} \
-													else if(spix == SPI3)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, DISABLE);} \
-													else					{lcd_log("lcd dma clock no disable\r\n");} \
-												}
 													
 #define	__lcd_config_io_out_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
 												GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT; \
@@ -134,8 +100,6 @@
 											spix == SPI2 ? DMA_FLAG_TCIF4 : \
 											spix == SPI3 ? DMA_FLAG_TCIF5 : \
 											(int)0)
-
-#define __lcd_gpio_deinit(port)	GPIO_DeInit(port)
 											
 	#if !FREERTOS
 	static void __lcd_delay_ms(uint32_t ms)
@@ -1351,20 +1315,6 @@ static int __lcd_deinit(LCDDev_t *pDev)
 	return -1;
 	
 	LCDPrivData_t *pPrivData = (LCDPrivData_t *)pDev->pPrivData;
-	
-	/*关闭时钟*/
-	__lcd_config_gpio_clock_disable(pDev->info.RESPort);
-	__lcd_config_gpio_clock_disable(pDev->info.DCPort);
-	__lcd_config_gpio_clock_disable(pDev->info.BLPort);
-	if(pDev->info.useDMA == LCD_USE_DMA)
-	{
-		__lcd_config_dma_clock_disable(pDev->info.spix);
-	}
-	
-	/*复位GPIO*/
-	__lcd_gpio_deinit(pDev->info.RESPort);
-	__lcd_gpio_deinit(pDev->info.DCPort);
-	__lcd_gpio_deinit(pDev->info.BLPort);
 	
 	/*去初始化硬件SPI*/
 	pPrivData->lcd.deinit(&pPrivData->lcd);
