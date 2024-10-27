@@ -1,5 +1,4 @@
 #include "key.h"
-#include "delay.h"
 
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 	
