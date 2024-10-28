@@ -7,4 +7,6 @@ key——按键
 key_fifo——按键+环形缓冲区  
 usart_dma	——串口+空闲中断+DMA  
 st7735_spi_hw_dma——ST7735主控1.8寸LCD屏幕，使用硬件SPI+DMA  
+stepper_motor——步进电机  
+
 
