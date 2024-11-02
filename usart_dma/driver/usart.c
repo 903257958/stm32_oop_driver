@@ -83,6 +83,12 @@
 												GPIO_Init(port, &GPIO_InitStructure); \
 											}
 
+#define	__usart_get_dma_channel(usartx)		(	usartx == USART1 ? DMA1_Channel5 : \
+												usartx == USART2 ? DMA1_Channel6 : \
+												usartx == USART3 ? DMA1_Channel3 : \
+												usartx == UART4 ? DMA2_Channel3 : \
+												(int)0)
+
 #elif defined(STM32F40_41xxx)
 
 #define __usart_get_tx_port(USARTx)	(	USARTx == USART1 ? GPIOA : \
@@ -273,7 +279,11 @@ int usart_init(USARTDev_t *pDev)
 	__usart_config_gpio_clock_enable(pPrivData->txPort);
 	__usart_config_gpio_clock_enable(pPrivData->rxPort);
 	__usart_config_io_af_pp(pPrivData->txPort, pPrivData->txPin);
+	#if defined(STM32F10X_HD) || defined(STM32F10X_MD)
+	__usart_config_io_in_pu(pPrivData->rxPort, pPrivData->rxPin);
+	#elif defined(STM32F40_41xxx)
 	__usart_config_io_af_pp(pPrivData->rxPort, pPrivData->rxPin);
+	#endif
 	
 	#if defined(STM32F40_41xxx)
 	if (pDev->info.usartx == USART1)
@@ -368,17 +378,11 @@ int usart_dma_init(USARTDev_t *pDev)
 	pPrivData->rxStringDMA = (char *)malloc(MAX_RX_STRING_LENGTH * sizeof(char));
 	
 	#if defined(STM32F10X_HD) || defined(STM32F10X_MD)
-	
-	if (pDev->info.usartx == USART1)			{	pPrivData->DMAChannel = DMA1_Channel5;	}
-	else if (pDev->info.usartx == USART2)	{	pPrivData->DMAChannel = DMA1_Channel6;	}
-	else if (pDev->info.usartx == USART3)	{	pPrivData->DMAChannel = DMA1_Channel3;	}
-	else if (pDev->info.usartx == UART4)		{	pPrivData->DMAChannel = DMA2_Channel3;	}
-	else	{return -1;}
 
 	/* 配置DMA */
 	__usart_config_dma_clock_enable(pDev->info.usartx);
 	DMA_InitTypeDef DMA_InitStructure;
-	DMA_DeInit(pPrivData->DMAChannel);													// 将DMA的通道寄存器重设为缺省值
+	DMA_DeInit(__usart_get_dma_channel(pDev->info.usartx));								// 将DMA的通道寄存器重设为缺省值
 	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&pDev->info.usartx->DR;		// DMA外设基地址
 	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)(pPrivData->rxStringDMA);			// DMA内存基地址
 	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;									// 数据传输方向，从外设读取发送到内存
@@ -390,14 +394,14 @@ int usart_dma_init(USARTDev_t *pDev)
 	DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;										// 工作在正常模式，一次传输后自动结束
 	DMA_InitStructure.DMA_Priority = DMA_Priority_Medium;								// 中优先级 
 	DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;										// 没有设置为内存到内存传输
-	DMA_Init(pPrivData->DMAChannel, &DMA_InitStructure);
+	DMA_Init(__usart_get_dma_channel(pDev->info.usartx), &DMA_InitStructure);
 
 	/* 中断使能 */
 	USART_ITConfig(pDev->info.usartx, USART_IT_RXNE, DISABLE);							// 关闭串口接受中断
 	USART_ITConfig(pDev->info.usartx, USART_IT_IDLE, ENABLE);							// 使能USART空闲中断
 
 	/* 开启DMA */
-	DMA_Cmd(pPrivData->DMAChannel, ENABLE);
+	DMA_Cmd(__usart_get_dma_channel(pDev->info.usartx), ENABLE);
 
 	/* 启用USART的DMA请求 */
 	USART_DMACmd(pDev->info.usartx, USART_DMAReq_Rx, ENABLE);
@@ -463,10 +467,10 @@ static int __usart_dma_recv_enable(USARTDev_t *pDev)
 	memset(pPrivData->rxStringDMA, 0, sizeof(pPrivData->rxStringDMA));
 	
 	/* 重新设置传输数据长度 */
-	DMA_SetCurrDataCounter(pPrivData->DMAChannel, sizeof(pPrivData->rxStringDMA));
+	DMA_SetCurrDataCounter(__usart_get_dma_channel(pDev->info.usartx), sizeof(pPrivData->rxStringDMA));
 
 	/* 重新打开DMA */
-	DMA_Cmd(pPrivData->DMAChannel, ENABLE);
+	DMA_Cmd(__usart_get_dma_channel(pDev->info.usartx), ENABLE);
 	
 	#elif defined(STM32F40_41xxx)
 	
@@ -763,7 +767,9 @@ static void __usart_recv_byte_callback(USARTx usartx)
 	else if (usartx == USART3)	{index = 2;}
 	else if (usartx == UART4)	{index = 3;}
 	else if (usartx == UART5)	{index = 4;}
+	#if defined(STM32F40_41xxx)
 	else if (usartx == USART6)	{index = 5;}
+	#endif
 	
 	gRxByte[index] = USART_ReceiveData(usartx);
 	gRxByteFlag[index] = 1;
@@ -782,7 +788,9 @@ static void __usart_recv_string_callback(USARTx usartx)
 	else if (usartx == USART3)	{index = 2;}
 	else if (usartx == UART4)	{index = 3;}
 	else if (usartx == UART5)	{index = 4;}
+	#if defined(STM32F40_41xxx)
 	else if (usartx == USART6)	{index = 5;}
+	#endif
 	
 	static uint8_t rx_string_num = 0; 						// 接收到文本数据包的数据个数
 	
@@ -820,7 +828,10 @@ static void __usart_recv_hex_packet_callback(USARTx usartx, uint8_t head, uint8_
 	else if (usartx == USART3)	{index = 2;}
 	else if (usartx == UART4)	{index = 3;}
 	else if (usartx == UART5)	{index = 4;}
+	#if defined(STM32F40_41xxx)
 	else if (usartx == USART6)	{index = 5;}
+	#endif
+	
 	static uint8_t rx_state = 0;			// 状态变量
 	static uint8_t rx_hex_packet_num = 0;	// 接收到HEX数据包的数据个数
 	
