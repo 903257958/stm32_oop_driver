@@ -225,6 +225,7 @@ typedef struct {
 	uint32_t rxPin;					// 接收引脚
 	uint32_t irqn;					// 中断号
 	uint8_t index;					// 索引
+	char *rxStringDMA;				// DMA接收文本数据包
 }USARTPrivData_t;
 
 /* 函数声明 */
@@ -347,6 +348,7 @@ int usart_init(USARTDev_t *pDev)
 	
 	pDev->DMAFlag = false;
 	pDev->initFlag = true;
+
 	return 0;
 }
 
@@ -362,6 +364,8 @@ int usart_dma_init(USARTDev_t *pDev)
 	
 	/* 保存私有数据 */
 	USARTPrivData_t *pPrivData = (USARTPrivData_t *)pDev->pPrivData;
+
+	pPrivData->rxStringDMA = (char *)malloc(MAX_RX_STRING_LENGTH * sizeof(char));
 	
 	#if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 	
@@ -376,9 +380,9 @@ int usart_dma_init(USARTDev_t *pDev)
 	DMA_InitTypeDef DMA_InitStructure;
 	DMA_DeInit(pPrivData->DMAChannel);													// 将DMA的通道寄存器重设为缺省值
 	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&pDev->info.usartx->DR;		// DMA外设基地址
-	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)(gRxString[pPrivData->index]);		// DMA内存基地址
+	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)(pPrivData->rxStringDMA);			// DMA内存基地址
 	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;									// 数据传输方向，从外设读取发送到内存
-	DMA_InitStructure.DMA_BufferSize = sizeof(gRxString[pPrivData->index]);				// DMA通道的DMA缓存的大小
+	DMA_InitStructure.DMA_BufferSize = sizeof(pPrivData->rxStringDMA);					// DMA通道的DMA缓存的大小
 	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;					// 外设地址寄存器不变
 	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;								// 内存地址寄存器递增
 	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;				// 数据宽度为8位
@@ -406,9 +410,9 @@ int usart_dma_init(USARTDev_t *pDev)
 	DMA_InitTypeDef DMA_InitStructure;
     DMA_InitStructure.DMA_Channel = __usart_get_dma_channel(pDev->info.usartx);			// 选择DMA通道
     DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&pDev->info.usartx->DR;		// DMA外设基地址
-    DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)(gRxString[pPrivData->index]);	// DMA内存基地址
+	DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)(pPrivData->rxStringDMA);			// DMA内存基地址
     DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;								// 从外设读取发送到内存
-    DMA_InitStructure.DMA_BufferSize = sizeof(gRxString[pPrivData->index]);				// DMA通道的DMA缓存的大小
+	DMA_InitStructure.DMA_BufferSize = sizeof(pPrivData->rxStringDMA);					// DMA通道的DMA缓存的大小
     DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;					// 外设地址不增
     DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;								// 内存地址自增
     DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;				// 外设数据单位8位
@@ -452,14 +456,14 @@ static int __usart_dma_recv_enable(USARTDev_t *pDev)
 	
 	if (!pDev || !pDev->initFlag || !pDev->DMAFlag)
 		return -1;
-	
+
 	#if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 	
 	/* 将接收的内存部分数据清0 */
-	memset(gRxString[pPrivData->index], 0, sizeof(gRxString[pPrivData->index]));
+	memset(pPrivData->rxStringDMA, 0, sizeof(pPrivData->rxStringDMA));
 	
 	/* 重新设置传输数据长度 */
-	DMA_SetCurrDataCounter(pPrivData->DMAChannel, sizeof(gRxString[pPrivData->index]));
+	DMA_SetCurrDataCounter(pPrivData->DMAChannel, sizeof(pPrivData->rxStringDMA));
 
 	/* 重新打开DMA */
 	DMA_Cmd(pPrivData->DMAChannel, ENABLE);
@@ -467,14 +471,14 @@ static int __usart_dma_recv_enable(USARTDev_t *pDev)
 	#elif defined(STM32F40_41xxx)
 	
 	/* 将接收的内存部分数据清0 */
-	memset(gRxString[pPrivData->index], 0, sizeof(gRxString[pPrivData->index]));
+	memset(pPrivData->rxStringDMA, 0, sizeof(pPrivData->rxStringDMA));
 
 	/* 清除标志位 */
 	DMA_ClearFlag(__usart_get_dma_stream(pDev->info.usartx), __usart_get_dma_flag(pDev->info.usartx));
 	USART_ClearFlag(pDev->info.usartx, USART_FLAG_IDLE);
 
 	/* 重新设置传输数据长度 */
-	DMA_SetCurrDataCounter(__usart_get_dma_stream(pDev->info.usartx), sizeof(gRxString[pPrivData->index]));
+	DMA_SetCurrDataCounter(__usart_get_dma_stream(pDev->info.usartx), sizeof(pPrivData->rxStringDMA));
 
 	/* 重新打开DMA */
 	DMA_Cmd(__usart_get_dma_stream(pDev->info.usartx), ENABLE);
@@ -666,7 +670,14 @@ static char *__usart_recv_string(USARTDev_t *pDev)
 {
 	USARTPrivData_t *pPrivData = pDev->pPrivData;
 	
-	return gRxString[pPrivData->index];
+	if (!pDev->DMAFlag)
+	{
+		return gRxString[pPrivData->index];
+	}
+	else
+	{
+		return pPrivData->rxStringDMA;
+	}
 }
 
 /******************************************************************************
@@ -723,10 +734,13 @@ static uint8_t __usart_recv_hex_packet_flag(USARTDev_t *pDev)
  ******************************************************************************/
 static int __usart_deinit(USARTDev_t *pDev)
 {
+	USARTPrivData_t *pPrivData = pDev->pPrivData;
+
 	if (!pDev || !pDev->initFlag)
 		return -1;
 	
 	/* 释放私有数据内存 */
+	free(pPrivData->rxStringDMA);
 	free(pDev->pPrivData);
     pDev->pPrivData = NULL;
 	
