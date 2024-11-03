@@ -28,8 +28,8 @@
     #define GPIO_LEVEL_LOW 0
 #endif
 
-#ifndef led_log
-    #define led_log(x) 
+#ifndef Led_Log
+    #define Led_Log(x) 
 #endif
 
 typedef struct {

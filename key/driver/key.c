@@ -9,7 +9,7 @@
 													else if(port == GPIOE)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);} \
 													else if(port == GPIOF)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE);} \
 													else if(port == GPIOG)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, ENABLE);} \
-													else					{key_log("key clock no enable\r\n");} \
+													else					{Key_Log("key clock no enable\r\n");} \
 												}
 
 #define	__key_config_io_in_pd(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -37,7 +37,7 @@
 													else if(port == GPIOE)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);} \
 													else if(port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);} \
 													else if(port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);} \
-													else					{key_log("gpio clock no enable\r\n");} \
+													else					{Key_Log("gpio clock no enable\r\n");} \
 												}
 
 #define	__key_config_io_in_pd(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -66,9 +66,6 @@ static int __key_deinit(KeyDev_t *pDev);
 /******************************************************************************
  * @brief	初始化按键
  * @param	pDev		:  KeyDev_t结构体指针
- * @param	port		:  端口
- * @param	pin			:  引脚
- * @param	pressLevel	:  按键按下的时候IO口的电平
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
 int key_init(KeyDev_t *pDev)

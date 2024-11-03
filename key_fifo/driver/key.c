@@ -117,7 +117,7 @@ typedef struct {
 	int write;
 }KeyBuf_t;
 
-KeyBuf_t gKeyBuf = {
+static KeyBuf_t gKeyBuf = {
 	.read = 0,
 	.write = 0
 };
@@ -179,9 +179,6 @@ static int __key_buf_read(KeyBuf_t *pKeyBuf)
 /******************************************************************************
  * @brief	初始化按键
  * @param	pDev		:  KeyDev_t结构体指针
- * @param	port		:  端口
- * @param	pin			:  引脚
- * @param	pressLevel	:  按键按下的时候IO口的电平
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
 int key_init(KeyDev_t *pDev)

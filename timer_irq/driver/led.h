@@ -33,20 +33,20 @@
 #endif
 
 typedef struct {
-	LED_GPIO_Port port;							//端口
-	uint32_t pin;								//引脚
-	bool offLevel;								//LED灭时IO口的电平
+	LED_GPIO_Port port;						// 端口
+	uint32_t pin;							// 引脚
+	bool offLevel;							// LED灭时IO口的电平
 }LEDInfo_t;
 
 typedef struct LEDDev {
 	LEDInfo_t info;
-	bool initFlag;							//初始化标志
-	void *pPrivData;						//私有数据指针
-	int (*on)(struct LEDDev *pDev);			//打开
-	int (*off)(struct LEDDev *pDev);		//关闭
-	int (*get_status)(struct LEDDev *pDev);	//获取状态
-	int (*toggle)(struct LEDDev *pDev);		//翻转
-	int (*deinit)(struct LEDDev *pDev);		//去初始化
+	bool initFlag;							// 初始化标志
+	void *pPrivData;						// 私有数据指针
+	int (*on)(struct LEDDev *pDev);			// 打开
+	int (*off)(struct LEDDev *pDev);		// 关闭
+	int (*get_status)(struct LEDDev *pDev);	// 获取状态
+	int (*toggle)(struct LEDDev *pDev);		// 翻转
+	int (*deinit)(struct LEDDev *pDev);		// 去初始化
 }LEDDev_t;
 
 int led_init(LEDDev_t *pDev);

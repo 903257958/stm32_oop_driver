@@ -28,8 +28,8 @@
 	#define GPIO_LEVEL_LOW 0
 #endif
 
-#ifndef key_log
-	#define key_log(x) 
+#ifndef Key_Log
+	#define Key_Log(x) 
 #endif
 
 typedef struct {

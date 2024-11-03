@@ -46,9 +46,9 @@
 
 #endif
 
-/*LED私有数据结构体*/
+/* LED私有数据结构体 */
 typedef struct {
-	bool status;		//状态，false灭/true亮，默认灭
+	bool status;		// 状态，false灭/true亮，默认灭
 }LEDPrivData_t;
 
 static int __led_on(LEDDev_t *pDev);
@@ -67,25 +67,25 @@ int led_init(LEDDev_t *pDev)
 	if (!pDev)
 		return -1;
 	
-	/*保存私有数据*/
+	/* 初始化私有数据 */
 	pDev->pPrivData = (LEDPrivData_t *)malloc(sizeof(LEDPrivData_t));
 	if (!pDev->pPrivData)
 		return -1;
 	
 	LEDPrivData_t *pPrivData = (LEDPrivData_t *)pDev->pPrivData;
 	
-	/*配置时钟与GPIO*/	
+	/* 配置时钟与GPIO */	
 	__led_config_gpio_clock_enable(pDev->info.port);
 	__led_config_io_out_pp(pDev->info.port, pDev->info.pin);
 	
-	/*函数指针赋值*/
+	/* 函数指针赋值 */
 	pDev->on = __led_on;
 	pDev->off = __led_off;
 	pDev->get_status = __led_get_status;
 	pDev->toggle = __led_toggle;
 	pDev->deinit = __led_deinit;
 	
-	/*默认关闭*/
+	/* 默认关闭 */
 	pPrivData->status = false;
 	__led_off(pDev);
 	
@@ -105,8 +105,8 @@ static int __led_on(LEDDev_t *pDev)
 	if (!pDev || !pDev->initFlag)
 		return -1;
 	
-	 __led_io_write(pDev->info.port, pDev->info.pin, !pDev->info.offLevel);	//LED亮
-	pPrivData->status = true;												//保存此时LED的状态
+	 __led_io_write(pDev->info.port, pDev->info.pin, !pDev->info.offLevel);	// LED亮
+	pPrivData->status = true;												// 保存此时LED的状态
 	
 	return 0;
 }
@@ -123,8 +123,8 @@ static int __led_off(LEDDev_t *pDev)
 	if (!pDev || !pDev->initFlag)
 		return -1;
 	
-	 __led_io_write(pDev->info.port, pDev->info.pin, pDev->info.offLevel);	//LED灭
-	pPrivData->status = false;												//保存此时LED的状态
+	 __led_io_write(pDev->info.port, pDev->info.pin, pDev->info.offLevel);	// LED灭
+	pPrivData->status = false;												// 保存此时LED的状态
 	
 	return 0;
 }
@@ -176,11 +176,11 @@ static int __led_deinit(LEDDev_t *pDev)
 	if (!pDev || !pDev->initFlag)
 		return -1;
 	
-	/*释放私有数据内存*/
+	/* 释放私有数据内存 */
 	free(pDev->pPrivData);
     pDev->pPrivData = NULL;
 	
-	pDev->initFlag = false;	//修改初始化标志
+	pDev->initFlag = false;	// 修改初始化标志
 	
 	return 0;
 }
