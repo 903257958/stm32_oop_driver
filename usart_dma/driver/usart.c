@@ -66,7 +66,7 @@
 													else if (USARTx == USART2)	{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);} \
 													else if (USARTx == USART3)	{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);} \
 													else if (USARTx == UART4)	{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA2, ENABLE);} \
-													else						{usart_log("usart clock no enable\r\n");} \
+													else						{usart_log("usart dma clock no enable\r\n");} \
 												}
 
 #define	__usart_config_io_af_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -164,7 +164,7 @@
 													else if (USARTx == UART4)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);} \
 													else if (USARTx == UART5)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);} \
 													else if (USARTx == USART6)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);} \
-													else						{usart_log("usart clock no enable\r\n");} \
+													else						{usart_log("usart dma clock no enable\r\n");} \
 												}
 
 #define	__usart_config_io_af_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -223,7 +223,7 @@ static uint8_t gRxStringFlag[MAX_USART_NUM];						// 接收文本数据包标志
 static uint8_t gRxHexPacket[MAX_USART_NUM][RX_HEX_PACKET_LENGTH];	// 接收HEX数据包
 static uint8_t gRxHexPacketFlag[MAX_USART_NUM];						// 接收HEX数据包标志位
 
-/*USART私有数据结构体*/
+/* USART私有数据结构体 */
 typedef struct {
 	USART_GPIO_Port txPort;			// 发送端口
 	USART_GPIO_Port rxPort;			// 接收端口

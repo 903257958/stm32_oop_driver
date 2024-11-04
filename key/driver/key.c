@@ -9,7 +9,7 @@
 													else if(port == GPIOE)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);} \
 													else if(port == GPIOF)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE);} \
 													else if(port == GPIOG)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, ENABLE);} \
-													else					{Key_Log("key clock no enable\r\n");} \
+													else					{key_log("key clock no enable\r\n");} \
 												}
 
 #define	__key_config_io_in_pd(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -37,7 +37,7 @@
 													else if(port == GPIOE)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);} \
 													else if(port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);} \
 													else if(port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);} \
-													else					{Key_Log("gpio clock no enable\r\n");} \
+													else					{key_log("gpio clock no enable\r\n");} \
 												}
 
 #define	__key_config_io_in_pd(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -73,10 +73,10 @@ int key_init(KeyDev_t *pDev)
 	if (!pDev)
 		return -1;
 	
-	/*配置时钟与GPIO*/
+	/* 配置时钟与GPIO */
 	__key_config_gpio_clock_enable(pDev->info.port);
 	
-	if(pDev->info.pressLevel == GPIO_LEVEL_HIGH)			//根据pressLevel配置为上拉或下拉输入
+	if(pDev->info.pressLevel == GPIO_LEVEL_HIGH)			// 根据pressLevel配置为上拉或下拉输入
 	{
 		__key_config_io_in_pd(pDev->info.port, pDev->info.pin);
 	}
@@ -85,7 +85,7 @@ int key_init(KeyDev_t *pDev)
 		__key_config_io_in_pu(pDev->info.port, pDev->info.pin);
 	}
 	
-	/*函数指针赋值*/
+	/* 函数指针赋值 */
 	pDev->is_press = __key_is_press;
 	pDev->deinit = __key_deinit;
 	
@@ -122,7 +122,7 @@ static int __key_deinit(KeyDev_t *pDev)
 	if (!pDev || !pDev->initFlag)
 		return -1;
 	
-	pDev->initFlag = false;	//修改初始化标志
+	pDev->initFlag = false;	// 修改初始化标志
 	
 	return 0;
 }

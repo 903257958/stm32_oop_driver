@@ -32,8 +32,8 @@
 	#include "task.h"
 #endif
 
-#ifndef ESP8266_Log
-	#define ESP8266_Log(x) 
+#ifndef esp8266_log
+	#define esp8266_log(x) 
 #endif
 
 #define BUFFER_LENGTH 50

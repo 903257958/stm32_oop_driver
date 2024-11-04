@@ -28,21 +28,21 @@
 	#define GPIO_LEVEL_LOW 0
 #endif
 
-#ifndef Key_Log
-	#define Key_Log(x) 
+#ifndef key_log
+	#define key_log(x) 
 #endif
 
 typedef struct {
-	Key_GPIO_Port port;						//端口
-	uint32_t pin;							//引脚
-	bool pressLevel;						//按键按下的时候IO口的电平
+	Key_GPIO_Port port;						// 端口
+	uint32_t pin;							// 引脚
+	bool pressLevel;						// 按键按下的时候IO口的电平
 }KeyInfo_t;
 
 typedef struct KeyDev {
 	KeyInfo_t info;
-	bool initFlag;								//初始化标志
-	bool (*is_press)(struct KeyDev *pDev);		//判断按键是否按下
-	int (*deinit)(struct KeyDev *pDev);			//去初始化
+	bool initFlag;								// 初始化标志
+	bool (*is_press)(struct KeyDev *pDev);		// 判断按键是否按下
+	int (*deinit)(struct KeyDev *pDev);			// 去初始化
 }KeyDev_t;
 
 int key_init(KeyDev_t *pDev);

@@ -9,7 +9,7 @@
 															else if(port == GPIOE)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);} \
 															else if(port == GPIOF)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE);} \
 															else if(port == GPIOG)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, ENABLE);} \
-															else					{stepper_motor_log("gpio clock no enable\r\n");} \
+															else					{stepper_motor_log("stepper motor gpio clock no enable\r\n");} \
 														}
 
 #define	__stepper_motor_config_io_out_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -26,11 +26,11 @@
 	{
 		while(ms--)
 		{
-			SysTick->LOAD = 72 * 1000;				//设置定时器重装值
-			SysTick->VAL = 0x00;					//清空当前计数值
-			SysTick->CTRL = 0x00000005;				//设置时钟源为HCLK，启动定时器
-			while(!(SysTick->CTRL & 0x00010000));	//等待计数到0
-			SysTick->CTRL = 0x00000004;				//关闭定时器
+			SysTick->LOAD = 72 * 1000;				// 设置定时器重装值
+			SysTick->VAL = 0x00;					// 清空当前计数值
+			SysTick->CTRL = 0x00000005;				// 设置时钟源为HCLK，启动定时器
+			while(!(SysTick->CTRL & 0x00010000));	// 等待计数到0
+			SysTick->CTRL = 0x00000004;				// 关闭定时器
 		}
 	}
 	#else
@@ -49,7 +49,7 @@
 															else if(port == GPIOE)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);} \
 															else if(port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);} \
 															else if(port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);} \
-															else					{stepper_motor_log("gpio clock no enable\r\n");} \
+															else					{stepper_motor_log("stepper motor gpio clock no enable\r\n");} \
 														}
 
 #define	__stepper_motor_config_io_out_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -229,7 +229,7 @@ static int __stepper_motor_deinit(StepperMotorDev_t *pDev)
 	if (!pDev || !pDev->initFlag)
 		return -1;
 	
-	pDev->initFlag = false;	//修改初始化标志
+	pDev->initFlag = false;	// 修改初始化标志
 	
 	return 0;
 }
