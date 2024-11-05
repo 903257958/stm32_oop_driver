@@ -22,8 +22,8 @@
 	#error spi.h: No processor defined!
 #endif
 
-#ifndef spi_log
-	#define spi_log(x) 
+#ifndef SPI_Log
+	#define SPI_Log(x) 
 #endif
 
 typedef enum {

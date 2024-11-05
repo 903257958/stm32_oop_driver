@@ -35,7 +35,7 @@
 #endif
 
 /* LCD屏幕方向选择：0为竖屏正向，1为竖屏反向，2为横屏正向，3为横屏反向 */
-#define LCD_DIRECTION	2
+#define LCD_DIRECTION	3
 
 #if (LCD_DIRECTION == 0) || (LCD_DIRECTION == 1)
 #define LCD_W 128

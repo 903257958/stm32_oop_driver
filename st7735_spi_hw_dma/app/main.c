@@ -1,10 +1,10 @@
 #include "main.h"
 
 LCDDev_t lcd = {.info = {
-	SPI2,
-	GPIOB, GPIO_Pin_0,
-	GPIOB, GPIO_Pin_1,
-	GPIOB, GPIO_Pin_12,
+	SPI1,
+	GPIOC, GPIO_Pin_5,
+	GPIOC, GPIO_Pin_4,
+	GPIOC, GPIO_Pin_1,
 	GPIOC, GPIO_Pin_0,
 	2,
 	SPI_MODE_3,
