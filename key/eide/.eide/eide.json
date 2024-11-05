@@ -13,10 +13,10 @@
         "name": "app",
         "files": [
           {
-            "path": "../app/main.c"
+            "path": "../app/main.h"
           },
           {
-            "path": "../app/main.h"
+            "path": "../app/main.c"
           }
         ],
         "folders": []
@@ -25,22 +25,22 @@
         "name": "driver",
         "files": [
           {
-            "path": "../driver/delay.c"
-          },
-          {
             "path": "../driver/delay.h"
           },
           {
-            "path": "../driver/key.c"
+            "path": "../driver/delay.c"
           },
           {
-            "path": "../driver/key.h"
+            "path": "../driver/led.h"
           },
           {
             "path": "../driver/led.c"
           },
           {
-            "path": "../driver/led.h"
+            "path": "../driver/key.h"
+          },
+          {
+            "path": "../driver/key.c"
           }
         ],
         "folders": []
@@ -216,7 +216,7 @@
   "deviceName": null,
   "packDir": null,
   "miscInfo": {
-    "uid": "2535863a31fe0b1de0e425f7dbee5560"
+    "uid": "c3421a4b2f197697e6bc57187ec59de1"
   },
   "targets": {
     "Target 1": {
@@ -316,7 +316,7 @@
               "id": 1,
               "mem": {
                 "startAddr": "0x8000000",
-                "size": "0x80000"
+                "size": "0x100000"
               },
               "isChecked": true,
               "isStartup": true

@@ -1,6 +1,6 @@
 #include "main.h"
 
-LEDDev_t led = {.info = {GPIOC, GPIO_Pin_13, GPIO_LEVEL_LOW}};
+LEDDev_t led = {.info = {GPIOB, GPIO_Pin_2, GPIO_LEVEL_LOW}};
 
 int main(void)
 {
