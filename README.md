@@ -20,4 +20,5 @@
 - **esp8266**: WiFi模块通过串口实现TCP透传
 - **ssd1306_spi_hw_dma**: SSD1306主控0.96寸OLED屏幕，使用硬件SPI + DMA
 - **st7735_spi_hw_dma**: ST7735主控1.8寸LCD屏幕，使用硬件SPI + DMA
+- **ili9341_fsmc**: ILI9341主控2.8寸LCD屏幕，使用FSMC
 - **stepper_motor**: 步进电机

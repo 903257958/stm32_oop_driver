@@ -90,7 +90,7 @@ typedef enum {
 	LCD_FILLED = 1,
 }LCDIsFilled_t;
 
-/* isFilled参数数值 */
+/* 是否使用DMA */
 typedef enum {
 	LCD_NONUSE_DMA = 0,
 	LCD_USE_DMA = 1
