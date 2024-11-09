@@ -280,33 +280,34 @@ int spi_init(SPIDev_t *pDev)
 	
 	__spi_config_io_af_pp(pPrivData->SCKPort, pPrivData->SCKPin);
 	__spi_config_io_af_pp(pPrivData->MOSIPort, pPrivData->MOSIPin);
-	__spi_config_io_in_pu(pPrivData->MISOPort, pPrivData->MISOPin);
 	__spi_config_io_out_pp(pDev->info.CSPort, pDev->info.CSPin);
 	
-	#if defined(STM32F10X_HD) || defined(STM32F10X_MD) || defined(STM32F40_41xxx)
+	#if defined(STM32F10X_HD) || defined(STM32F10X_MD)
+	__spi_config_io_in_pu(pPrivData->MISOPort, pPrivData->MISOPin);
+	/* STM32F1的PB3、PB4、PA15为JTAG引脚，配置SPI3时需要解除JTAG */
+	if(pDev->info.spix == SPI3)
+	{
+		RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+		GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);
+		DBGMCU->CR &= ~((uint32_t)1 << 5);
+	}
 	
-		#if defined(STM32F10X_HD) || defined(STM32F10X_MD)
-		
-		/* STM32F1的PB3、PB4、PA15为JTAG引脚，配置SPI3时需要解除JTAG */
-		if(pDev->info.spix == SPI3)
-		{
-			RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
-			GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);
-			DBGMCU->CR &= ~((uint32_t)1 << 5);
-		}
-		
-		#elif defined(STM32F40_41xxx)
-		
-		/* STM32F4配置为复用输出时需要配置引脚复用映射 */
-		GPIO_PinAFConfig(	pPrivData->SCKPort, 
-							__spi_get_gpio_pin_sourse(pPrivData->SCKPin), 
-							__spi_get_gpio_af(pDev->info.spix)	);
-							
-		GPIO_PinAFConfig(	pPrivData->MOSIPort, 
-							__spi_get_gpio_pin_sourse(pPrivData->MOSIPin), 
-							__spi_get_gpio_af(pDev->info.spix)	);
-		
-		#endif
+	#elif defined(STM32F40_41xxx)
+	__spi_config_io_af_pp(pPrivData->MISOPort, pPrivData->MISOPin);
+	/* STM32F4配置为复用输出时需要配置引脚复用映射 */
+	GPIO_PinAFConfig(	pPrivData->SCKPort, 
+						__spi_get_gpio_pin_sourse(pPrivData->SCKPin), 
+						__spi_get_gpio_af(pDev->info.spix)	);
+						
+	GPIO_PinAFConfig(	pPrivData->MOSIPort, 
+						__spi_get_gpio_pin_sourse(pPrivData->MOSIPin), 
+						__spi_get_gpio_af(pDev->info.spix)	);
+						
+	GPIO_PinAFConfig(	pPrivData->MISOPort, 
+						__spi_get_gpio_pin_sourse(pPrivData->MISOPin), 
+						__spi_get_gpio_af(pDev->info.spix)	);
+	
+	#endif
 		
 	/* 配置硬件SPI */
 	SPI_InitTypeDef SPI_InitStructure;
@@ -341,8 +342,6 @@ int spi_init(SPIDev_t *pDev)
 	
 	/* 开启硬件SPI */
 	SPI_Cmd(pDev->info.spix, ENABLE);
-	
-	#endif
 	
 	/* 函数指针赋值 */
 	pDev->cs_write = __spi_cs_write;

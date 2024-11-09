@@ -21,4 +21,5 @@
 - **ssd1306_spi_hw_dma**: SSD1306主控0.96寸OLED屏幕，使用硬件SPI + DMA
 - **st7735_spi_hw_dma**: ST7735主控1.8寸LCD屏幕，使用硬件SPI + DMA
 - **ili9341_fsmc**: ILI9341主控2.8寸LCD屏幕，使用FSMC
+- **ili9341_fsmc_touch**: ILI9341主控2.8寸LCD屏幕，使用FSMC + XPT2046触摸屏
 - **stepper_motor**: 步进电机

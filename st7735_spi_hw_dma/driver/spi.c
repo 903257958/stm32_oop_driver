@@ -38,6 +38,12 @@
 												else					{SPI_Log("spi clock no enable\r\n");} \
 											}
 
+#define	__spi_config_clock_disable(SPIx)	{	if(SPIx == SPI1)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, DISABLE);} \
+												else if(SPIx == SPI2)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, DISABLE);} \
+												else if(SPIx == SPI3)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI3, DISABLE);} \
+												else					{SPI_Log("spi clock no disable\r\n");} \
+											}
+
 #define	__spi_config_gpio_clock_enable(port)	{	if(port == GPIOA)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);} \
 													else if(port == GPIOB)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);} \
 													else if(port == GPIOC)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);} \
@@ -46,6 +52,16 @@
 													else if(port == GPIOF)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE);} \
 													else if(port == GPIOG)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, ENABLE);} \
 													else					{SPI_Log("spi gpio clock no enable\r\n");} \
+												}
+
+#define	__spi_config_gpio_clock_disable(port)	{	if(port == GPIOA)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, DISABLE);} \
+													else if(port == GPIOB)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, DISABLE);} \
+													else if(port == GPIOC)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, DISABLE);} \
+													else if(port == GPIOD)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, DISABLE);} \
+													else if(port == GPIOE)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, DISABLE);} \
+													else if(port == GPIOF)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, DISABLE);} \
+													else if(port == GPIOG)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, DISABLE);} \
+													else					{SPI_Log("spi gpio clock no disable\r\n");} \
 												}
 								
 #define	__spi_config_io_af_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -80,6 +96,8 @@
 											prescaler == 128 ? SPI_BaudRatePrescaler_128 : \
 											prescaler == 256 ? SPI_BaudRatePrescaler_256 : \
 											(int)0	)
+
+#define __spi_gpio_deinit(port)		GPIO_DeInit(port)
 						
 #elif defined(STM32F40_41xxx)
 
@@ -119,6 +137,12 @@
 												else					{SPI_Log("spi clock no enable\r\n");} \
 											}
 
+#define	__spi_config_clock_disable(SPIx)	{	if(SPIx == SPI1)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, DISABLE);} \
+												else if(SPIx == SPI2)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, DISABLE);} \
+												else if(SPIx == SPI3)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI3, DISABLE);} \
+												else					{SPI_Log("spi clock no disable\r\n");} \
+											}
+
 #define	__spi_config_gpio_clock_enable(port)	{	if(port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);} \
 													else if(port == GPIOB)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);} \
 													else if(port == GPIOC)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);} \
@@ -127,6 +151,16 @@
 													else if(port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);} \
 													else if(port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);} \
 													else					{SPI_Log("spi gpio clock no enable\r\n");} \
+												}
+
+#define	__spi_config_gpio_clock_disable(port)	{	if(port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, DISABLE);} \
+													else if(port == GPIOB)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, DISABLE);} \
+													else if(port == GPIOC)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, DISABLE);} \
+													else if(port == GPIOD)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, DISABLE);} \
+													else if(port == GPIOE)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, DISABLE);} \
+													else if(port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, DISABLE);} \
+													else if(port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, DISABLE);} \
+													else					{SPI_Log("spi gpio clock no disable\r\n");} \
 												}
 								
 #define	__spi_config_io_af_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -190,6 +224,8 @@
 											prescaler == 256 ? SPI_BaudRatePrescaler_256 : \
 											(int)0	)
 
+#define __spi_gpio_deinit(port)		GPIO_DeInit(port)
+
 #endif
 	
 /* 硬件SPI私有数据结构体 */
@@ -244,33 +280,34 @@ int spi_init(SPIDev_t *pDev)
 	
 	__spi_config_io_af_pp(pPrivData->SCKPort, pPrivData->SCKPin);
 	__spi_config_io_af_pp(pPrivData->MOSIPort, pPrivData->MOSIPin);
-	__spi_config_io_in_pu(pPrivData->MISOPort, pPrivData->MISOPin);
 	__spi_config_io_out_pp(pDev->info.CSPort, pDev->info.CSPin);
 	
-	#if defined(STM32F10X_HD) || defined(STM32F10X_MD) || defined(STM32F40_41xxx)
+	#if defined(STM32F10X_HD) || defined(STM32F10X_MD)
+	__spi_config_io_in_pu(pPrivData->MISOPort, pPrivData->MISOPin);
+	/* STM32F1的PB3、PB4、PA15为JTAG引脚，配置SPI3时需要解除JTAG */
+	if(pDev->info.spix == SPI3)
+	{
+		RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+		GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);
+		DBGMCU->CR &= ~((uint32_t)1 << 5);
+	}
 	
-		#if defined(STM32F10X_HD) || defined(STM32F10X_MD)
-		
-		/* STM32F1的PB3、PB4、PA15为JTAG引脚，配置SPI3时需要解除JTAG */
-		if(pDev->info.spix == SPI3)
-		{
-			RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
-			GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);
-			DBGMCU->CR &= ~((uint32_t)1 << 5);
-		}
-		
-		#elif defined(STM32F40_41xxx)
-		
-		/* STM32F4配置为复用输出时需要配置引脚复用映射 */
-		GPIO_PinAFConfig(	pPrivData->SCKPort, 
-							__spi_get_gpio_pin_sourse(pPrivData->SCKPin), 
-							__spi_get_gpio_af(pDev->info.spix)	);
-							
-		GPIO_PinAFConfig(	pPrivData->MOSIPort, 
-							__spi_get_gpio_pin_sourse(pPrivData->MOSIPin), 
-							__spi_get_gpio_af(pDev->info.spix)	);
-		
-		#endif
+	#elif defined(STM32F40_41xxx)
+	__spi_config_io_af_pp(pPrivData->MISOPort, pPrivData->MISOPin);
+	/* STM32F4配置为复用输出时需要配置引脚复用映射 */
+	GPIO_PinAFConfig(	pPrivData->SCKPort, 
+						__spi_get_gpio_pin_sourse(pPrivData->SCKPin), 
+						__spi_get_gpio_af(pDev->info.spix)	);
+						
+	GPIO_PinAFConfig(	pPrivData->MOSIPort, 
+						__spi_get_gpio_pin_sourse(pPrivData->MOSIPin), 
+						__spi_get_gpio_af(pDev->info.spix)	);
+						
+	GPIO_PinAFConfig(	pPrivData->MISOPort, 
+						__spi_get_gpio_pin_sourse(pPrivData->MISOPin), 
+						__spi_get_gpio_af(pDev->info.spix)	);
+	
+	#endif
 		
 	/* 配置硬件SPI */
 	SPI_InitTypeDef SPI_InitStructure;
@@ -305,8 +342,6 @@ int spi_init(SPIDev_t *pDev)
 	
 	/* 开启硬件SPI */
 	SPI_Cmd(pDev->info.spix, ENABLE);
-	
-	#endif
 	
 	/* 函数指针赋值 */
 	pDev->cs_write = __spi_cs_write;
@@ -381,6 +416,21 @@ static int __spi_deinit(SPIDev_t *pDev)
 {
 	if (!pDev || !pDev->initFlag)
 		return -1;
+	
+	SPIPrivData_t *pPrivData = (SPIPrivData_t *)pDev->pPrivData;
+	
+	/* 关闭时钟 */
+	__spi_config_clock_disable(pDev->info.spix);
+	__spi_config_gpio_clock_disable(pPrivData->SCKPort);
+	__spi_config_gpio_clock_disable(pPrivData->MOSIPort);
+	__spi_config_gpio_clock_disable(pPrivData->MISOPort);
+	__spi_config_gpio_clock_disable(pDev->info.CSPort);
+	
+	/* 复位GPIO */
+	__spi_gpio_deinit(pPrivData->SCKPort);
+	__spi_gpio_deinit(pPrivData->MOSIPort);
+	__spi_gpio_deinit(pPrivData->MISOPort);
+	__spi_gpio_deinit(pDev->info.CSPort);
 	
 	/* 释放私有数据内存 */
 	free(pDev->pPrivData);
