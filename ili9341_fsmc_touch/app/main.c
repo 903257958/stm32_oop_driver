@@ -3,7 +3,7 @@
 KeyDev_t key = {.info = {GPIOA, GPIO_Pin_1, GPIO_LEVEL_LOW, 1}};
 TimerDev_t timerKeyTick = {.info.timx = TIM2};
 LCDDev_t lcd;
-XPT2046Dev_t xpt2046 = {.info = {0.0647, 0.0889, -11.8483, -11.8666, 240, 320, 0}};
+XPT2046Dev_t xpt2046;
 
 int main(void)
 {

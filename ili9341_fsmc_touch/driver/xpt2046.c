@@ -63,6 +63,10 @@ typedef struct {
 	XPT2046_GPIO_Port	MISOPort;
 	uint32_t		    MISOPin;
     uint8_t             EN;         // 触摸检测开关
+    float               xfac;       // 触摸屏与XPT2046的坐标比例系数,  xfac=(float)(20-320)/(t1x-t2x);
+    float               yfac;                     
+    float               xoff;       // 像素点偏移值, xoff=(320-xfac*(t1x+t2x))/2;
+    float               yoff; 
     uint16_t            lcdX;       // 当前按下的X坐标值
     uint16_t            lcdY;       // 当前按下的Y坐标值
     uint16_t            adcX;       // 保存最后读取的触摸屏X方向的ADC值，已用平均值滤波
@@ -95,7 +99,7 @@ int xpt2046_init(XPT2046Dev_t *pDev)
 	
 	XPT2046PrivData_t *pPrivData = (XPT2046PrivData_t *)pDev->pPrivData;
 
-    /* 触摸屏的引脚一般不会改变，直接在此私有数据中定义引脚，不提供外部接口 */
+    /* 触摸屏的引脚一般不会改变，直接在此私有数据中定义，不提供外部接口 */
     pPrivData->PENPort = GPIOE;
     pPrivData->PENPin = GPIO_Pin_4;
     pPrivData->CSPort = GPIOD;
@@ -106,6 +110,25 @@ int xpt2046_init(XPT2046Dev_t *pDev)
     pPrivData->MOSIPin = GPIO_Pin_2;
     pPrivData->MISOPort = GPIOE;
     pPrivData->MISOPin = GPIO_Pin_3;
+
+    /* 触摸屏的校准数据一般不会改变，直接在此私有数据中定义，不提供外部接口 */
+    pPrivData->xfac = 0.0647;
+    pPrivData->yfac = 0.0889;
+    pPrivData->xoff = -11.8483;
+    pPrivData->yoff = -11.8666;
+
+    /* 通过方向确定触摸屏宽度与高度 */
+    if (TOUCH_DIRECTION == 0)         // 竖屏
+    {
+        pDev->width = 240;
+        pDev->height = 320;
+    }
+    else if (TOUCH_DIRECTION == 1)    // 横屏
+    {
+        pDev->width = 320;
+        pDev->height = 240;
+    }
+
 
     /* 开启时钟 */
     __xpt2046_config_gpio_clock_enable(pPrivData->PENPort);
@@ -292,14 +315,24 @@ static void __xpt2046_adc_xy_to_lcd_xy(XPT2046Dev_t *pDev)
     static int16_t lcdY = 0;
 
     /* 计算比例系数 */
-    lcdX = pPrivData->adcX * pDev->info.xfac + pDev->info.xoff ;
-    lcdY = pPrivData->adcY * pDev->info.yfac + pDev->info.yoff ;
+    lcdX = pPrivData->adcX * pPrivData->xfac + pPrivData->xoff ;
+    lcdY = pPrivData->adcY * pPrivData->yfac + pPrivData->yoff ;
 
     /* 限制坐标值范围 */
-    if (lcdX < 0)  lcdX = 0;
-    if (lcdX > pDev->info.lcdWidth)  lcdX = pDev->info.lcdWidth;
-    if (lcdY < 0)  lcdY = 0;
-    if (lcdY > pDev->info.lcdHeight)  lcdY = pDev->info.lcdHeight;
+    if (TOUCH_DIRECTION == 0)
+    {
+        if (lcdX < 0)  lcdX = 0;
+        if (lcdX > pDev->width)  lcdX = pDev->width;
+        if (lcdY < 0)  lcdY = 0;
+        if (lcdY > pDev->height)  lcdY = pDev->height;
+    }
+    else if (TOUCH_DIRECTION == 1)
+    {
+        if (lcdX < 0)  lcdX = 0;
+        if (lcdX > pDev->height)  lcdX = pDev->height;
+        if (lcdY < 0)  lcdY = 0;
+        if (lcdY > pDev->width)  lcdY = pDev->width;
+    }
 
     /* 经换算, 及限值后的坐标值, 转存到结构体, 随时可调用 */
     pPrivData->lcdX = lcdX;
@@ -390,8 +423,15 @@ static bool __xpt2046_is_pressed(XPT2046Dev_t *pDev)
 static uint16_t  __xpt2046_get_x(XPT2046Dev_t *pDev)
 {
     XPT2046PrivData_t *pPrivData = (XPT2046PrivData_t *)pDev->pPrivData;
-
-    return pPrivData->lcdX;
+    
+    if (TOUCH_DIRECTION == 0)
+    {
+        return pPrivData->lcdX;
+    }
+    else
+    {
+        return 320-pPrivData->lcdY;
+    }
 }
 
 /******************************************************************************
@@ -403,7 +443,14 @@ static uint16_t  __xpt2046_get_y(XPT2046Dev_t *pDev)
 {
     XPT2046PrivData_t *pPrivData = (XPT2046PrivData_t *)pDev->pPrivData;
 
-    return pPrivData->lcdY;
+    if (TOUCH_DIRECTION == 0)
+    {
+        return pPrivData->lcdY;
+    }
+    else
+    {
+        return pPrivData->lcdX;
+    }
 }
 
 /******************************************************************************
@@ -424,8 +471,8 @@ static int  __xpt2046_recalibration(XPT2046Dev_t *pDev)
     uint16_t crossX = 0;      // 用于画十字线
     uint16_t crossY = 0;      // 用于画十字线
     char strTemp[30];
-    uint16_t lcdWidth  = pDev->info.lcdWidth;
-    uint16_t lcdHeight = pDev->info.lcdHeight;
+    uint16_t lcdWidth  = pDev->width;
+    uint16_t lcdHeight = pDev->height;
 
     lcd.fill(&lcd, 0, 0, lcd.width, lcd.height, BLACK);
 	
@@ -546,7 +593,7 @@ static void __xpt2046_draw(XPT2046Dev_t *pDev, uint16_t color, uint16_t bc)
 {
 	uint16_t x, y;
 	
-	lcd.draw_rectangle(&lcd, 230, 0, 10, 10, color);
+	lcd.draw_rectangle(&lcd, pDev->width - 10, 0, 10, 10, color);
 	
     /* 检查触摸屏是否按下 */
     if (__xpt2046_is_pressed(pDev))
@@ -554,7 +601,7 @@ static void __xpt2046_draw(XPT2046Dev_t *pDev, uint16_t color, uint16_t bc)
 		x = __xpt2046_get_x(pDev);
 		y = __xpt2046_get_y(pDev);
 		
-		if (x > 230 && y < 10)	// 触摸右上角清屏
+		if (x > pDev->width - 10 && y < 10)	// 触摸右上角清屏
 		{
 			lcd.clear(&lcd, bc);
 			return;
@@ -562,6 +609,6 @@ static void __xpt2046_draw(XPT2046Dev_t *pDev, uint16_t color, uint16_t bc)
         lcd.draw_point(&lcd, x, y, color);	// 在按下的位置画点
         static char str[20] = {0};			// 存放坐标字符串
         sprintf(str, "X:%3d  Y:%3d", x, y); // 格式化坐标字符串
-        lcd.show_string(&lcd, 84, 0, str, color, bc, LCD_6X12, 0);	// 显示坐标字符串
+        lcd.show_string(&lcd, pDev->width / 2 - 36, 0, str, color, bc, LCD_6X12, 0);	// 显示坐标字符串
     }
 }

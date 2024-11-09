@@ -34,19 +34,13 @@
 	#define xpt2046_log(x) 
 #endif
 
-typedef struct {
-	float xfac;       // 触摸屏与XPT2046的坐标比例系数,  xfac=(float)(20-320)/(t1x-t2x);
-    float yfac;                     
-    float xoff;       // 像素点偏移值, xoff=(320-xfac*(t1x+t2x))/2;
-    float yoff; 
-	uint16_t lcdWidth;
-    uint16_t lcdHeight;
-    uint8_t lcdDir;
-}XPT2046Info_t;
+/* 触摸屏方向选择：0为竖屏，1为横屏，需与LCD屏幕方向一致！ */
+#define TOUCH_DIRECTION		1
 
 typedef struct XPT2046Dev {
-    XPT2046Info_t info;
 	bool initFlag;							    						// 初始化标志
+	uint16_t width;														// 宽度
+	uint16_t height;													// 高度
     void *pPrivData;						    						// 私有数据指针
 	void (*cmd)(struct XPT2046Dev *pDev, uint8_t status);				// 开关
     bool (*is_pressed)(struct XPT2046Dev *pDev);						// 是否按下

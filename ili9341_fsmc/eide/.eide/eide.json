@@ -41,12 +41,6 @@
           },
           {
             "path": "../driver/lcd.h"
-          },
-          {
-            "path": "../driver/led.c"
-          },
-          {
-            "path": "../driver/led.h"
           }
         ],
         "folders": []

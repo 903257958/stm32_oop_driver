@@ -28,7 +28,7 @@
     #define lcd_log(x) 
 #endif
 
-/* LCD屏幕方向选择：0为竖屏，1为横屏 */
+/* LCD屏幕方向选择：0为竖屏，1为横屏，需与触摸屏方向一致！ */
 #define LCD_DIRECTION	0
 
 /* LCD显示字体大小 */
