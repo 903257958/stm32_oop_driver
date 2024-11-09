@@ -99,7 +99,7 @@ typedef struct {
 #define LCD_BASE	((uint32_t)(0x6001FFFE))
 #define LCD			((LCDAddr_t *)LCD_BASE)
 
-/* LCD引脚配置结构体 */
+/* LCD私有数据结构体 */
 typedef struct {
 	LCD_GPIO_Port	BLPort;		// 背光端口
 	uint32_t		BLPin;		// 背光引脚
@@ -111,11 +111,6 @@ typedef struct {
 	uint32_t		WRPin;		// 写信号引脚
 	LCD_GPIO_Port	RDPort;		// 读信号端口
 	uint32_t		RDPin;		// 读信号引脚
-}LCDInfo_t;
-
-/* LCD私有数据结构体 */
-typedef struct {
-	LCDInfo_t		info;
 	uint16_t		id;			// ID
 	uint8_t			dir;		// 横屏还是竖屏控制：0竖屏/1横屏
 	uint16_t		wramcmd;	// 开始写gram指令
@@ -215,44 +210,44 @@ int lcd_init(LCDDev_t *pDev)
 	pPrivData->setxcmd = 0X2A;
 	pPrivData->setycmd = 0X2B;
 
-	pPrivData->info.BLPort = GPIOA;
-	pPrivData->info.BLPin = GPIO_Pin_15;
+	pPrivData->BLPort = GPIOA;
+	pPrivData->BLPin = GPIO_Pin_15;
 
-	pPrivData->info.CSPort = GPIOD;
-	pPrivData->info.CSPin = GPIO_Pin_7;
+	pPrivData->CSPort = GPIOD;
+	pPrivData->CSPin = GPIO_Pin_7;
 
-	pPrivData->info.RSPort = GPIOD;
-	pPrivData->info.RSPin = GPIO_Pin_11;
+	pPrivData->RSPort = GPIOD;
+	pPrivData->RSPin = GPIO_Pin_11;
 
-	pPrivData->info.WRPort = GPIOD;
-	pPrivData->info.WRPin = GPIO_Pin_5;
+	pPrivData->WRPort = GPIOD;
+	pPrivData->WRPin = GPIO_Pin_5;
 
-	pPrivData->info.RDPort = GPIOD;
-	pPrivData->info.RDPin = GPIO_Pin_4;
+	pPrivData->RDPort = GPIOD;
+	pPrivData->RDPin = GPIO_Pin_4;
 
 	/* 开启时钟 */
 	RCC_AHB3PeriphClockCmd(RCC_AHB3Periph_FSMC,ENABLE);
-	__lcd_config_gpio_clock_enable(pPrivData->info.CSPort);
-	__lcd_config_gpio_clock_enable(pPrivData->info.RSPort);
-	__lcd_config_gpio_clock_enable(pPrivData->info.WRPort);
-	__lcd_config_gpio_clock_enable(pPrivData->info.RDPort);
-	__lcd_config_gpio_clock_enable(pPrivData->info.BLPort);
+	__lcd_config_gpio_clock_enable(pPrivData->CSPort);
+	__lcd_config_gpio_clock_enable(pPrivData->RSPort);
+	__lcd_config_gpio_clock_enable(pPrivData->WRPort);
+	__lcd_config_gpio_clock_enable(pPrivData->RDPort);
+	__lcd_config_gpio_clock_enable(pPrivData->BLPort);
 	for (uint8_t i = 0; i < 16; i++)
 		__lcd_config_gpio_clock_enable(gLCDDataPorts[i]);
 
 	/* 配置为复用推挽输出 */
-	__lcd_config_io_af_pp(pPrivData->info.CSPort, pPrivData->info.CSPin);
-	__lcd_config_io_af_pp(pPrivData->info.RSPort, pPrivData->info.RSPin);
-	__lcd_config_io_af_pp(pPrivData->info.WRPort, pPrivData->info.WRPin);
-	__lcd_config_io_af_pp(pPrivData->info.RDPort, pPrivData->info.RDPin);
-	__lcd_config_io_out_pp(pPrivData->info.BLPort, pPrivData->info.BLPin);
+	__lcd_config_io_af_pp(pPrivData->CSPort, pPrivData->CSPin);
+	__lcd_config_io_af_pp(pPrivData->RSPort, pPrivData->RSPin);
+	__lcd_config_io_af_pp(pPrivData->WRPort, pPrivData->WRPin);
+	__lcd_config_io_af_pp(pPrivData->RDPort, pPrivData->RDPin);
+	__lcd_config_io_out_pp(pPrivData->BLPort, pPrivData->BLPin);
 	for (uint8_t i = 0; i < 16; i++)
 		__lcd_config_io_af_pp(gLCDDataPorts[i], gLCDDataPins[i]);
 
-	GPIO_PinAFConfig(pPrivData->info.CSPort, __lcd_get_gpio_pin_sourse(pPrivData->info.CSPin), GPIO_AF_FSMC);
-	GPIO_PinAFConfig(pPrivData->info.RSPort, __lcd_get_gpio_pin_sourse(pPrivData->info.RSPin), GPIO_AF_FSMC);
-	GPIO_PinAFConfig(pPrivData->info.WRPort, __lcd_get_gpio_pin_sourse(pPrivData->info.WRPin), GPIO_AF_FSMC);
-	GPIO_PinAFConfig(pPrivData->info.RDPort, __lcd_get_gpio_pin_sourse(pPrivData->info.RDPin), GPIO_AF_FSMC);
+	GPIO_PinAFConfig(pPrivData->CSPort, __lcd_get_gpio_pin_sourse(pPrivData->CSPin), GPIO_AF_FSMC);
+	GPIO_PinAFConfig(pPrivData->RSPort, __lcd_get_gpio_pin_sourse(pPrivData->RSPin), GPIO_AF_FSMC);
+	GPIO_PinAFConfig(pPrivData->WRPort, __lcd_get_gpio_pin_sourse(pPrivData->WRPin), GPIO_AF_FSMC);
+	GPIO_PinAFConfig(pPrivData->RDPort, __lcd_get_gpio_pin_sourse(pPrivData->RDPin), GPIO_AF_FSMC);
 
 	GPIO_PinAFConfig(GPIOD, GPIO_PinSource14, GPIO_AF_FSMC);
 	GPIO_PinAFConfig(GPIOD, GPIO_PinSource15, GPIO_AF_FSMC);
@@ -272,10 +267,10 @@ int lcd_init(LCDDev_t *pDev)
 	GPIO_PinAFConfig(GPIOD, GPIO_PinSource10, GPIO_AF_FSMC);
 
 	/* 默认输出高电平 */
-	__lcd_io_set(pPrivData->info.WRPort, pPrivData->info.WRPin);
-	__lcd_io_set(pPrivData->info.RDPort, pPrivData->info.RDPin);
-	__lcd_io_set(pPrivData->info.CSPort, pPrivData->info.CSPin);
-	__lcd_io_set(pPrivData->info.RSPort, pPrivData->info.RSPin);
+	__lcd_io_set(pPrivData->WRPort, pPrivData->WRPin);
+	__lcd_io_set(pPrivData->RDPort, pPrivData->RDPin);
+	__lcd_io_set(pPrivData->CSPort, pPrivData->CSPin);
+	__lcd_io_set(pPrivData->RSPort, pPrivData->RSPin);
 	for (uint8_t i = 0; i < 16; i++)
 		__lcd_io_set(gLCDDataPorts[i], gLCDDataPins[i]);
 
@@ -485,7 +480,7 @@ int lcd_init(LCDDev_t *pDev)
     }
 
 	/* 点亮背光 */
-	__lcd_io_set(pPrivData->info.BLPort, pPrivData->info.BLPin);		// BL引脚置高电平
+	__lcd_io_set(pPrivData->BLPort, pPrivData->BLPin);		// BL引脚置高电平
 
 	/* 清屏 */
 	__lcd_clear(pDev, 0xFFFF);	// 白屏
