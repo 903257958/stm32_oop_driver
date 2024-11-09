@@ -121,6 +121,7 @@ typedef struct {
 /* 函数声明 */
 static void __lcd_clear(LCDDev_t *pDev, uint16_t color);
 static void __lcd_fill(LCDDev_t *pDev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color);
+static void __lcd_color_fill(LCDDev_t *pDev, uint16_t sx, uint16_t sy, uint16_t ex, uint16_t ey, uint16_t *color);
 static void __lcd_show_char(LCDDev_t *pDev, uint16_t x, uint16_t y, uint8_t chr, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
 static void __lcd_show_string(LCDDev_t *pDev, uint16_t x, uint16_t y, char *str, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
 static void __lcd_show_num(LCDDev_t *pDev, uint16_t x, uint16_t y, uint32_t num, uint8_t len, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
@@ -488,6 +489,7 @@ int lcd_init(LCDDev_t *pDev)
 	/* 函数指针赋值 */
 	pDev->clear = __lcd_clear;
 	pDev->fill = __lcd_fill;
+	pDev->color_fill = __lcd_color_fill;
 	pDev->show_char = __lcd_show_char;
 	pDev->show_string = __lcd_show_string;
 	pDev->show_num = __lcd_show_num;
@@ -586,6 +588,35 @@ static void __lcd_fill(LCDDev_t *pDev, uint16_t x, uint16_t y, uint16_t width, u
         for (j = x; j <= x_end; j++)
         {
             LCD->LCD_RAM = color;
+        }
+    }
+}
+
+/******************************************************************************
+ * @brief	LCD在指定区域填充颜色块，颜色可以不同
+ * @param	pDev	:  LCDDev_t结构体指针
+ * @param	x		:  x坐标
+ * @param	y		:  y坐标
+ * @param	width	:  填充宽度
+ * @param	height	:  填充高度
+ * @param	color	:  颜色
+ * @return	无
+ ******************************************************************************/
+static void __lcd_color_fill(LCDDev_t *pDev, uint16_t sx, uint16_t sy, uint16_t ex, uint16_t ey, uint16_t *color)
+{
+    uint16_t height, width;
+    uint16_t i, j;
+    width = ex - sx + 1;            //得到填充的宽度
+    height = ey - sy + 1;           //高度
+
+    for (i = 0; i < height; i++)
+    {
+        __lcd_set_cursor(pDev, sx, sy + i);	//设置光标位置
+        __lcd_write_ram_prepare(pDev);		//开始写入GRAM
+
+        for (j = 0; j < width; j++)
+        {
+            LCD->LCD_RAM=color[i * width + j];  //写入数据
         }
     }
 }

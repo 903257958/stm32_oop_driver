@@ -76,6 +76,7 @@ typedef struct LCDDev {
 	void *pPrivData;						// 私有数据指针
 	void (*clear)(struct LCDDev *pDev, uint16_t color);
 	void (*fill)(struct LCDDev *pDev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color);
+	void (*color_fill)(struct LCDDev *pDev, uint16_t sx, uint16_t sy, uint16_t ex, uint16_t ey, uint16_t *color);
 	void (*show_char)(struct LCDDev *pDev, uint16_t x, uint16_t y, uint8_t chr, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
 	void (*show_string)(struct LCDDev *pDev, uint16_t x, uint16_t y, char *str, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
 	void (*show_num)(struct LCDDev *pDev, uint16_t x, uint16_t y, uint32_t num, uint8_t len, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
