@@ -85,32 +85,32 @@
 
 #define __spi_get_sck_port(SPIx)	(	SPIx == SPI1 ? GPIOA : \
 										SPIx == SPI2 ? GPIOB : \
-										SPIx == SPI3 ? GPIOC : \
+										SPIx == SPI3 ? GPIOB : \
 										(int)0	)
 											
 #define __spi_get_sck_pin(SPIx)		(	SPIx == SPI1 ? GPIO_Pin_5 : \
-										SPIx == SPI2 ? GPIO_Pin_10 : \
-										SPIx == SPI3 ? GPIO_Pin_10 : \
+										SPIx == SPI2 ? GPIO_Pin_13 : \
+										SPIx == SPI3 ? GPIO_Pin_3 : \
 										(int)0	)
 											
 #define __spi_get_mosi_port(SPIx)	(	SPIx == SPI1 ? GPIOA : \
-										SPIx == SPI2 ? GPIOC : \
-										SPIx == SPI3 ? GPIOC : \
+										SPIx == SPI2 ? GPIOB : \
+										SPIx == SPI3 ? GPIOB : \
 										(int)0	)
 											
 #define __spi_get_mosi_pin(SPIx)	(	SPIx == SPI1 ? GPIO_Pin_7 : \
-										SPIx == SPI2 ? GPIO_Pin_3 : \
-										SPIx == SPI3 ? GPIO_Pin_12 : \
+										SPIx == SPI2 ? GPIO_Pin_15 : \
+										SPIx == SPI3 ? GPIO_Pin_5 : \
 										(int)0	)
 											
 #define __spi_get_miso_port(SPIx)	(	SPIx == SPI1 ? GPIOA : \
-										SPIx == SPI2 ? GPIOC : \
-										SPIx == SPI3 ? GPIOC : \
+										SPIx == SPI2 ? GPIOB : \
+										SPIx == SPI3 ? GPIOB : \
 										(int)0	)
 											
 #define __spi_get_miso_pin(SPIx)	(	SPIx == SPI1 ? GPIO_Pin_6 : \
-										SPIx == SPI2 ? GPIO_Pin_2 : \
-										SPIx == SPI3 ? GPIO_Pin_11 : \
+										SPIx == SPI2 ? GPIO_Pin_14 : \
+										SPIx == SPI3 ? GPIO_Pin_4 : \
 										(int)0	)
 
 #define	__spi_config_clock_enable(SPIx)		{	if(SPIx == SPI1)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);} \
