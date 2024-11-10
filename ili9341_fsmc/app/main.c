@@ -21,6 +21,8 @@ int main(void)
 	lcd.show_chinese(&lcd, 0, 12 + 16 + 24 + 32, "你好", GREEN, RED, LCD_32X32, 1);
 	lcd.show_image(&lcd, 0, 12 + 16 + 24 + 32 + 32, 128, 128, imageTest);
 
+	lcd.show_hex_num(&lcd, 80, 0, 255, 4, WHITE, BLACK, LCD_6X12, 0);
+
 	while(1)
 	{
 		

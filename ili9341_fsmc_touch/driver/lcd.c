@@ -125,6 +125,7 @@ static void __lcd_color_fill(LCDDev_t *pDev, uint16_t sx, uint16_t sy, uint16_t 
 static void __lcd_show_char(LCDDev_t *pDev, uint16_t x, uint16_t y, uint8_t chr, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
 static void __lcd_show_string(LCDDev_t *pDev, uint16_t x, uint16_t y, char *str, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
 static void __lcd_show_num(LCDDev_t *pDev, uint16_t x, uint16_t y, uint32_t num, uint8_t len, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
+static void __lcd_show_hex_num(LCDDev_t *pDev, uint16_t x, uint16_t y, uint32_t num, uint8_t len, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
 static void __lcd_show_float_num(LCDDev_t *pDev, uint16_t x, uint16_t y, float num, uint8_t len, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
 static void __lcd_show_chinese(LCDDev_t *pDev, uint16_t x, uint16_t y, char *Chinese, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
 static void __lcd_show_image(LCDDev_t *pDev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, const uint8_t pic[]);
@@ -493,6 +494,7 @@ int lcd_init(LCDDev_t *pDev)
 	pDev->show_char = __lcd_show_char;
 	pDev->show_string = __lcd_show_string;
 	pDev->show_num = __lcd_show_num;
+	pDev->show_hex_num = __lcd_show_hex_num;
 	pDev->show_float_num = __lcd_show_float_num;
 	pDev->show_chinese = __lcd_show_chinese;
 	pDev->show_image = __lcd_show_image;
@@ -736,6 +738,43 @@ static void __lcd_show_num(LCDDev_t *pDev, uint16_t x, uint16_t y, uint32_t num,
 
         __lcd_show_char(pDev, x + (size / 2)*t, y, temp + '0', fc, bc, size, mode);
     }
+}
+
+/******************************************************************************
+ * @brief	LCD显示十六进制数
+ * @param	pDev	:	LCDDev_t结构体指针
+ * @param	x		:	x坐标
+ * @param	y		:	y坐标
+ * @param	num		:	指定要显示的数字，范围：0x00000000~0xFFFFFFFF
+ * @param	len		:	指定数字的长度，范围：0~8
+ * @param	fc		:	字的颜色
+ * @param	bc		:	字的背景色
+ * @param	size	:	指定字体大小：LCD_16X32 / LCD_12X24 / LCD_8X16 / LCD_6X12
+ * @param	mode	:	模式：0非叠加/1叠加
+ * @return	无
+ ******************************************************************************/
+static void __lcd_show_hex_num(LCDDev_t *pDev, uint16_t x, uint16_t y, uint32_t num, uint8_t len, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode)
+{
+	uint8_t i, singleNumber;
+
+	for (i = 0; i < len; i++)		// 遍历数字的每一位
+	{
+		/* 以十六进制提取数字的每一位 */
+		singleNumber = num / __lcd_pow(16, len - i - 1) % 16;
+		
+		if (singleNumber < 10)			// 单个数字小于10
+		{
+			/* 调用__oled_show_char函数，显示此数字 */
+			/* + '0' 可将数字转换为字符格式 */
+			__lcd_show_char(pDev, x + i * size / 2, y, singleNumber + '0', fc, bc, size, mode);
+		}
+		else							// 单个数字大于10
+		{
+			/* 调用__oled_show_char函数，显示此数字 */
+			/* + 'A' 可将数字转换为从A开始的十六进制字符 */
+			__lcd_show_char(pDev, x + i * size / 2, y, singleNumber - 10 + 'A', fc, bc, size, mode);
+		}
+	}
 }
 
 /******************************************************************************
