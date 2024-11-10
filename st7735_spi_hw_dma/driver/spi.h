@@ -22,11 +22,9 @@
 	#error spi.h: No processor defined!
 #endif
 
-#ifndef SPI_Log
-	#define SPI_Log(x) 
+#ifndef spi_log
+	#define spi_log(x) 
 #endif
-
-#define  W25Q128_SPI                    SPI1             // SPI端口
 
 typedef enum {
     SPI_MODE_0,

@@ -35,13 +35,7 @@
 #define	__spi_config_clock_enable(SPIx)		{	if(SPIx == SPI1)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);} \
 												else if(SPIx == SPI2)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);} \
 												else if(SPIx == SPI3)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI3, ENABLE);} \
-												else					{SPI_Log("spi clock no enable\r\n");} \
-											}
-
-#define	__spi_config_clock_disable(SPIx)	{	if(SPIx == SPI1)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, DISABLE);} \
-												else if(SPIx == SPI2)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, DISABLE);} \
-												else if(SPIx == SPI3)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI3, DISABLE);} \
-												else					{SPI_Log("spi clock no disable\r\n");} \
+												else					{spi_log("spi clock no enable\r\n");} \
 											}
 
 #define	__spi_config_gpio_clock_enable(port)	{	if(port == GPIOA)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);} \
@@ -51,17 +45,7 @@
 													else if(port == GPIOE)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);} \
 													else if(port == GPIOF)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE);} \
 													else if(port == GPIOG)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, ENABLE);} \
-													else					{SPI_Log("spi gpio clock no enable\r\n");} \
-												}
-
-#define	__spi_config_gpio_clock_disable(port)	{	if(port == GPIOA)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, DISABLE);} \
-													else if(port == GPIOB)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, DISABLE);} \
-													else if(port == GPIOC)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, DISABLE);} \
-													else if(port == GPIOD)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, DISABLE);} \
-													else if(port == GPIOE)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, DISABLE);} \
-													else if(port == GPIOF)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, DISABLE);} \
-													else if(port == GPIOG)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, DISABLE);} \
-													else					{SPI_Log("spi gpio clock no disable\r\n");} \
+													else					{spi_log("spi gpio clock no enable\r\n");} \
 												}
 								
 #define	__spi_config_io_af_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -96,51 +80,43 @@
 											prescaler == 128 ? SPI_BaudRatePrescaler_128 : \
 											prescaler == 256 ? SPI_BaudRatePrescaler_256 : \
 											(int)0	)
-
-#define __spi_gpio_deinit(port)		GPIO_DeInit(port)
 						
 #elif defined(STM32F40_41xxx)
 
 #define __spi_get_sck_port(SPIx)	(	SPIx == SPI1 ? GPIOA : \
 										SPIx == SPI2 ? GPIOB : \
-										SPIx == SPI3 ? GPIOB : \
+										SPIx == SPI3 ? GPIOC : \
 										(int)0	)
 											
 #define __spi_get_sck_pin(SPIx)		(	SPIx == SPI1 ? GPIO_Pin_5 : \
-										SPIx == SPI2 ? GPIO_Pin_13 : \
-										SPIx == SPI3 ? GPIO_Pin_3 : \
+										SPIx == SPI2 ? GPIO_Pin_10 : \
+										SPIx == SPI3 ? GPIO_Pin_10 : \
 										(int)0	)
 											
 #define __spi_get_mosi_port(SPIx)	(	SPIx == SPI1 ? GPIOA : \
-										SPIx == SPI2 ? GPIOB : \
-										SPIx == SPI3 ? GPIOB : \
+										SPIx == SPI2 ? GPIOC : \
+										SPIx == SPI3 ? GPIOC : \
 										(int)0	)
 											
 #define __spi_get_mosi_pin(SPIx)	(	SPIx == SPI1 ? GPIO_Pin_7 : \
-										SPIx == SPI2 ? GPIO_Pin_15 : \
-										SPIx == SPI3 ? GPIO_Pin_5 : \
+										SPIx == SPI2 ? GPIO_Pin_3 : \
+										SPIx == SPI3 ? GPIO_Pin_12 : \
 										(int)0	)
 											
 #define __spi_get_miso_port(SPIx)	(	SPIx == SPI1 ? GPIOA : \
-										SPIx == SPI2 ? GPIOB : \
-										SPIx == SPI3 ? GPIOB : \
+										SPIx == SPI2 ? GPIOC : \
+										SPIx == SPI3 ? GPIOC : \
 										(int)0	)
 											
 #define __spi_get_miso_pin(SPIx)	(	SPIx == SPI1 ? GPIO_Pin_6 : \
-										SPIx == SPI2 ? GPIO_Pin_14 : \
-										SPIx == SPI3 ? GPIO_Pin_4 : \
+										SPIx == SPI2 ? GPIO_Pin_2 : \
+										SPIx == SPI3 ? GPIO_Pin_11 : \
 										(int)0	)
 
 #define	__spi_config_clock_enable(SPIx)		{	if(SPIx == SPI1)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);} \
 												else if(SPIx == SPI2)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);} \
 												else if(SPIx == SPI3)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI3, ENABLE);} \
-												else					{SPI_Log("spi clock no enable\r\n");} \
-											}
-
-#define	__spi_config_clock_disable(SPIx)	{	if(SPIx == SPI1)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, DISABLE);} \
-												else if(SPIx == SPI2)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, DISABLE);} \
-												else if(SPIx == SPI3)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI3, DISABLE);} \
-												else					{SPI_Log("spi clock no disable\r\n");} \
+												else					{spi_log("spi clock no enable\r\n");} \
 											}
 
 #define	__spi_config_gpio_clock_enable(port)	{	if(port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);} \
@@ -150,17 +126,7 @@
 													else if(port == GPIOE)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);} \
 													else if(port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);} \
 													else if(port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);} \
-													else					{SPI_Log("spi gpio clock no enable\r\n");} \
-												}
-
-#define	__spi_config_gpio_clock_disable(port)	{	if(port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, DISABLE);} \
-													else if(port == GPIOB)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, DISABLE);} \
-													else if(port == GPIOC)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, DISABLE);} \
-													else if(port == GPIOD)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, DISABLE);} \
-													else if(port == GPIOE)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, DISABLE);} \
-													else if(port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, DISABLE);} \
-													else if(port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, DISABLE);} \
-													else					{SPI_Log("spi gpio clock no disable\r\n");} \
+													else					{spi_log("spi gpio clock no enable\r\n");} \
 												}
 								
 #define	__spi_config_io_af_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -177,14 +143,6 @@
 												GPIO_InitStructure.GPIO_OType = GPIO_OType_PP; \
 												GPIO_InitStructure.GPIO_Pin = pin ; \
 												GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL; \
-												GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; \
-												GPIO_Init(port, &GPIO_InitStructure); \
-											}
-
-#define	__spi_config_io_in_pu(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
-												GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN; \
-												GPIO_InitStructure.GPIO_Pin = pin ; \
-												GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP; \
 												GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; \
 												GPIO_Init(port, &GPIO_InitStructure); \
 											}
@@ -223,8 +181,6 @@
 											prescaler == 128 ? SPI_BaudRatePrescaler_128 : \
 											prescaler == 256 ? SPI_BaudRatePrescaler_256 : \
 											(int)0	)
-
-#define __spi_gpio_deinit(port)		GPIO_DeInit(port)
 
 #endif
 	
@@ -280,10 +236,11 @@ int spi_init(SPIDev_t *pDev)
 	
 	__spi_config_io_af_pp(pPrivData->SCKPort, pPrivData->SCKPin);
 	__spi_config_io_af_pp(pPrivData->MOSIPort, pPrivData->MOSIPin);
+	__spi_config_io_af_pp(pPrivData->MISOPort, pPrivData->MISOPin);
 	__spi_config_io_out_pp(pDev->info.CSPort, pDev->info.CSPin);
 	
 	#if defined(STM32F10X_HD) || defined(STM32F10X_MD)
-	__spi_config_io_in_pu(pPrivData->MISOPort, pPrivData->MISOPin);
+	
 	/* STM32F1的PB3、PB4、PA15为JTAG引脚，配置SPI3时需要解除JTAG */
 	if(pDev->info.spix == SPI3)
 	{
@@ -293,7 +250,7 @@ int spi_init(SPIDev_t *pDev)
 	}
 	
 	#elif defined(STM32F40_41xxx)
-	__spi_config_io_af_pp(pPrivData->MISOPort, pPrivData->MISOPin);
+	
 	/* STM32F4配置为复用输出时需要配置引脚复用映射 */
 	GPIO_PinAFConfig(	pPrivData->SCKPort, 
 						__spi_get_gpio_pin_sourse(pPrivData->SCKPin), 
@@ -416,21 +373,6 @@ static int __spi_deinit(SPIDev_t *pDev)
 {
 	if (!pDev || !pDev->initFlag)
 		return -1;
-	
-	SPIPrivData_t *pPrivData = (SPIPrivData_t *)pDev->pPrivData;
-	
-	/* 关闭时钟 */
-	__spi_config_clock_disable(pDev->info.spix);
-	__spi_config_gpio_clock_disable(pPrivData->SCKPort);
-	__spi_config_gpio_clock_disable(pPrivData->MOSIPort);
-	__spi_config_gpio_clock_disable(pPrivData->MISOPort);
-	__spi_config_gpio_clock_disable(pDev->info.CSPort);
-	
-	/* 复位GPIO */
-	__spi_gpio_deinit(pPrivData->SCKPort);
-	__spi_gpio_deinit(pPrivData->MOSIPort);
-	__spi_gpio_deinit(pPrivData->MISOPort);
-	__spi_gpio_deinit(pDev->info.CSPort);
 	
 	/* 释放私有数据内存 */
 	free(pDev->pPrivData);

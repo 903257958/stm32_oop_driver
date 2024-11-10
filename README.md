@@ -19,6 +19,8 @@
 - **timer_irq**: 定时器中断
 - **usart_dma**: 串口 + 空闲中断 + DMA
 - **esp8266**: WiFi模块通过串口实现TCP透传
+- **w25qx_spi_hw**: 硬件SPI读写外部Flash
+- **w25qx_spi_sw**: 软件SPI读写外部Flash
 - **ssd1306_spi_hw_dma**: SSD1306主控0.96寸OLED屏幕，使用硬件SPI + DMA
 - **st7735_spi_hw_dma**: ST7735主控1.8寸LCD屏幕，使用硬件SPI + DMA
 - **ili9341_fsmc**: ILI9341主控2.8寸LCD屏幕，使用FSMC
