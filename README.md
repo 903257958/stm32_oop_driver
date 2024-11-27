@@ -21,8 +21,9 @@
 - **esp8266**: WiFi模块通过串口实现TCP透传
 - **w25qx_spi_hw**: 硬件SPI读写外部Flash
 - **w25qx_spi_sw**: 软件SPI读写外部Flash
-- **ssd1306_spi_hw_dma**: SSD1306主控0.96寸OLED屏幕，使用硬件SPI + DMA
-- **st7735_spi_hw_dma**: ST7735主控1.8寸LCD屏幕，使用硬件SPI + DMA
-- **ili9341_fsmc**: ILI9341主控2.8寸LCD屏幕，使用FSMC
-- **ili9341_fsmc_touch**: ILI9341主控2.8寸LCD屏幕，使用FSMC + XPT2046触摸屏
+- **ssd1306_spi_hw_dma**: 硬件SPI + DMA驱动 SSD1306主控0.96寸OLED屏幕
+- **st7735_spi_hw_dma**: 硬件SPI + DMA驱动 ST7735主控1.8寸LCD屏幕
+- **ili9341_fsmc**: FSMC驱动 ILI9341主控2.8寸LCD屏幕
+- **ili9341_fsmc_touch_flash**: FSMC驱动 ILI9341主控2.8寸LCD屏幕 + XPT2046触摸屏，校准数据保存在Flash中
 - **stepper_motor**: 步进电机
+- **passive_buzzer_pwm**: PWM控制无源蜂鸣器

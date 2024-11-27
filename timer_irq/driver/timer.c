@@ -3,6 +3,8 @@
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 
 #define MAX_TIMER_NUM	6
+
+#define TIMER_FREQ	72000000
 	
 #define __timer_get_irqn_channel(TIMx)	(	TIMx == TIM2 ? TIM2_IRQn : \
 											TIMx == TIM3 ? TIM3_IRQn : \
@@ -32,6 +34,8 @@
 #elif defined(STM32F40_41xxx)
 
 #define MAX_TIMER_NUM	6
+
+#define TIMER_FREQ	84000000
 
 #define __timer_get_irqn_channel(TIMx)	(	TIMx == TIM2 ? TIM2_IRQn : \
 											TIMx == TIM3 ? TIM3_IRQn : \
@@ -146,17 +150,12 @@ int timer_init(TimerDev_t *pDev)
  ******************************************************************************/
 static int __timer_delay_us(TimerDev_t *pDev, uint32_t us)
 {
-	#if defined(STM32F10X_HD) || defined(STM32F10X_MD)
-	if(TIM_GetPrescaler(pDev->info.timx) != 71)		// 判断PSC是否配置为71
+	if (TIM_GetPrescaler(pDev->info.timx) != TIMER_FREQ / 1000000 - 1)	// 判断PSC配置
 		return -1;
-	#elif defined(STM32F40_41xxx)
-	if(TIM_GetPrescaler(pDev->info.timx) != 83)		// 判断PSC是否配置为83
-		return -1;
-	#endif
 	
-    uint32_t start = TIM_GetCounter(pDev->info.timx);		// 记录当前计数值
+    uint32_t start = TIM_GetCounter(pDev->info.timx);					// 记录当前计数值
     
-    while ((TIM_GetCounter(pDev->info.timx) - start) < us);	// 等待指定的微秒数
+    while ((TIM_GetCounter(pDev->info.timx) - start) < us);				// 等待指定的微秒数
 
 	return us;
 }
@@ -169,15 +168,10 @@ static int __timer_delay_us(TimerDev_t *pDev, uint32_t us)
  ******************************************************************************/
 static int __timer_delay_ms(TimerDev_t *pDev, uint32_t ms)
 {
-	#if defined(STM32F10X_HD) || defined(STM32F10X_MD)
-	if(TIM_GetPrescaler(pDev->info.timx) != 71)		// 判断PSC是否配置为71
+	if (TIM_GetPrescaler(pDev->info.timx) != TIMER_FREQ / 1000000 - 1)	// 判断PSC配置
 		return -1;
-	#elif defined(STM32F40_41xxx)
-	if(TIM_GetPrescaler(pDev->info.timx) != 83)		// 判断PSC是否配置为83
-	 	return -1;
-	#endif
 	
-	while(ms--)
+	while (ms--)
 	{
 		__timer_delay_us(pDev, 1000);
 	}
