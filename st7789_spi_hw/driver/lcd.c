@@ -125,21 +125,12 @@
 	}								  
 	#endif
 
-#endif		
-
-/**
-  * LCD显存数组
-  * 在使用DMA传输时，所有的显示函数，都只是对此显存数组进行读写
-  * 随后调用__lcd_update函数或__lcd_updateArea函数启动一次DMA传输
-  * 才会将显存数组的数据发送到LCD硬件，进行显示
-  * LCD屏幕的像素为128*160，每个像素存放16位的颜色数据，故定义类型为uint8_t时，LCD_W需要*2
-  */
-// uint8_t gLCDDisplayBuf[LCD_H][LCD_W * 2] = {0};
-uint8_t gLCDDisplayBuf[1][1 * 2] = {0};
+#endif
 											
 /* LCD私有数据结构体 */
 typedef struct {
-	SPIDev_t lcd;					// 硬件SPI设备
+	SPIDev_t lcdSPI;	// 硬件SPI设备
+	PWMDev_t lcdPWM;	// PWM背光引脚
 }LCDPrivData_t;
 
 /* 通信协议 */
@@ -188,14 +179,21 @@ int lcd_init(LCDDev_t *pDev)
 	
 	LCDPrivData_t *pPrivData = (LCDPrivData_t *)pDev->pPrivData;
 	
-	pPrivData->lcd.info.spix = pDev->info.spix;
-	pPrivData->lcd.info.CSPort = pDev->info.CSPort;
-	pPrivData->lcd.info.CSPin = pDev->info.CSPin;
-	pPrivData->lcd.info.prescaler = 2;
-	pPrivData->lcd.info.mode = SPI_MODE_3;
+	pPrivData->lcdSPI.info.spix = pDev->info.spix;
+	pPrivData->lcdSPI.info.CSPort = pDev->info.CSPort;
+	pPrivData->lcdSPI.info.CSPin = pDev->info.CSPin;
+	pPrivData->lcdSPI.info.prescaler = 2;
+	pPrivData->lcdSPI.info.mode = SPI_MODE_3;
+
+	pPrivData->lcdPWM.info.timx = pDev->info.timx;
+	pPrivData->lcdPWM.info.OCChannel = pDev->info.OCChannel;
+	pPrivData->lcdPWM.info.psc = 82;
+	pPrivData->lcdPWM.info.arr = 3000;
+	pPrivData->lcdPWM.info.port = pDev->info.BLPort;
+	pPrivData->lcdPWM.info.pin = pDev->info.BLPin;
 	
 	/* 配置硬件SPI */
-	spi_init(&pPrivData->lcd);
+	spi_init(&pPrivData->lcdSPI);
 	
 	/* 配置时钟与GPIO */
 	__lcd_config_gpio_clock_enable(pDev->info.RESPort);
@@ -207,10 +205,9 @@ int lcd_init(LCDDev_t *pDev)
 	__lcd_dc_write(pDev, 1);
 	__lcd_res_write(pDev, 1);
 	
-	/* 配置背光引脚 */
-	PWMDev_t lcdBL = {.info = {TIM3, 2, 83, 3000, pDev->info.BLPort, pDev->info.BLPin}};
-	pwm_init(&lcdBL);
-	lcdBL.set_compare(&lcdBL, 100);
+	/* 配置背光 */
+	pwm_init(&pPrivData->lcdPWM);
+	pPrivData->lcdPWM.set_compare(&pPrivData->lcdPWM, 100);
 	
 	/* 配置LCD */
 	__lcd_reset(pDev);			// 复位
@@ -382,9 +379,9 @@ static void __lcd_write_command(LCDDev_t *pDev, uint8_t command)
 	LCDPrivData_t *pPrivData = (LCDPrivData_t *)pDev->pPrivData;
 	
 	__lcd_dc_write(pDev, 0);			// 写命令
-	pPrivData->lcd.start(&pPrivData->lcd);					// 拉低CS，开始通信
-	pPrivData->lcd.swap_byte(&pPrivData->lcd, command);		// 写入指定命令
-	pPrivData->lcd.stop(&pPrivData->lcd);					// 拉高CS，结束通信
+	pPrivData->lcdSPI.start(&pPrivData->lcdSPI);				// 拉低CS，开始通信
+	pPrivData->lcdSPI.swap_byte(&pPrivData->lcdSPI, command);	// 写入指定命令
+	pPrivData->lcdSPI.stop(&pPrivData->lcdSPI);					// 拉高CS，结束通信
 }
 
 /******************************************************************************
@@ -398,9 +395,9 @@ static void __lcd_write_byte(LCDDev_t *pDev, uint8_t byte)
 	LCDPrivData_t *pPrivData = (LCDPrivData_t *)pDev->pPrivData;
 	
 	__lcd_dc_write(pDev, 1);			// 写数据
-	pPrivData->lcd.start(&pPrivData->lcd);					// 拉低CS，开始通信
-	pPrivData->lcd.swap_byte(&pPrivData->lcd, byte);		// 写入指定命令
-	pPrivData->lcd.stop(&pPrivData->lcd);					// 拉高CS，结束通信
+	pPrivData->lcdSPI.start(&pPrivData->lcdSPI);				// 拉低CS，开始通信
+	pPrivData->lcdSPI.swap_byte(&pPrivData->lcdSPI, byte);		// 写入指定命令
+	pPrivData->lcdSPI.stop(&pPrivData->lcdSPI);					// 拉高CS，结束通信
 }
 
 /******************************************************************************
@@ -414,10 +411,10 @@ static void __lcd_write_halfword(LCDDev_t *pDev, uint16_t halfword)
 	LCDPrivData_t *pPrivData = (LCDPrivData_t *)pDev->pPrivData;
 	
 	__lcd_dc_write(pDev, 1);			// 写数据
-	pPrivData->lcd.start(&pPrivData->lcd);						// 拉低CS，开始通信
-	pPrivData->lcd.swap_byte(&pPrivData->lcd, halfword >> 8);	// 写入数据
-	pPrivData->lcd.swap_byte(&pPrivData->lcd, halfword);		// 写入数据
-	pPrivData->lcd.stop(&pPrivData->lcd);						// 拉高CS，结束通信
+	pPrivData->lcdSPI.start(&pPrivData->lcdSPI);					// 拉低CS，开始通信
+	pPrivData->lcdSPI.swap_byte(&pPrivData->lcdSPI, halfword >> 8);	// 写入数据
+	pPrivData->lcdSPI.swap_byte(&pPrivData->lcdSPI, halfword);		// 写入数据
+	pPrivData->lcdSPI.stop(&pPrivData->lcdSPI);						// 拉高CS，结束通信
 }
 
 /**********************************************************************通信协议*/
@@ -609,21 +606,21 @@ static void __lcd_show_char(LCDDev_t *pDev, uint16_t x, uint16_t y, uint8_t chr,
 
 	for (i = 0; i < TypefaceNum; i++)
 	{ 
-		if(size==12)temp=LCD_F6x12[chr][i];				// 调用6x12字体
-		else if(size==16)temp=LCD_F8x16[chr][i];		// 调用8x16字体
-		else if(size==24)temp=LCD_F12x24[chr][i];		// 调用12x24字体
-		else if(size==32)temp=LCD_F16x32[chr][i];		// 调用16x32字体
+		if (size==12)temp=LCD_F6x12[chr][i];			// 调用6x12字体
+		else if (size==16)temp=LCD_F8x16[chr][i];		// 调用8x16字体
+		else if (size==24)temp=LCD_F12x24[chr][i];		// 调用12x24字体
+		else if (size==32)temp=LCD_F16x32[chr][i];		// 调用16x32字体
 		else return;
 
 		for (t = 0;t < 8;t++)
 		{
 			if (!mode)									// 非叠加模式
 			{
-				if(temp & (0x01 << t)) __lcd_draw_point(pDev, x, y, fc);
+				if (temp & (0x01 << t)) __lcd_draw_point(pDev, x, y, fc);
                 else __lcd_draw_point(pDev, x, y, bc);
                 m++;
                 x++;
-                if(m % sizex == 0)
+                if (m % sizex == 0)
                 {
                     m = 0;
                     x = x0;
@@ -633,9 +630,9 @@ static void __lcd_show_char(LCDDev_t *pDev, uint16_t x, uint16_t y, uint8_t chr,
 			}
 			else										// 叠加模式
 			{
-				if(temp & (0x01 << t)) __lcd_draw_point(pDev, x, y, fc);
+				if (temp & (0x01 << t)) __lcd_draw_point(pDev, x, y, fc);
                 x++;
-                if((x - x0) == sizex)
+                if ((x - x0) == sizex)
                 {
                     x = x0;
                     y++;
@@ -984,12 +981,12 @@ static void __lcd_show_chinese32x32(LCDDev_t *pDev, uint16_t x, uint16_t y, char
  ******************************************************************************/
 static void __lcd_show_chinese(LCDDev_t *pDev, uint16_t x, uint16_t y, char *Chinese, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode)
 {
-	while(*Chinese != 0)
+	while (*Chinese != 0)
 	{
-		if(size==LCD_12X12)			__lcd_show_chinese12x12(pDev, x, y, Chinese, fc, bc, mode);
-		else if(size==LCD_16X16)	__lcd_show_chinese16x16(pDev, x, y, Chinese, fc, bc, mode);
-		else if(size==LCD_24X24)	__lcd_show_chinese24x24(pDev, x, y, Chinese, fc, bc, mode);
-		else if(size==LCD_32X32)	__lcd_show_chinese32x32(pDev, x, y, Chinese, fc, bc, mode);
+		if (size==LCD_12X12)		__lcd_show_chinese12x12(pDev, x, y, Chinese, fc, bc, mode);
+		else if (size==LCD_16X16)	__lcd_show_chinese16x16(pDev, x, y, Chinese, fc, bc, mode);
+		else if (size==LCD_24X24)	__lcd_show_chinese24x24(pDev, x, y, Chinese, fc, bc, mode);
+		else if (size==LCD_32X32)	__lcd_show_chinese32x32(pDev, x, y, Chinese, fc, bc, mode);
 		else return;
 		
 		Chinese += LCD_CHN_CHAR_WIDTH;
@@ -1132,18 +1129,18 @@ static void __lcd_draw_circle(LCDDev_t *pDev, uint16_t x, uint16_t y, uint8_t ra
 	a = 0;
 	b = radius;
 	
-	while(a <= b)
+	while (a <= b)
 	{
-		__lcd_draw_point(pDev, x - b, y - a, color);	//3           
-		__lcd_draw_point(pDev, x + b, y - a, color);	//0           
-		__lcd_draw_point(pDev, x - a, y + b, color);	//1                
-		__lcd_draw_point(pDev, x - a, y - b, color);	//2             
-		__lcd_draw_point(pDev, x + b, y + a, color);	//4               
-		__lcd_draw_point(pDev, x + a, y - b, color);	//5
-		__lcd_draw_point(pDev, x + a, y + b, color);	//6 
-		__lcd_draw_point(pDev, x - b, y + a, color);	//7
+		__lcd_draw_point(pDev, x - b, y - a, color);	// 3           
+		__lcd_draw_point(pDev, x + b, y - a, color);	// 0           
+		__lcd_draw_point(pDev, x - a, y + b, color);	// 1                
+		__lcd_draw_point(pDev, x - a, y - b, color);	// 2             
+		__lcd_draw_point(pDev, x + b, y + a, color);	// 4               
+		__lcd_draw_point(pDev, x + a, y - b, color);	// 5
+		__lcd_draw_point(pDev, x + a, y + b, color);	// 6 
+		__lcd_draw_point(pDev, x - b, y + a, color);	// 7
 		a++;
-		if((a * a + b * b) > (radius * radius))		//判断要画的点是否过远
+		if ((a * a + b * b) > (radius * radius))		// 判断要画的点是否过远
 		{
 			b--;
 		}
@@ -1162,14 +1159,17 @@ static int __lcd_deinit(LCDDev_t *pDev)
 	
 	LCDPrivData_t *pPrivData = (LCDPrivData_t *)pDev->pPrivData;
 	
-	/*去初始化硬件SPI*/
-	pPrivData->lcd.deinit(&pPrivData->lcd);
+	/* 去初始化硬件SPI */
+	pPrivData->lcdSPI.deinit(&pPrivData->lcdSPI);
+
+	/* 去初始化PWM */
+	pPrivData->lcdPWM.deinit(&pPrivData->lcdPWM);
 	
-	/*释放私有数据内存*/
+	/* 释放私有数据内存 */
 	free(pDev->pPrivData);
 	pDev->pPrivData = NULL;
 	
-	pDev->initFlag = false;	//修改初始化标志
+	pDev->initFlag = false;	// 修改初始化标志
 	return 0;
 }
 

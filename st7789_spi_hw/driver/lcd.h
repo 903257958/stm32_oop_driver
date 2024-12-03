@@ -97,7 +97,9 @@ typedef struct {
 	uint32_t CSPin;					// CS引脚
 	LCD_GPIO_Port BLPort;			// BL端口
 	uint32_t BLPin;					// BL引脚
-	uint8_t dir;
+	TIMx timx;						// 背光PWM定时器
+	uint8_t OCChannel;				// 背光PWM输出比较通道
+	uint8_t dir;					// 显示方向
 }LCDInfo_t;
 
 typedef struct LCDDev {
