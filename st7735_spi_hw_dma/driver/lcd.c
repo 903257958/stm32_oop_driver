@@ -158,7 +158,7 @@ static void __lcd_fill_area(LCDDev_t *pDev, uint16_t x, uint16_t y, uint16_t wid
 static void __lcd_show_char(LCDDev_t *pDev, uint16_t x, uint16_t y, uint8_t character, uint16_t fc, uint16_t bc, uint8_t fontSize);
 static void __lcd_show_string(LCDDev_t *pDev, uint16_t x, uint16_t y, char *string,uint16_t fc, uint16_t bc, uint8_t fontSize);
 static void __lcd_show_num(LCDDev_t *pDev, uint16_t x, uint16_t y, uint32_t num, uint8_t len, uint16_t fc, uint16_t bc , uint8_t fontSize);
-static void __lcd_show_float_num(LCDDev_t *pDev, uint16_t x, uint16_t y, float num, uint8_t len, uint16_t fc, uint16_t bc, uint8_t fontSize);
+static void __lcd_show_float_num(LCDDev_t *pDev, uint16_t x, uint16_t y, float num, uint8_t intLen, uint8_t fraLen, uint16_t fc, uint16_t bc, uint8_t size);
 static void __lcd_show_chinese(LCDDev_t *pDev, uint16_t x, uint16_t y, char *Chinese, uint16_t fc, uint16_t bc, uint8_t fontSize);
 static void __lcd_show_image(LCDDev_t *pDev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, const uint8_t pic[]);
 static void __lcd_draw_point(LCDDev_t *pDev, uint16_t x, uint16_t y, uint16_t color);
@@ -777,34 +777,45 @@ static void __lcd_show_num(LCDDev_t *pDev, uint16_t x, uint16_t y, uint32_t num,
 /******************************************************************************
  * @brief	LCD显示两位小数变量
  * @param	pDev		:	LCDDev_t结构体指针
- * @param	x,y			:	显示坐标
- * @param	num			:	要显示小数变量
- * @param	len			:	要显示的位数
- * @param	fc			:	字的颜色
- * @param	bc			:	字的背景色
- * @param	fontSize	:	指定字体大小
-			范围		:	LCD_16X32	宽16像素，高32像素
-							LCD_12X24	宽12像素，高24像素
-							LCD_8X16	宽8像素，高16像素
-							LCD_6X12	宽6像素，高12像素
+ * @param	x		:	x坐标
+ * @param	y		:	y坐标
+ * @param	num		:	要显示整数变量
+ * @param	intLen	:	要显示的整数位数
+ * @param	fraLen	:	要显示的小数位数
+ * @param	fc		:	字的颜色
+ * @param	bc		:	字的背景色
+ * @param	size	:	指定字体大小：LCD_16X32 / LCD_12X24 / LCD_8X16 / LCD_6X12
+ * @param	mode	:	模式：0非叠加/1叠加
  * @return	无
  ******************************************************************************/
-static void __lcd_show_float_num(LCDDev_t *pDev, uint16_t x, uint16_t y, float num, uint8_t len, uint16_t fc, uint16_t bc, uint8_t fontSize)
-{         	
-	uint8_t t, temp, fontSizex;
-	uint16_t num1;
-	fontSizex = fontSize / 2;
-	num1 = num * 100;
-	for(t = 0; t < len; t++)
+static void __lcd_show_float_num(LCDDev_t *pDev, uint16_t x, uint16_t y, float num, uint8_t intLen, uint8_t fraLen, uint16_t fc, uint16_t bc, uint8_t size)
+{
+    uint32_t powNum, intNum, fraNum;
+	
+	if (num < 0)
 	{
-		temp = (num1 / __lcd_pow(10, len - t - 1)) % 10;
-		if(t == (len - 2))
-		{
-			__lcd_show_char(pDev, x + (len - 2) * fontSizex, y, '.', fc, bc, fontSize);
-			t++;
-			len += 1;
-		}
-	 	__lcd_show_char(pDev, x + t * fontSizex, y, temp + 48, fc, bc, fontSize);
+		__lcd_show_char(pDev, x, y, '-', fc, bc, size);	// 显示-号
+	}
+	
+	/* 提取整数部分和小数部分 */
+	intNum = num;						// 直接赋值给整型变量，提取整数
+	num -= intNum;						// 将Number的整数减掉，防止之后将小数乘到整数时因数过大造成错误
+	powNum = __lcd_pow(10, fraLen);		// 根据指定小数的位数，确定乘数
+	fraNum = round(num * powNum);		// 将小数乘到整数，同时四舍五入，避免显示误差
+	intNum += fraNum / powNum;			// 若四舍五入造成了进位，则需要再加给整数
+	
+	if (num >= 0)
+	{
+		__lcd_show_num(pDev, x, y, intNum, intLen, fc, bc, size);								// 显示整数部分
+		__lcd_show_char(pDev, x + (intLen) * size / 2, y, '.', fc, bc, size);					// 显示小数点
+		__lcd_show_num(pDev, x + (intLen + 1) * size / 2, y, fraNum, fraLen, fc, bc, size);		// 显示小数部分
+	}
+	else
+	{
+		num = -num;
+		__lcd_show_num(pDev, x + size / 2, y, intNum, intLen, fc, bc, size);					// 显示整数部分
+		__lcd_show_char(pDev, x + (intLen + 1) * size / 2, y, '.', fc, bc, size);				// 显示小数点
+		__lcd_show_num(pDev, x + (intLen + 2) * size / 2, y, fraNum, fraLen, fc, bc, size);		// 显示小数部分
 	}
 }
 

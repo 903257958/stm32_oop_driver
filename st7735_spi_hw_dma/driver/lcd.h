@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <math.h>
 #include "spi.h"
 
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
@@ -121,7 +122,7 @@ typedef struct LCDDev {
 	void (*show_char)(struct LCDDev *pDev, uint16_t x, uint16_t y, uint8_t num, uint16_t fc, uint16_t bc, uint8_t size);					//LCD显示字符
 	void (*show_string)(struct LCDDev *pDev, uint16_t x, uint16_t y, char *string, uint16_t fc, uint16_t bc, uint8_t size);					//LCD显示字符串
 	void (*show_num)(struct LCDDev *pDev, uint16_t x, uint16_t y, uint32_t num, uint8_t len, uint16_t fc, uint16_t bc , uint8_t size);		//LCD显示整型数字
-	void (*show_float_num)(struct LCDDev *pDev, uint16_t x, uint16_t y, float num, uint8_t len, uint16_t fc, uint16_t bc, uint8_t size);	//LCD显示两位浮点数
+	void (*show_float_num)(struct LCDDev *pDev, uint16_t x, uint16_t y, float num, uint8_t intLen, uint8_t fraLen, uint16_t fc, uint16_t bc, uint8_t size);	//LCD显示两位浮点数
 	void (*show_chinese)(struct LCDDev *pDev, uint16_t x, uint16_t y, char *Chinese, uint16_t fc, uint16_t bc, uint8_t size);				//LCD显示汉字串
 	void (*show_image)(struct LCDDev *pDev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, const uint8_t pic[]);					//LCD显示图片
 	void (*draw_point)(struct LCDDev *pDev, uint16_t x, uint16_t y, uint16_t color);														//LCD画点

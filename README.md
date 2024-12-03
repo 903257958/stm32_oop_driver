@@ -24,6 +24,7 @@
 - **w25qx_spi_sw**: 软件SPI读写外部Flash
 - **ssd1306_spi_hw_dma**: 硬件SPI + DMA驱动 SSD1306主控0.96寸OLED屏幕
 - **st7735_spi_hw_dma**: 硬件SPI + DMA驱动 ST7735主控1.8寸LCD屏幕
+- **st7789_spi_hw**: 硬件SPI驱动 ST7789主控1.69寸LCD屏幕
 - **ili9341_fsmc**: FSMC驱动 ILI9341主控2.8寸LCD屏幕
 - **ili9341_fsmc_touch_flash**: FSMC驱动 ILI9341主控2.8寸LCD屏幕 + XPT2046触摸屏，校准数据保存在Flash中
 - **stepper_motor**: 步进电机

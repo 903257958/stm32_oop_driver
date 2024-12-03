@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <math.h>
 	
 #if defined(STM32F40_41xxx)
 	#include "stm32f4xx.h"
@@ -81,7 +82,7 @@ typedef struct LCDDev {
 	void (*show_string)(struct LCDDev *pDev, uint16_t x, uint16_t y, char *str, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
 	void (*show_num)(struct LCDDev *pDev, uint16_t x, uint16_t y, uint32_t num, uint8_t len, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
 	void (*show_hex_num)(struct LCDDev *pDev, uint16_t x, uint16_t y, uint32_t num, uint8_t len, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
-	void (*show_float_num)(struct LCDDev *pDev, uint16_t x, uint16_t y, float num, uint8_t len, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
+	void (*show_float_num)(struct LCDDev *pDev, uint16_t x, uint16_t y, float num, uint8_t intLen, uint8_t fraLen, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
 	void (*show_chinese)(struct LCDDev *pDev, uint16_t x, uint16_t y, char *Chinese, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
 	void (*show_image)(struct LCDDev *pDev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, const uint8_t pic[]);
 	void (*draw_point)(struct LCDDev *pDev, uint16_t x, uint16_t y, uint16_t color);
