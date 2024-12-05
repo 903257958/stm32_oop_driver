@@ -49,5 +49,7 @@ int main(void)
 		lcd.show_hex_num(&lcd, 68, 80, touch.gesture, 2, BLACK, YELLOW, LCD_12X24, 0);
 		lcd.show_num(&lcd, 44, 110, touch.x, 3, BLACK, YELLOW, LCD_12X24, 0);
 		lcd.show_num(&lcd, 44, 140, touch.y, 3, BLACK, YELLOW, LCD_12X24, 0);
+
+		lcd.show_num(&lcd, 44, 170, touch.get_finger_num(&touch), 3, BLACK, YELLOW, LCD_12X24, 0);
 	}
 }

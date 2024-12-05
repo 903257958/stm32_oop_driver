@@ -95,12 +95,12 @@ typedef struct {
 }CST816TPrivData_t;
 
 /* 函数声明 */
-static void __cst816t_write_reg(CST816TDev_t *pDev, uint8_t addr, uint8_t data);
+// static void __cst816t_write_reg(CST816TDev_t *pDev, uint8_t addr, uint8_t data);
 static void __cst816t_read_reg(CST816TDev_t *pDev, uint8_t addr, uint8_t *data);
 static void __cst816t_read_regs(CST816TDev_t *pDev, uint8_t addr, uint8_t num, uint8_t data[]);
 static void __cst816t_get_id(CST816TDev_t *pDev, uint8_t *id);
 static void __cst816t_get_firmware_ver(CST816TDev_t *pDev, uint8_t *fwVer);
-static void __cst816t_get_finger_num(CST816TDev_t *pDev, uint8_t *num);
+static uint8_t __cst816t_get_finger_num(CST816TDev_t *pDev);
 static void __cst816t_get_action(CST816TDev_t *pDev);
 static int __cst816t_deinit(CST816TDev_t *pDev);
 
@@ -158,19 +158,19 @@ int cst816t_init(CST816TDev_t *pDev)
  * @param	data   :  要写入的寄存器数据
  * @return	无
  ******************************************************************************/
-static void __cst816t_write_reg(CST816TDev_t *pDev, uint8_t addr, uint8_t data)
-{
-    CST816TPrivData_t *pPrivData = (CST816TPrivData_t *)pDev->pPrivData;
+// static void __cst816t_write_reg(CST816TDev_t *pDev, uint8_t addr, uint8_t data)
+// {
+//     CST816TPrivData_t *pPrivData = (CST816TPrivData_t *)pDev->pPrivData;
 
-    pPrivData->cst816tI2C.start(&pPrivData->cst816tI2C);						// I2C起始
-	pPrivData->cst816tI2C.send_byte(&pPrivData->cst816tI2C, CST816T_ADDRESS);	// 发送从机地址，读写位为0，表示即将写入
-	pPrivData->cst816tI2C.recv_ack(&pPrivData->cst816tI2C);					    // 接收应答
-	pPrivData->cst816tI2C.send_byte(&pPrivData->cst816tI2C, addr);	            // 发送寄存器地址
-	pPrivData->cst816tI2C.recv_ack(&pPrivData->cst816tI2C);					    // 接收应答
-	pPrivData->cst816tI2C.send_byte(&pPrivData->cst816tI2C, data);			    // 发送要写入寄存器的数据
-	pPrivData->cst816tI2C.recv_ack(&pPrivData->cst816tI2C);					    // 接收应答
-	pPrivData->cst816tI2C.stop(&pPrivData->cst816tI2C);						    // I2C终止
-}
+//     pPrivData->cst816tI2C.start(&pPrivData->cst816tI2C);						// I2C起始
+// 	pPrivData->cst816tI2C.send_byte(&pPrivData->cst816tI2C, CST816T_ADDRESS);	// 发送从机地址，读写位为0，表示即将写入
+// 	pPrivData->cst816tI2C.recv_ack(&pPrivData->cst816tI2C);					    // 接收应答
+// 	pPrivData->cst816tI2C.send_byte(&pPrivData->cst816tI2C, addr);	            // 发送寄存器地址
+// 	pPrivData->cst816tI2C.recv_ack(&pPrivData->cst816tI2C);					    // 接收应答
+// 	pPrivData->cst816tI2C.send_byte(&pPrivData->cst816tI2C, data);			    // 发送要写入寄存器的数据
+// 	pPrivData->cst816tI2C.recv_ack(&pPrivData->cst816tI2C);					    // 接收应答
+// 	pPrivData->cst816tI2C.stop(&pPrivData->cst816tI2C);						    // I2C终止
+// }
 
 /******************************************************************************
  * @brief	CST816T读寄存器
@@ -208,7 +208,6 @@ static void __cst816t_read_reg(CST816TDev_t *pDev, uint8_t addr, uint8_t *data)
 static void __cst816t_read_regs(CST816TDev_t *pDev, uint8_t addr, uint8_t num, uint8_t data[])
 {
 	uint8_t i;
-	uint8_t val;
 
     CST816TPrivData_t *pPrivData = (CST816TPrivData_t *)pDev->pPrivData;
 	
@@ -263,12 +262,15 @@ static void __cst816t_get_firmware_ver(CST816TDev_t *pDev, uint8_t *fwVer)
 /******************************************************************************
  * @brief	CST816T读取触摸手指个数
  * @param	pDev	:  CST816TDev_t结构体指针
- * @param	num		:  触摸手指个数
- * @return	无
+ * @return	触摸手指个数
  ******************************************************************************/
-static void __cst816t_get_finger_num(CST816TDev_t *pDev, uint8_t *num)
+static uint8_t __cst816t_get_finger_num(CST816TDev_t *pDev)
 {
-    __cst816t_read_reg(pDev, FINGER_NUM, num);
+	uint8_t num;
+
+    __cst816t_read_reg(pDev, FINGER_NUM, &num);
+
+	return num;
 }
 
 /******************************************************************************

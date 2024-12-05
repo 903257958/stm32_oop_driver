@@ -95,7 +95,7 @@ typedef struct CST816TDev {
     uint8_t gesture;
 	void (*get_id)(struct CST816TDev *pDev, uint8_t *id);
 	void (*get_firmware_ver)(struct CST816TDev *pDev, uint8_t *fwVer);
-	void (*get_finger_num)(struct CST816TDev *pDev, uint8_t *num);
+	uint8_t (*get_finger_num)(struct CST816TDev *pDev);
     void (*get_action)(struct CST816TDev *pDev);
 	int (*deinit)(struct CST816TDev *pDev); // 去初始化
 }CST816TDev_t;
