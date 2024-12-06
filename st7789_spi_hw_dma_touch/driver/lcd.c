@@ -151,6 +151,7 @@ static void __lcd_set_windows(LCDDev_t *pDev, uint16_t x1, uint16_t y1, uint16_t
 static void __lcd_clear(LCDDev_t *pDev, uint16_t color);
 static void __lcd_fill(LCDDev_t *pDev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color);
 static void __lcd_color_fill(LCDDev_t *pDev, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t *pColor);
+static void __lcd_color_fill_dma(LCDDev_t *pDev, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t size);
 static void __lcd_show_char(LCDDev_t *pDev, uint16_t x, uint16_t y, uint8_t chr, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
 static void __lcd_show_string(LCDDev_t *pDev, uint16_t x, uint16_t y, char *str, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
 static void __lcd_show_num(LCDDev_t *pDev, uint16_t x, uint16_t y, uint32_t num, uint8_t len, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
@@ -314,6 +315,7 @@ int lcd_init(LCDDev_t *pDev)
 	pDev->clear = __lcd_clear;
 	pDev->fill = __lcd_fill;
 	pDev->color_fill = __lcd_color_fill;
+	pDev->color_fill_dma = __lcd_color_fill_dma;
 	pDev->show_char = __lcd_show_char;
 	pDev->show_string = __lcd_show_string;
 	pDev->show_num = __lcd_show_num;
@@ -329,6 +331,67 @@ int lcd_init(LCDDev_t *pDev)
 	
 	pDev->initFlag = true;
 	return 0;
+}
+
+/******************************************************************************
+ * @brief	LCD配置DMA传输，用于LVGL
+ * @param	pDev			:	LCDDev_t结构体指针
+ * @param	memoryBaseAddr	:	DMA内存地址
+ * @return	无
+ ******************************************************************************/
+void lcd_dma_init(LCDDev_t *pDev, uint32_t memoryBaseAddr)
+{
+	#if defined(STM32F10X_HD) || defined(STM32F10X_MD)
+	
+	__lcd_config_dma_clock_enable(pDev->info.spix);	// 开启DMA时钟
+	DMA_DeInit(__lcd_get_dma_channel(pDev->info.spix));
+	DMA_InitTypeDef DMA_InitStructure;
+    DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&pDev->info.spix->DR;	// SPI数据寄存器地址
+    DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)memoryBaseAddr;			// 内存地址
+    DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;							// 方向：从内存到外设
+    DMA_InitStructure.DMA_BufferSize = 0;										// 传输大小
+    DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;			// 外设地址不增
+    DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;						// 内存地址自增
+    DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;		// 外设数据单位8位
+    DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;				// 内存数据单位8位
+    DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;								// 工作在正常模式，一次传输后自动结束
+    DMA_InitStructure.DMA_Priority = DMA_Priority_Medium;						// 优先级：中
+    DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;								// 没有设置为内存到内存传输
+    DMA_Init(__lcd_get_dma_channel(pDev->info.spix), &DMA_InitStructure);
+	
+    DMA_ClearFlag(__lcd_get_dma_flag(pDev->info.spix));
+	
+    DMA_Cmd(__lcd_get_dma_channel(pDev->info.spix), DISABLE);
+	
+	#elif defined(STM32F40_41xxx)
+	
+    __lcd_config_dma_clock_enable(pDev->info.spix);	// 开启DMA时钟
+	
+	DMA_DeInit(__lcd_get_dma_stream(pDev->info.spix));
+	DMA_InitTypeDef DMA_InitStructure;
+    DMA_InitStructure.DMA_Channel = __lcd_get_dma_channel(pDev->info.spix);		// 选择DMA通道
+    DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&pDev->info.spix->DR;	// SPI数据寄存器地址
+    DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)memoryBaseAddr;			// 内存地址
+    DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;						// 方向：从内存到外设
+    DMA_InitStructure.DMA_BufferSize = 0;										// 传输大小
+    DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;			// 外设地址不增
+    DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;						// 内存地址自增
+    DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;		// 外设数据单位8位
+    DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;				// 内存数据单位8位
+    DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;								// 工作在正常模式，一次传输后自动结束
+    DMA_InitStructure.DMA_Priority = DMA_Priority_Medium;						// 优先级：中
+    DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable;						// 禁用FIFO模式
+    DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_Full;				// FIFO阈值为满
+    DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;					// 内存突发传输为单次
+    DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;			// 外设突发传输为单次
+    DMA_Init(__lcd_get_dma_stream(pDev->info.spix), &DMA_InitStructure);
+	
+    DMA_ClearFlag(	__lcd_get_dma_stream(pDev->info.spix), 
+					__lcd_get_dma_flag(pDev->info.spix)	);
+					
+    DMA_Cmd(__lcd_get_dma_stream(pDev->info.spix), DISABLE);
+	
+	#endif
 }
 
 /*通信协议*********************************************************************/
@@ -462,11 +525,11 @@ static void __lcd_set_windows(LCDDev_t *pDev, uint16_t x1, uint16_t y1, uint16_t
 	{
 		__lcd_write_command(pDev, 0x2a);			// 列地址设置
 		__lcd_write_halfword(pDev, x1);
-		__lcd_write_halfword(pDev, x2 - 1);
+		__lcd_write_halfword(pDev, x2);
 
 		__lcd_write_command(pDev, 0x2b);			// 行地址设置
 		__lcd_write_halfword(pDev, y1 + 20);
-		__lcd_write_halfword(pDev, y2 + 20 - 1);
+		__lcd_write_halfword(pDev, y2 + 20);
 
 	}
 	else if (pDev->info.dir == HORIZONTAL_FORWARD || pDev->info.dir == HORIZONTAL_REVERSE)	// 横屏
@@ -474,14 +537,14 @@ static void __lcd_set_windows(LCDDev_t *pDev, uint16_t x1, uint16_t y1, uint16_t
 		__lcd_write_command(pDev, 0x2a);			// 列地址设置
 		__lcd_write_byte(pDev, (x1 + 20) >> 8);
         __lcd_write_byte(pDev, x1 + 20);
-        __lcd_write_byte(pDev, (x2 + 20 - 1) >> 8);
-        __lcd_write_byte(pDev, x2 + 20 - 1);
+        __lcd_write_byte(pDev, (x2 + 20) >> 8);
+        __lcd_write_byte(pDev, x2 + 20);
 
 		__lcd_write_command(pDev, 0x2b);			// 行地址设置
         __lcd_write_byte(pDev, y1 >> 8);
         __lcd_write_byte(pDev, y1);
-        __lcd_write_byte(pDev, (y2 - 1) >> 8);
-        __lcd_write_byte(pDev, y2 - 1);
+        __lcd_write_byte(pDev, (y2) >> 8);
+        __lcd_write_byte(pDev, y2);
 	}
 
 	__lcd_write_command(pDev, 0x2c);				// 储存器写 
@@ -558,7 +621,7 @@ static void __lcd_fill(LCDDev_t *pDev, uint16_t x, uint16_t y, uint16_t width, u
 }
 
 /******************************************************************************
- * @brief	LCD在指定区域填充颜色
+ * @brief	LCD在指定区域填充颜色，用于LVGL
  * @param	pDev	:	LCDDev_t结构体指针
  * @param	x1		:	填充起点x坐标
  * @param	y1		:	填充起点y坐标
@@ -574,15 +637,59 @@ static void __lcd_color_fill(LCDDev_t *pDev, uint16_t x1, uint16_t y1, uint16_t 
     width = x2 - x1 + 1;            // 填充的宽度
     height = y2 - y1 + 1;           // 填充的高度
 
+	__lcd_set_windows(pDev, x1, y1, x2, y2);					//设置光标位置
+	
     for (i = 0; i < height; i++)
     {
-		__lcd_set_windows(pDev, x1, y1 + i, x2, y1 + i);		//设置光标位置
-		
         for (j = 0; j < width; j++)
         {
             __lcd_write_halfword(pDev, color[i * width + j]);	// 写入数据
         }
     }
+}
+
+/******************************************************************************
+ * @brief	LCD在指定区域填充颜色，并使用DMA传输，用于LVGL
+ * @param	pDev	:	LCDDev_t结构体指针
+ * @param	x1		:	填充起点x坐标
+ * @param	y1		:	填充起点y坐标
+ * @param	x2		:	填充终点x坐标
+ * @param	y2		:	填充终点y坐标
+ * @param	size	:	传输大小
+ * @return	无
+ ******************************************************************************/
+static void __lcd_color_fill_dma(LCDDev_t *pDev, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t size)
+{
+	LCDPrivData_t *pPrivData = (LCDPrivData_t *)pDev->pPrivData;
+	
+	__lcd_set_windows(pDev, x1, y1, x2, y2);
+
+	__lcd_dc_write(pDev, 1);										// 写数据
+
+	pPrivData->lcdSPI.start(&pPrivData->lcdSPI);					// 拉低CS，开始通信
+	
+	#if defined(STM32F10X_HD) || defined(STM32F10X_MD)
+	/* STM32F10X代码待编写 */
+	#elif defined(STM32F40_41xxx)
+	/* 开启SPI的DMA接收 */
+	SPI_I2S_DMACmd(pDev->info.spix, SPI_I2S_DMAReq_Tx, ENABLE);
+
+	/* 使能DMA */
+	DMA_Cmd(__lcd_get_dma_stream(pDev->info.spix), DISABLE);
+	while (DMA_GetCmdStatus(__lcd_get_dma_stream(pDev->info.spix)) != DISABLE);
+	DMA_SetCurrDataCounter(__lcd_get_dma_stream(pDev->info.spix), size);
+	DMA_Cmd(__lcd_get_dma_stream(pDev->info.spix), ENABLE);
+	
+	/* 等待传输完成 */
+	while (DMA_GetFlagStatus(__lcd_get_dma_stream(pDev->info.spix),
+							 __lcd_get_dma_flag(pDev->info.spix)) == RESET);
+
+	/* 清除标志位 */
+	DMA_ClearFlag(__lcd_get_dma_stream(pDev->info.spix),
+				  __lcd_get_dma_flag(pDev->info.spix));
+	
+	pPrivData->lcdSPI.stop(&pPrivData->lcdSPI);						// 拉高CS，结束通信
+	#endif
 }
 
 /******************************************************************************
