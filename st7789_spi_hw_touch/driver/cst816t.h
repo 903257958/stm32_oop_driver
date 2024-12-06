@@ -27,8 +27,11 @@
 #endif
 
 #if FREERTOS
+	#include "timer.h"
 	#include "FreeRTOS.h"
 	#include "task.h"
+
+	extern TimerDev_t timerDelay;
 #endif
 
 #ifndef GPIO_LEVEL_HIGH

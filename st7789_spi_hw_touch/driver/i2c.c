@@ -40,7 +40,7 @@
 		TIM_Init(&tim_delay);	*/
 	static void __i2c_delay_us(uint32_t us)
 	{
-		tim_delay.delay_us(&tim_delay, us);
+		timerDelay.delay_us(&timerDelay, us);
 	}							  
 	#endif
 
@@ -90,7 +90,7 @@
 		TIM_Init(&tim_delay);	*/
 	static void __i2c_delay_us(uint32_t us)
 	{
-		tim_delay.delay_us(&tim_delay, us);
+		timerDelay.delay_us(&timerDelay, us);
 	}							  
 	#endif
 

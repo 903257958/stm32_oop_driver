@@ -28,8 +28,11 @@
 #endif
 
 #if FREERTOS
-#include "FreeRTOS.h"
-#include "task.h"
+	#include "timer.h"
+	#include "FreeRTOS.h"
+	#include "task.h"
+
+	extern TimerDev_t timerDelay;
 #endif
 
 #ifndef lcd_log

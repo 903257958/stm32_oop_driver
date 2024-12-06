@@ -36,7 +36,8 @@
         #else
         static void __cst816t_delay_ms(uint32_t ms)
         {
-            vTaskDelay(ms);
+            //vTaskDelay(ms);
+			timerDelay.delay_ms(&timerDelay, ms);
         }								  
         #endif
 
@@ -83,7 +84,8 @@
 	#else
 	static void __cst816t_delay_ms(uint32_t ms)
 	{
-		vTaskDelay(ms);
+		//vTaskDelay(ms);
+		timerDelay.delay_ms(&timerDelay, ms);
 	}								  
 	#endif
 

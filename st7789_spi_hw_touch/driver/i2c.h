@@ -28,7 +28,7 @@
 	#include "FreeRTOS.h"
 	#include "task.h"
 
-	extern TimerDev_t tim_delay;
+	extern TimerDev_t timerDelay;
 #endif
 
 #ifndef i2c_log

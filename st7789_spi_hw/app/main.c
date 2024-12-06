@@ -4,7 +4,7 @@ LCDDev_t lcd = {.info = {
 	SPI1,
 	GPIOA, GPIO_Pin_9,
 	GPIOA, GPIO_Pin_8,
-	GPIOB, GPIO_Pin_6,
+	GPIOB, GPIO_Pin_5,
 	GPIOC, GPIO_Pin_7,
 	TIM3, 2,
 	VERTICAL_REVERSE
