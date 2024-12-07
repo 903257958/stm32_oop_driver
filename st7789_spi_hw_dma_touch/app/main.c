@@ -2,6 +2,8 @@
 
 LCDDev_t lcd = {.info = {
 	SPI1,
+	GPIOA, GPIO_Pin_5,
+	GPIOA, GPIO_Pin_7,
 	GPIOA, GPIO_Pin_9,
 	GPIOA, GPIO_Pin_8,
 	GPIOB, GPIO_Pin_5,
@@ -17,12 +19,7 @@ CST816TDev_t touch = {.info = {
 	VERTICAL_REVERSE
 }};
 
-uint16_t x = 0;
-uint16_t y = 0;
-uint8_t gesture = 0;
-
 uint8_t id, fwVer;
-uint32_t i = 0;
 
 int main(void)
 {

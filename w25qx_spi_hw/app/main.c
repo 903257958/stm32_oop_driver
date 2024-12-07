@@ -6,7 +6,13 @@ uint8_t gArrayWrite[] = {0x01, 0x02, 0x03, 0x04};	// 定义要写入数据的测
 uint8_t gArrayRead[4];								// 定义要读取数据的测试数组
 
 LCDDev_t lcd;
-W25QXDev_t w25q128 = {.info = {SPI1, GPIOC, GPIO_Pin_13}};
+W25QXDev_t w25q128 = {.info = {
+	SPI1, 
+	GPIOA, GPIO_Pin_5, 
+	GPIOA, GPIO_Pin_6, 
+	GPIOA, GPIO_Pin_7, 
+	GPIOC, GPIO_Pin_13
+}};
 
 int main(void)
 {

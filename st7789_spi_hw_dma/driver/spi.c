@@ -1,36 +1,6 @@
 #include "spi.h"
 
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
-	
-#define __spi_get_sck_port(SPIx)	(	SPIx == SPI1 ? GPIOA : \
-										SPIx == SPI2 ? GPIOB : \
-										SPIx == SPI3 ? GPIOB : \
-										(int)0	)
-											
-#define __spi_get_sck_pin(SPIx)		(	SPIx == SPI1 ? GPIO_Pin_5 : \
-										SPIx == SPI2 ? GPIO_Pin_13 : \
-										SPIx == SPI3 ? GPIO_Pin_3 : \
-										(int)0	)
-											
-#define __spi_get_mosi_port(SPIx)	(	SPIx == SPI1 ? GPIOA : \
-										SPIx == SPI2 ? GPIOB : \
-										SPIx == SPI3 ? GPIOB : \
-										(int)0	)
-											
-#define __spi_get_mosi_pin(SPIx)	(	SPIx == SPI1 ? GPIO_Pin_7 : \
-										SPIx == SPI2 ? GPIO_Pin_15 : \
-										SPIx == SPI3 ? GPIO_Pin_5 : \
-										(int)0	)
-											
-#define __spi_get_miso_port(SPIx)	(	SPIx == SPI1 ? GPIOA : \
-										SPIx == SPI2 ? GPIOB : \
-										SPIx == SPI3 ? GPIOB : \
-										(int)0	)
-											
-#define __spi_get_miso_pin(SPIx)	(	SPIx == SPI1 ? GPIO_Pin_6 : \
-										SPIx == SPI2 ? GPIO_Pin_14 : \
-										SPIx == SPI3 ? GPIO_Pin_4 : \
-										(int)0	)
 
 #define	__spi_config_clock_enable(SPIx)		{	if(SPIx == SPI1)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);} \
 												else if(SPIx == SPI2)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);} \
@@ -82,36 +52,6 @@
 											(int)0	)
 						
 #elif defined(STM32F40_41xxx)
-
-#define __spi_get_sck_port(SPIx)	(	SPIx == SPI1 ? GPIOA : \
-										SPIx == SPI2 ? GPIOB : \
-										SPIx == SPI3 ? GPIOB : \
-										(int)0	)
-											
-#define __spi_get_sck_pin(SPIx)		(	SPIx == SPI1 ? GPIO_Pin_5 : \
-										SPIx == SPI2 ? GPIO_Pin_13 : \
-										SPIx == SPI3 ? GPIO_Pin_3 : \
-										(int)0	)
-											
-#define __spi_get_mosi_port(SPIx)	(	SPIx == SPI1 ? GPIOA : \
-										SPIx == SPI2 ? GPIOB : \
-										SPIx == SPI3 ? GPIOB : \
-										(int)0	)
-											
-#define __spi_get_mosi_pin(SPIx)	(	SPIx == SPI1 ? GPIO_Pin_7 : \
-										SPIx == SPI2 ? GPIO_Pin_15 : \
-										SPIx == SPI3 ? GPIO_Pin_5 : \
-										(int)0	)
-											
-#define __spi_get_miso_port(SPIx)	(	SPIx == SPI1 ? GPIOA : \
-										SPIx == SPI2 ? GPIOB : \
-										SPIx == SPI3 ? GPIOB : \
-										(int)0	)
-											
-#define __spi_get_miso_pin(SPIx)	(	SPIx == SPI1 ? GPIO_Pin_6 : \
-										SPIx == SPI2 ? GPIO_Pin_14 : \
-										SPIx == SPI3 ? GPIO_Pin_4 : \
-										(int)0	)
 
 #define	__spi_config_clock_enable(SPIx)		{	if(SPIx == SPI1)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);} \
 												else if(SPIx == SPI2)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);} \
@@ -182,17 +122,7 @@
 											prescaler == 256 ? SPI_BaudRatePrescaler_256 : \
 											(int)0	)
 
-#endif
-	
-/* 硬件SPI私有数据结构体 */
-typedef struct {
-	SPI_GPIO_Port SCKPort;			// SCK端口
-	uint32_t SCKPin;				// SCK引脚
-	SPI_GPIO_Port MOSIPort;			// MOSI端口
-	uint32_t MOSIPin;				// MOSI引脚
-	SPI_GPIO_Port MISOPort;			// MISO端口
-	uint32_t MISOPin;				// MISO引脚
-}SPIPrivData_t;							
+#endif					
 										
 /* 引脚配置层 */
 static void __spi_cs_write(SPIDev_t *pDev, uint8_t bitValue);
@@ -213,30 +143,16 @@ int spi_init(SPIDev_t *pDev)
 	if (!pDev)
 		return -1;
 	
-	/* 保存私有数据 */
-	pDev->pPrivData = (SPIPrivData_t *)malloc(sizeof(SPIPrivData_t));
-	if (!pDev->pPrivData)
-		return -1;
-	
-	SPIPrivData_t *pPrivData = (SPIPrivData_t *)pDev->pPrivData;
-	
-	pPrivData->SCKPort = __spi_get_sck_port(pDev->info.spix);
-	pPrivData->SCKPin = __spi_get_sck_pin(pDev->info.spix);
-	pPrivData->MOSIPort = __spi_get_mosi_port(pDev->info.spix);
-	pPrivData->MOSIPin = __spi_get_mosi_pin(pDev->info.spix);
-	pPrivData->MISOPort = __spi_get_miso_port(pDev->info.spix);
-	pPrivData->MISOPin = __spi_get_miso_pin(pDev->info.spix);
-	
 	/* 配置时钟与GPIO */
 	__spi_config_clock_enable(pDev->info.spix);
-	__spi_config_gpio_clock_enable(pPrivData->SCKPort);
-	__spi_config_gpio_clock_enable(pPrivData->MOSIPort);
-	__spi_config_gpio_clock_enable(pPrivData->MISOPort);
+	__spi_config_gpio_clock_enable(pDev->info.SCKPort);
+	__spi_config_gpio_clock_enable(pDev->info.MOSIPort);
+	__spi_config_gpio_clock_enable(pDev->info.MISOPort);
 	__spi_config_gpio_clock_enable(pDev->info.CSPort);
 	
-	__spi_config_io_af_pp(pPrivData->SCKPort, pPrivData->SCKPin);
-	__spi_config_io_af_pp(pPrivData->MOSIPort, pPrivData->MOSIPin);
-	__spi_config_io_af_pp(pPrivData->MISOPort, pPrivData->MISOPin);
+	__spi_config_io_af_pp(pDev->info.SCKPort, pDev->info.SCKPin);
+	__spi_config_io_af_pp(pDev->info.MOSIPort, pDev->info.MOSIPin);
+	__spi_config_io_af_pp(pDev->info.MISOPort, pDev->info.MISOPin);
 	__spi_config_io_out_pp(pDev->info.CSPort, pDev->info.CSPin);
 	
 	#if defined(STM32F10X_HD) || defined(STM32F10X_MD)
@@ -252,16 +168,16 @@ int spi_init(SPIDev_t *pDev)
 	#elif defined(STM32F40_41xxx)
 	
 	/* STM32F4配置为复用输出时需要配置引脚复用映射 */
-	GPIO_PinAFConfig(	pPrivData->SCKPort, 
-						__spi_get_gpio_pin_sourse(pPrivData->SCKPin), 
+	GPIO_PinAFConfig(	pDev->info.SCKPort, 
+						__spi_get_gpio_pin_sourse(pDev->info.SCKPin), 
 						__spi_get_gpio_af(pDev->info.spix)	);
 						
-	GPIO_PinAFConfig(	pPrivData->MOSIPort, 
-						__spi_get_gpio_pin_sourse(pPrivData->MOSIPin), 
+	GPIO_PinAFConfig(	pDev->info.MOSIPort, 
+						__spi_get_gpio_pin_sourse(pDev->info.MOSIPin), 
 						__spi_get_gpio_af(pDev->info.spix)	);
 						
-	GPIO_PinAFConfig(	pPrivData->MISOPort, 
-						__spi_get_gpio_pin_sourse(pPrivData->MISOPin), 
+	GPIO_PinAFConfig(	pDev->info.MISOPort, 
+						__spi_get_gpio_pin_sourse(pDev->info.MISOPin), 
 						__spi_get_gpio_af(pDev->info.spix)	);
 	
 	#endif
@@ -373,10 +289,6 @@ static int __spi_deinit(SPIDev_t *pDev)
 {
 	if (!pDev || !pDev->initFlag)
 		return -1;
-	
-	/* 释放私有数据内存 */
-	free(pDev->pPrivData);
-    pDev->pPrivData = NULL;
 	
 	pDev->initFlag = false;	// 修改初始化标志
 	return 0;

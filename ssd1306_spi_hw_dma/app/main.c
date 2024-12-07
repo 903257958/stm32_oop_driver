@@ -2,6 +2,8 @@
 
 OLEDDev_t oled = {.info = {
 	SPI1,
+	GPIOA, GPIO_Pin_5,
+	GPIOA, GPIO_Pin_7,
 	GPIOC, GPIO_Pin_5,
 	GPIOC, GPIO_Pin_4,
 	GPIOC, GPIO_Pin_1,

@@ -138,7 +138,7 @@ uint8_t gLCDDisplayBuf[LCD_H][LCD_W * 2] = {0};
 											
 /* LCD私有数据结构体 */
 typedef struct {
-	SPIDev_t lcd;					// 硬件SPI设备
+	SPIDev_t lcdSPI;					// 硬件SPI设备
 }LCDPrivData_t;
 
 static void __lcd_dma_init(LCDDev_t *pDev);
@@ -184,14 +184,20 @@ int lcd_init(LCDDev_t *pDev)
 	
 	LCDPrivData_t *pPrivData = (LCDPrivData_t *)pDev->pPrivData;
 	
-	pPrivData->lcd.info.spix = pDev->info.spix;
-	pPrivData->lcd.info.CSPort = pDev->info.CSPort;
-	pPrivData->lcd.info.CSPin = pDev->info.CSPin;
-	pPrivData->lcd.info.prescaler = pDev->info.prescaler;
-	pPrivData->lcd.info.mode = pDev->info.mode;
+	pPrivData->lcdSPI.info.spix = pDev->info.spix;
+	pPrivData->lcdSPI.info.SCKPort = pDev->info.SCKPort;
+	pPrivData->lcdSPI.info.SCKPin = pDev->info.SCKPin;
+	pPrivData->lcdSPI.info.MOSIPort = pDev->info.MOSIPort;
+	pPrivData->lcdSPI.info.MOSIPin = pDev->info.MOSIPin;
+	pPrivData->lcdSPI.info.MISOPort = NULL;
+	pPrivData->lcdSPI.info.MISOPin = NULL;
+	pPrivData->lcdSPI.info.CSPort = pDev->info.CSPort;
+	pPrivData->lcdSPI.info.CSPin = pDev->info.CSPin;
+	pPrivData->lcdSPI.info.prescaler = pDev->info.prescaler;
+	pPrivData->lcdSPI.info.mode = pDev->info.mode;
 	
 	/* 配置硬件SPI */
-	spi_init(&pPrivData->lcd);
+	spi_init(&pPrivData->lcdSPI);
 	
 	/* 配置时钟与GPIO */
 	__lcd_config_gpio_clock_enable(pDev->info.RESPort);
@@ -448,9 +454,9 @@ static void __lcd_write_byte(LCDDev_t *pDev, uint8_t byte)
 {	
 	LCDPrivData_t *pPrivData = (LCDPrivData_t *)pDev->pPrivData;
 	
-	pPrivData->lcd.start(&pPrivData->lcd);					// 拉低CS，开始通信
-	pPrivData->lcd.swap_byte(&pPrivData->lcd, byte);		// 写入指定命令
-	pPrivData->lcd.stop(&pPrivData->lcd);					// 拉高CS，结束通信
+	pPrivData->lcdSPI.start(&pPrivData->lcdSPI);					// 拉低CS，开始通信
+	pPrivData->lcdSPI.swap_byte(&pPrivData->lcdSPI, byte);		// 写入指定命令
+	pPrivData->lcdSPI.stop(&pPrivData->lcdSPI);					// 拉高CS，结束通信
 }
 
 /******************************************************************************
@@ -463,10 +469,10 @@ static void __lcd_write_halfword(LCDDev_t *pDev, uint16_t halfword)
 {
 	LCDPrivData_t *pPrivData = (LCDPrivData_t *)pDev->pPrivData;
 	
-	pPrivData->lcd.start(&pPrivData->lcd);						// 拉低CS，开始通信
-	pPrivData->lcd.swap_byte(&pPrivData->lcd, halfword >> 8);	// 写入数据
-	pPrivData->lcd.swap_byte(&pPrivData->lcd, halfword);		// 写入数据
-	pPrivData->lcd.stop(&pPrivData->lcd);						// 拉高CS，结束通信
+	pPrivData->lcdSPI.start(&pPrivData->lcdSPI);						// 拉低CS，开始通信
+	pPrivData->lcdSPI.swap_byte(&pPrivData->lcdSPI, halfword >> 8);	// 写入数据
+	pPrivData->lcdSPI.swap_byte(&pPrivData->lcdSPI, halfword);		// 写入数据
+	pPrivData->lcdSPI.stop(&pPrivData->lcdSPI);						// 拉高CS，结束通信
 }
 
 /**********************************************************************通信协议*/
@@ -549,7 +555,7 @@ static void __lcd_update(LCDDev_t *pDev)
 		DMA_SetCurrDataCounter(__lcd_get_dma_channel(pDev->info.spix), LCD_W * LCD_H * 2);	// 数据传输量
 		DMA_ClearFlag(__lcd_get_dma_flag(pDev->info.spix));
 		
-		pPrivData->lcd.cs_write(&pPrivData->lcd, 0);
+		pPrivData->lcdSPI.cs_write(&pPrivData->lcdSPI, 0);
 		__lcd_res_write(pDev, 1);
 		
 		SPI_I2S_DMACmd(pDev->info.spix, SPI_I2S_DMAReq_Tx, ENABLE);							// 开启SPI的DMA接收
@@ -566,7 +572,7 @@ static void __lcd_update(LCDDev_t *pDev)
 		DMA_ClearFlag(	__lcd_get_dma_stream(pDev->info.spix), 
 						__lcd_get_dma_flag(pDev->info.spix)	);
 		
-		pPrivData->lcd.cs_write(&pPrivData->lcd, 0);
+		pPrivData->lcdSPI.cs_write(&pPrivData->lcdSPI, 0);
 		__lcd_res_write(pDev, 1);
 		
 		SPI_I2S_DMACmd(pDev->info.spix, SPI_I2S_DMAReq_Tx, ENABLE);							// 开启SPI的DMA接收
@@ -580,7 +586,7 @@ static void __lcd_update(LCDDev_t *pDev)
 		
 		#endif
 		
-		pPrivData->lcd.cs_write(&pPrivData->lcd, 1);
+		pPrivData->lcdSPI.cs_write(&pPrivData->lcdSPI, 1);
 	}
 }
 
@@ -1328,7 +1334,7 @@ static int __lcd_deinit(LCDDev_t *pDev)
 	LCDPrivData_t *pPrivData = (LCDPrivData_t *)pDev->pPrivData;
 	
 	/*去初始化硬件SPI*/
-	pPrivData->lcd.deinit(&pPrivData->lcd);
+	pPrivData->lcdSPI.deinit(&pPrivData->lcdSPI);
 	
 	/*释放私有数据内存*/
 	free(pDev->pPrivData);

@@ -2,6 +2,8 @@
 
 LCDDev_t lcd = {.info = {
 	SPI1,
+	GPIOA, GPIO_Pin_5,
+	GPIOA, GPIO_Pin_7,
 	GPIOA, GPIO_Pin_9,
 	GPIOA, GPIO_Pin_8,
 	GPIOB, GPIO_Pin_5,
@@ -14,7 +16,7 @@ int main(void)
 {
 	lcd_init(&lcd);
 	
-	lcd.clear(&lcd, YELLOW);
+	lcd.clear(&lcd, BLACK);
 
 	lcd.show_char(&lcd, 0, 50, 'a', LIGHTBLUE, WHITE, LCD_16X32, 0);
 	lcd.show_char(&lcd, 0, 100, 'x', BRRED, WHITE, LCD_16X32, 1);
@@ -24,7 +26,7 @@ int main(void)
 	lcd.show_num(&lcd, 100, 50, 123456, 6, BLUE, RED, LCD_16X32, 0);
 	lcd.show_hex_num(&lcd, 100, 100, 0x1234, 6, BLUE, RED, LCD_16X32, 0);
 	lcd.show_float_num(&lcd, 70, 150, 212.34, 3, 4, YELLOW, BLACK, LCD_16X32, 0);
-	lcd.show_float_num(&lcd, 70, 200, -456.78, 3, 2, YELLOW, BLACK, LCD_16X32, 0);
+	lcd.show_float_num(&lcd, 70, 200, -456.78, 3, 2, WHITE, BLACK, LCD_16X32, 0);
 	
 	while (1)
 	{

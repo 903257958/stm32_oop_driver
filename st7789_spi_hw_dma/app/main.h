@@ -13,6 +13,5 @@
 /* 驱动头文件 */
 #include "delay.h"
 #include "lcd.h"
-#include "lcd_data.h"
 
 #endif

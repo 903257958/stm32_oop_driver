@@ -2,7 +2,13 @@
 
 KeyDev_t key = {.info = {GPIOA, GPIO_Pin_1, GPIO_LEVEL_LOW, 1}};
 TimerDev_t timerKeyTick = {.info.timx = TIM2};
-W25QXDev_t flash = {.info = {SPI1, GPIOC, GPIO_Pin_13}};
+W25QXDev_t flash = {.info = {
+	SPI1, 
+	GPIOA, GPIO_Pin_5, 
+	GPIOA, GPIO_Pin_6, 
+	GPIOA, GPIO_Pin_7, 
+	GPIOC, GPIO_Pin_13
+}};
 LCDDev_t lcd;
 XPT2046Dev_t xpt2046;
 

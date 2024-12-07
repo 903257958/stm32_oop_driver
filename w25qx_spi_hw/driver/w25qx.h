@@ -64,6 +64,12 @@
 
 typedef struct {
 	SPIx spix;						// SPI外设
+	W25QX_GPIO_Port SCKPort;		// SCK端口
+	uint32_t SCKPin;				// SCK引脚
+	W25QX_GPIO_Port MISOPort;		// MISO端口
+	uint32_t MISOPin;				// MISO引脚
+	W25QX_GPIO_Port MOSIPort;		// MOSI端口
+	uint32_t MOSIPin;				// MOSI引脚
 	W25QX_GPIO_Port CSPort;			// CS端口
 	uint32_t CSPin;					// CS引脚
 }W25QXInfo_t;

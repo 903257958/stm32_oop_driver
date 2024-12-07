@@ -32,6 +32,12 @@ int w25qx_init(W25QXDev_t *pDev)
 	W25QXPrivData_t *pPrivData = (W25QXPrivData_t *)pDev->pPrivData;
 	
 	pPrivData->w25qx.info.spix = pDev->info.spix;
+	pPrivData->w25qx.info.SCKPort = pDev->info.SCKPort;
+	pPrivData->w25qx.info.SCKPin = pDev->info.SCKPin;
+	pPrivData->w25qx.info.MISOPort = pDev->info.MISOPort;
+	pPrivData->w25qx.info.MISOPin = pDev->info.MISOPin;
+	pPrivData->w25qx.info.MOSIPort = pDev->info.MOSIPort;
+	pPrivData->w25qx.info.MOSIPin = pDev->info.MOSIPin;
 	pPrivData->w25qx.info.CSPort = pDev->info.CSPort;
 	pPrivData->w25qx.info.CSPin = pDev->info.CSPin;
 	pPrivData->w25qx.info.prescaler = 128;

@@ -183,6 +183,12 @@ int lcd_init(LCDDev_t *pDev)
 	LCDPrivData_t *pPrivData = (LCDPrivData_t *)pDev->pPrivData;
 	
 	pPrivData->lcdSPI.info.spix = pDev->info.spix;
+	pPrivData->lcdSPI.info.SCKPort = pDev->info.SCKPort;
+	pPrivData->lcdSPI.info.SCKPin = pDev->info.SCKPin;
+	pPrivData->lcdSPI.info.MOSIPort = pDev->info.MOSIPort;
+	pPrivData->lcdSPI.info.MOSIPin = pDev->info.MOSIPin;
+	pPrivData->lcdSPI.info.MISOPort = NULL;
+	pPrivData->lcdSPI.info.MISOPin = NULL;
 	pPrivData->lcdSPI.info.CSPort = pDev->info.CSPort;
 	pPrivData->lcdSPI.info.CSPin = pDev->info.CSPin;
 	pPrivData->lcdSPI.info.prescaler = 2;

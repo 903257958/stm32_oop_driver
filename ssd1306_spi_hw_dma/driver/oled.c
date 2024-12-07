@@ -146,8 +146,8 @@ static uint8_t gIndex = 0;
 
 /* OLED私有数据结构体 */
 typedef struct {
-	SPIDev_t oled;		// 硬件SPI设备
-	uint8_t index;		// 索引
+	SPIDev_t oledSPI;		// 硬件SPI设备
+	uint8_t index;			// 索引
 }OLEDPrivData_t;
 				
 /* 通信协议 */
@@ -205,16 +205,22 @@ int oled_init(OLEDDev_t *pDev)
 	
 	OLEDPrivData_t *pPrivData = (OLEDPrivData_t *)pDev->pPrivData;
 	
-	pPrivData->oled.info.spix = pDev->info.spix;
-	pPrivData->oled.info.CSPort = pDev->info.CSPort;
-	pPrivData->oled.info.CSPin = pDev->info.CSPin;
-	pPrivData->oled.info.prescaler = pDev->info.prescaler;
-	pPrivData->oled.info.mode = pDev->info.mode;
+	pPrivData->oledSPI.info.spix = pDev->info.spix;
+	pPrivData->oledSPI.info.SCKPort = pDev->info.SCKPort;
+	pPrivData->oledSPI.info.SCKPin = pDev->info.SCKPin;
+	pPrivData->oledSPI.info.MOSIPort = pDev->info.MOSIPort;
+	pPrivData->oledSPI.info.MOSIPin = pDev->info.MOSIPin;
+	pPrivData->oledSPI.info.MISOPort = NULL;
+	pPrivData->oledSPI.info.MISOPin = NULL;
+	pPrivData->oledSPI.info.CSPort = pDev->info.CSPort;
+	pPrivData->oledSPI.info.CSPin = pDev->info.CSPin;
+	pPrivData->oledSPI.info.prescaler = pDev->info.prescaler;
+	pPrivData->oledSPI.info.mode = pDev->info.mode;
 	
 	pPrivData->index = gIndex++;
 	
 	/* 配置硬件SPI */
-	spi_init(&pPrivData->oled);
+	spi_init(&pPrivData->oledSPI);
 	
 	/* 配置时钟与GPIO */
 	__oled_config_gpio_clock_enable(pDev->info.RESPort);
@@ -226,7 +232,7 @@ int oled_init(OLEDDev_t *pDev)
 	/* 置引脚默认电平 */
 	__oled_res_write(pDev, 1);
 	__oled_dc_write(pDev, 1);
-	pPrivData->oled.cs_write(&pPrivData->oled, 1);
+	pPrivData->oledSPI.cs_write(&pPrivData->oledSPI, 1);
 	
 	/* 函数指针赋值 */
 	pDev->update = __oled_update;
@@ -346,10 +352,10 @@ static int __oled_write_command(OLEDDev_t *pDev, uint8_t command)
 	if (!pDev || !pDev->initFlag)
 		return -1;
 	
-	pPrivData->oled.start(&pPrivData->oled);					// 拉低CS，开始通信
+	pPrivData->oledSPI.start(&pPrivData->oledSPI);					// 拉低CS，开始通信
 	__oled_dc_write(pDev, 0);									// 拉低DC，表示即将发送命令
-	pPrivData->oled.swap_byte(&pPrivData->oled, command);		// 写入指定命令
-	pPrivData->oled.stop(&pPrivData->oled);						// 拉高CS，结束通信
+	pPrivData->oledSPI.swap_byte(&pPrivData->oledSPI, command);		// 写入指定命令
+	pPrivData->oledSPI.stop(&pPrivData->oledSPI);						// 拉高CS，结束通信
 	
 	return 0;
 }
@@ -370,14 +376,14 @@ static int __oled_write_data(OLEDDev_t *pDev, uint8_t *data, uint8_t count)
 	
 	uint8_t i;
 	
-	pPrivData->oled.start(&pPrivData->oled);				// 拉低CS，开始通信
+	pPrivData->oledSPI.start(&pPrivData->oledSPI);				// 拉低CS，开始通信
 	__oled_dc_write(pDev, 1);								// 拉高DC，表示即将发送数据
 	/* 循环count次，进行连续的数据写入 */
 	for (i = 0; i < count; i++)
 	{
-		pPrivData->oled.swap_byte(&pPrivData->oled, data[i]);
+		pPrivData->oledSPI.swap_byte(&pPrivData->oledSPI, data[i]);
 	}
-	pPrivData->oled.stop(&pPrivData->oled);					// 拉高CS，结束通信
+	pPrivData->oledSPI.stop(&pPrivData->oledSPI);					// 拉高CS，结束通信
 	
 	return 0;
 }
@@ -394,7 +400,7 @@ static int __oled_write_data_dma(OLEDDev_t *pDev, uint8_t *data, uint16_t count)
 	OLEDPrivData_t *pPrivData = (OLEDPrivData_t *)pDev->pPrivData;
 	if (!pDev || !pDev->initFlag) return -1;
 	
-	pPrivData->oled.start(&pPrivData->oled);				// SPI起始
+	pPrivData->oledSPI.start(&pPrivData->oledSPI);				// SPI起始
 	__oled_dc_write(pDev, 1);								// 拉高DC，表示即将发送数据
 	
 	__oled_config_dma_clock_enable(pDev->info.spix);		// 开启DMA时钟
@@ -461,7 +467,7 @@ static int __oled_write_data_dma(OLEDDev_t *pDev, uint8_t *data, uint16_t count)
 	
 	#endif
 	
-	pPrivData->oled.stop(&pPrivData->oled);	// SPI终止
+	pPrivData->oledSPI.stop(&pPrivData->oledSPI);	// SPI终止
 	
 	return 0;
 }
@@ -1715,7 +1721,7 @@ static int __oled_deinit(OLEDDev_t *pDev)
 	__oled_gpio_deinit(pDev->info.DCPort);
 	
 	/* 去初始化硬件SPI */
-	pPrivData->oled.deinit(&pPrivData->oled);
+	pPrivData->oledSPI.deinit(&pPrivData->oledSPI);
 	
 	/* 释放私有数据内存 */
 	free(pDev->pPrivData);

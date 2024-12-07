@@ -92,6 +92,10 @@ typedef enum {
 
 typedef struct {
 	SPIx spix;						// SPI外设
+	LCD_GPIO_Port SCKPort;			// SCK端口
+	uint32_t SCKPin;				// SCK引脚
+	LCD_GPIO_Port MOSIPort;			// MOSI端口
+	uint32_t MOSIPin;				// MOSI引脚
 	LCD_GPIO_Port RESPort;			// RES端口
 	uint32_t RESPin;				// RES引脚
 	LCD_GPIO_Port DCPort;			// DC端口
