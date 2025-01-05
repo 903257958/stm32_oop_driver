@@ -30,3 +30,4 @@
 - **ili9341_fsmc_touch**: FSMC驱动 ILI9341主控 分辨率240*320 2.8寸LCD屏幕 + XPT2046电阻触摸
 - **stepper_motor**: 步进电机
 - **passive_buzzer_pwm**: PWM控制无源蜂鸣器
+- **rtc**: RTC实时时钟
