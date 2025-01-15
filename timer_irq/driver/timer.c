@@ -62,6 +62,31 @@
 												else					{timer_log("timer clock no enable\r\n");} \
 											}
 
+#elif defined(STM32F411xE)
+
+#define MAX_TIMER_NUM	6
+
+#define TIMER_FREQ	100000000
+
+#define __timer_get_irqn_channel(TIMx)	(	TIMx == TIM2 ? TIM2_IRQn : \
+											TIMx == TIM3 ? TIM3_IRQn : \
+											TIMx == TIM4 ? TIM4_IRQn : \
+											TIMx == TIM5 ? TIM5_IRQn : \
+											(int)0	)
+										
+#define __timer_get_index(TIMx)	(	TIMx == TIM2 ? 0 : \
+									TIMx == TIM3 ? 1 : \
+									TIMx == TIM4 ? 2 : \
+									TIMx == TIM5 ? 3 : \
+									(int)-1	)
+										
+#define	__timer_config_clock_enable(TIMx)	{	if(TIMx == TIM2)		{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);} \
+												else if(TIMx == TIM3)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);} \
+												else if(TIMx == TIM4)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);} \
+												else if(TIMx == TIM5)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5, ENABLE);} \
+												else					{timer_log("timer clock no enable\r\n");} \
+											}
+
 #endif
 
 /* 定时器私有数据结构体 */

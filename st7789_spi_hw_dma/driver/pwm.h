@@ -11,7 +11,7 @@
 	typedef TIM_TypeDef*	TIMx;
 	typedef GPIO_TypeDef*	PWM_GPIO_Port;
 	
-#elif defined(STM32F40_41xxx)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
 	#include "stm32f4xx.h"
 	
 	typedef TIM_TypeDef*	TIMx;

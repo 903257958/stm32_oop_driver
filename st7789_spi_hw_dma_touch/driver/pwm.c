@@ -26,7 +26,7 @@
 												GPIO_Init(port, &GPIO_InitStructure); \
 											}
 
-#elif defined(STM32F40_41xxx)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
 
 #define	__pwm_config_timer_clock_enable(TIMx)	{	if(TIMx == TIM2)		{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);} \
 													else if(TIMx == TIM3)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);} \
@@ -105,7 +105,7 @@ int pwm_init(PWMDev_t *pDev)
 	
 	__pwm_config_io_af_pp(pDev->info.port, pDev->info.pin);					// 复用推挽输出
 
-	#if defined(STM32F40_41xxx)
+	#if defined(STM32F40_41xxx) || defined(STM32F411xE)
 	GPIO_PinAFConfig(pDev->info.port, __pwm_get_gpio_pin_source(pDev->info.pin), __pwm_get_gpio_af(pDev->info.timx));
 	#endif
 	

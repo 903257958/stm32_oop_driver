@@ -51,7 +51,7 @@
 											prescaler == 256 ? SPI_BaudRatePrescaler_256 : \
 											(int)0	)
 						
-#elif defined(STM32F40_41xxx)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
 
 #define	__spi_config_clock_enable(SPIx)		{	if(SPIx == SPI1)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);} \
 												else if(SPIx == SPI2)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);} \
@@ -165,7 +165,7 @@ int spi_init(SPIDev_t *pDev)
 		DBGMCU->CR &= ~((uint32_t)1 << 5);
 	}
 	
-	#elif defined(STM32F40_41xxx)
+	#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
 	
 	/* STM32F4配置为复用输出时需要配置引脚复用映射 */
 	GPIO_PinAFConfig(	pDev->info.SCKPort, 
@@ -269,7 +269,7 @@ static void __spi_stop(SPIDev_t *pDev)
  ******************************************************************************/
 static uint8_t __spi_swap_byte(SPIDev_t *pDev, uint8_t sendByte)
 {
-	#if defined(STM32F10X_HD) || defined(STM32F10X_MD) || defined(STM32F40_41xxx)
+	#if defined(STM32F10X_HD) || defined(STM32F10X_MD) || defined(STM32F40_41xxx) || defined(STM32F411xE)
 	
 	while(SPI_I2S_GetFlagStatus(pDev->info.spix, SPI_I2S_FLAG_TXE) != SET);		// 等待TXE置1，表示发送寄存器为空，发送一个字节
 	SPI_I2S_SendData(pDev->info.spix, sendByte);								// 发送字节

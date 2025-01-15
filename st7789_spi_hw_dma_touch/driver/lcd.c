@@ -58,7 +58,7 @@
 	}								  
 	#endif
 
-#elif defined(STM32F40_41xxx)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
 
 #define	__lcd_config_gpio_clock_enable(port)	{	if(port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);} \
 													else if(port == GPIOB)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);} \
@@ -107,6 +107,7 @@
 	{
 		while(ms--)
 		{
+			#if defined(STM32F40_41xxx)
 			uint32_t temp;	    	 
 			SysTick->LOAD = 1000 * 21; 					// 时间加载	  		 
 			SysTick->VAL=0x00;        					// 清空计数器
@@ -117,6 +118,19 @@
 			}while((temp&0x01) && !(temp&(1<<16)));		// 等待时间到达   
 			SysTick->CTRL &= ~SysTick_CTRL_ENABLE_Msk;	// 关闭计数器
 			SysTick->VAL = 0X00;       					// 清空计数器 
+			#elif defined(STM32F411xE)
+			uint32_t temp;
+			SysTick->CTRL |= SysTick_CTRL_CLKSOURCE_Msk; // 使用系统时钟（100MHz）
+			SysTick->LOAD = 1000 * 100;                   // 100MHz时钟，每微秒100个时钟周期
+			SysTick->VAL = 0x00;                         // 清空计数器
+			SysTick->CTRL |= SysTick_CTRL_ENABLE_Msk;    // 开始倒数
+			do
+			{
+				temp = SysTick->CTRL;
+			} while ((temp & 0x01) && !(temp & (1 << 16))); // 等待时间到达
+			SysTick->CTRL &= ~SysTick_CTRL_ENABLE_Msk;   // 关闭计数器
+			SysTick->VAL = 0x00;                         // 清空计数器
+			#endif
 		}
 	}
 	#else
@@ -196,8 +210,8 @@ int lcd_init(LCDDev_t *pDev)
 
 	pPrivData->lcdPWM.info.timx = pDev->info.timx;
 	pPrivData->lcdPWM.info.OCChannel = pDev->info.OCChannel;
-	pPrivData->lcdPWM.info.psc = 82;
-	pPrivData->lcdPWM.info.arr = 3000;
+	pPrivData->lcdPWM.info.psc = 99;
+	pPrivData->lcdPWM.info.arr = 999;
 	pPrivData->lcdPWM.info.port = pDev->info.BLPort;
 	pPrivData->lcdPWM.info.pin = pDev->info.BLPin;
 	
@@ -369,7 +383,7 @@ void lcd_dma_init(LCDDev_t *pDev, uint32_t memoryBaseAddr)
 	
     DMA_Cmd(__lcd_get_dma_channel(pDev->info.spix), DISABLE);
 	
-	#elif defined(STM32F40_41xxx)
+	#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
 	
     __lcd_config_dma_clock_enable(pDev->info.spix);	// 开启DMA时钟
 	
@@ -676,7 +690,7 @@ static void __lcd_color_fill_dma(LCDDev_t *pDev, uint16_t x1, uint16_t y1, uint1
 	
 	#if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 	/* STM32F10X代码待编写 */
-	#elif defined(STM32F40_41xxx)
+	#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
 	/* 开启SPI的DMA接收 */
 	SPI_I2S_DMACmd(pDev->info.spix, SPI_I2S_DMAReq_Tx, ENABLE);
 

@@ -11,7 +11,7 @@
 	
 	typedef TIM_TypeDef* TIMx;
 
-#elif defined(STM32F40_41xxx)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
 	#include "stm32f4xx.h"
 	
 	typedef TIM_TypeDef* TIMx;

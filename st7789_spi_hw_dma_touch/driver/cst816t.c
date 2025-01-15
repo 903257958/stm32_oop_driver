@@ -41,7 +41,7 @@
         }								  
         #endif
 
-#elif defined(STM32F40_41xxx)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
 
 #define	__cst816t_config_gpio_clock_enable(port)	{	if(port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);} \
 												    	else if(port == GPIOB)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);} \
@@ -69,6 +69,7 @@
 	{
 		while(ms--)
 		{
+			#if defined(STM32F40_41xxx)
 			uint32_t temp;	    	 
 			SysTick->LOAD = 1000 * 21; 					// 时间加载	  		 
 			SysTick->VAL=0x00;        					// 清空计数器
@@ -79,6 +80,19 @@
 			}while((temp&0x01) && !(temp&(1<<16)));		// 等待时间到达   
 			SysTick->CTRL &= ~SysTick_CTRL_ENABLE_Msk;	// 关闭计数器
 			SysTick->VAL = 0X00;       					// 清空计数器 
+			#elif defined(STM32F411xE)
+			uint32_t temp;
+			SysTick->CTRL |= SysTick_CTRL_CLKSOURCE_Msk; // 使用系统时钟（100MHz）
+			SysTick->LOAD = 1000 * 100;                   // 100MHz时钟，每微秒100个时钟周期
+			SysTick->VAL = 0x00;                         // 清空计数器
+			SysTick->CTRL |= SysTick_CTRL_ENABLE_Msk;    // 开始倒数
+			do
+			{
+				temp = SysTick->CTRL;
+			} while ((temp & 0x01) && !(temp & (1 << 16))); // 等待时间到达
+			SysTick->CTRL &= ~SysTick_CTRL_ENABLE_Msk;   // 关闭计数器
+			SysTick->VAL = 0x00;                         // 清空计数器
+			#endif
 		}
 	}
 	#else
