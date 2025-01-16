@@ -6,7 +6,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 	
-#if defined(STM32F40_41xxx)
+#if defined(STM32F40_41xxx) || defined(STM32F411xE)
 	#include "stm32f4xx.h"
 #else
     #error rtc.h: No processor defined!
