@@ -43,7 +43,7 @@ int rtc_init(RTCDev_t *pDev)
 		RTC_Init(&RTC_InitStructure);
  
 		RTCTime_t time = {23, 59, 56};
-		RTCDate_t date = {25, 1, 1, 3};
+		RTCDate_t date = {25, 1, 1};
 		__rtc_set_time(pDev, &time);	// 设置时间
 		__rtc_set_date(pDev, &date);	// 设置日期
 		
@@ -61,6 +61,33 @@ int rtc_init(RTCDev_t *pDev)
 	
 	pDev->initFlag = true;
 	return 0;
+}
+
+/******************************************************************************
+ * @brief	RTC根据日期计算星期
+ * @param	pTime	:  RTCTime_t 结构体指针
+ * @return	当前星期
+ ******************************************************************************/
+static uint8_t __rtc_calc_week(RTCDate_t *pDate)
+{
+	uint16_t year = pDate->year + 2000;
+	uint8_t date = pDate->date;
+    uint8_t month = pDate->month;
+	uint8_t week;
+	
+    if (month < 3)
+	{
+        month += 12;
+        year--;
+    }
+    
+    /* Zeller 公式 */
+    week = (date + 13 * (month + 1) / 5 + (year % 100) + (year % 100) / 4 + (year / 100) / 4 + 5 * (year / 100)) % 7;
+
+    /* 映射到 1-7 为星期一~星期日 */
+    week = (week + 5) % 7 + 1;
+	
+    return week;
 }
 
 /******************************************************************************
@@ -94,7 +121,7 @@ static int __rtc_set_date(RTCDev_t *pDev, RTCDate_t *pDate)
 	RTC_DateTypeInitStructure.RTC_Year = pDate->year;
 	RTC_DateTypeInitStructure.RTC_Month = pDate->month;
 	RTC_DateTypeInitStructure.RTC_Date = pDate->date;
-	RTC_DateTypeInitStructure.RTC_WeekDay = pDate->week;
+	RTC_DateTypeInitStructure.RTC_WeekDay = __rtc_calc_week(pDate);
 
 	return !RTC_SetDate(RTC_Format_BIN, &RTC_DateTypeInitStructure);
 }
