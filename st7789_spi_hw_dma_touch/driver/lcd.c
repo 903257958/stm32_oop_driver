@@ -1,5 +1,16 @@
+#include <stdlib.h>
+#include <math.h>
 #include "lcd.h"
 #include "lcd_data.h"
+#include "pwm.h"
+
+#if FREERTOS
+#include "timer.h"
+#include "FreeRTOS.h"
+#include "task.h"
+
+extern TimerDev_t timerDelay;
+#endif
 
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 	
@@ -149,6 +160,8 @@ typedef struct {
 	PWMDev_t lcdPWM;	// PWM背光引脚
 }LCDPrivData_t;
 
+static void __lcd_backlight_ctrl(struct LCDDev *pDev, uint16_t val);
+
 /* 通信协议 */
 static void __lcd_res_write(LCDDev_t *pDev, uint8_t bitValue);
 static void __lcd_dc_write(LCDDev_t *pDev, uint8_t bitValue);
@@ -210,7 +223,11 @@ int lcd_init(LCDDev_t *pDev)
 
 	pPrivData->lcdPWM.info.timx = pDev->info.timx;
 	pPrivData->lcdPWM.info.OCChannel = pDev->info.OCChannel;
-	pPrivData->lcdPWM.info.psc = 99;
+	#if defined(STM32F40_41xxx)
+	pPrivData->lcdPWM.info.psc = 82;	// STM32F407通用/基本定时器时钟频率为84MHz
+	#elif defined(STM32F411xE)
+	pPrivData->lcdPWM.info.psc = 99;	// STM32F411定时器时钟频率为100MHz
+	#endif
 	pPrivData->lcdPWM.info.arr = 999;
 	pPrivData->lcdPWM.info.port = pDev->info.BLPort;
 	pPrivData->lcdPWM.info.pin = pDev->info.BLPin;
@@ -332,6 +349,7 @@ int lcd_init(LCDDev_t *pDev)
 	__lcd_clear(pDev, BLACK);
 	
 	/* 函数指针赋值 */
+	pDev->backlight_ctrl = __lcd_backlight_ctrl;
 	pDev->clear = __lcd_clear;
 	pDev->fill = __lcd_fill;
 	pDev->color_fill = __lcd_color_fill;
@@ -412,6 +430,26 @@ void lcd_dma_init(LCDDev_t *pDev, uint32_t memoryBaseAddr)
     DMA_Cmd(__lcd_get_dma_stream(pDev->info.spix), DISABLE);
 	
 	#endif
+}
+
+/******************************************************************************
+ * @brief	LCD背光控制
+ * @param	pDev	:	LCDDev_t结构体指针
+ * @param	value	:	背光调节系数，范围：0~99
+ * @return	无
+ ******************************************************************************/
+static void __lcd_backlight_ctrl(struct LCDDev *pDev, uint16_t val)
+{
+	LCDPrivData_t *pPrivData = (LCDPrivData_t *)pDev->pPrivData;
+
+	uint16_t compare = val * 10;
+	if (compare > 999)
+	{
+		compare = 999;
+	}
+	compare = 999 - compare;
+
+	pPrivData->lcdPWM.set_compare(&pPrivData->lcdPWM, compare);
 }
 
 /*通信协议*********************************************************************/

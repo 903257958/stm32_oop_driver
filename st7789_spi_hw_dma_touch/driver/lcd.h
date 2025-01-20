@@ -4,35 +4,26 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdbool.h>
-#include <stdlib.h>
-#include <math.h>
 #include "spi.h"
-#include "pwm.h"
 
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
     #include "stm32f10x.h"
 	
-    typedef GPIO_TypeDef*			LCD_GPIO_Port;
+    typedef GPIO_TypeDef*       LCD_GPIO_Port;
+    typedef TIM_TypeDef*	    TIMx;
 	
 #elif defined(STM32F40_41xxx) || defined(STM32F411xE)
 	#include "stm32f4xx.h"
 
 	typedef GPIO_TypeDef*		LCD_GPIO_Port;
+    typedef TIM_TypeDef*	    TIMx;
 	
 #else
     #error lcd.h: No processor defined!
 #endif
 
 #ifndef FREERTOS
-	#define FREERTOS	0
-#endif
-
-#if FREERTOS
-	#include "timer.h"
-	#include "FreeRTOS.h"
-	#include "task.h"
-
-	extern TimerDev_t timerDelay;
+	#define FREERTOS	1
 #endif
 
 #ifndef lcd_log
@@ -115,6 +106,7 @@ typedef struct LCDDev {
 	void *pPrivData;				// 私有数据指针
 	uint16_t width;
 	uint16_t height;
+	void (*backlight_ctrl)(struct LCDDev *pDev, uint16_t val);
 	void (*clear)(struct LCDDev *pDev, uint16_t color);
 	void (*fill)(struct LCDDev *pDev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color);
 	void (*color_fill)(struct LCDDev *pDev, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t *pColor);
