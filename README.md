@@ -19,8 +19,8 @@
 - **key_fifo_timer**: 按键 + 环形缓冲区 + 定时器中断扫描 + 定时器消抖
 - **timer_irq**: 定时器中断
 - **usart_dma**: 串口 + 空闲中断 + DMA
-- **esp_at**: WiFi模块通过AT命令获取天气与时间
-- **esp_tcp**: WiFi模块通过AT命令实现TCP透传
+- **esp_at**: ESP32通过AT命令获取天气与时间
+- **esp_tcp**: ESP8266通过AT命令实现TCP透传
 - **w25qx_spi_hw**: 硬件SPI读写外部Flash
 - **w25qx_spi_sw**: 软件SPI读写外部Flash
 - **ssd1306_spi_hw_dma**: 硬件SPI + DMA驱动 SSD1306主控 分辨率128*64 0.96寸OLED屏幕
