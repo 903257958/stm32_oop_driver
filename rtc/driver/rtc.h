@@ -4,7 +4,6 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdbool.h>
-#include <stdlib.h>
 	
 #if defined(STM32F40_41xxx) || defined(STM32F411xE)
 	#include "stm32f4xx.h"
@@ -30,6 +29,8 @@ typedef struct {
 }RTCDate_t;
 
 typedef struct RTCDev {
+    RTCTime_t time;
+    RTCDate_t date;
 	bool initFlag;							// 初始化标志
     int (*set_time)(struct RTCDev *pDev, RTCTime_t *pTime);
     int (*set_date)(struct RTCDev *pDev, RTCDate_t *pDate);
