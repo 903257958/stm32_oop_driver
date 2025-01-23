@@ -27,10 +27,10 @@
 typedef struct {
 	USARTx usartx;					// 串口外设
 	uint32_t baud;					// 波特率
-	USART_GPIO_Port txPort;			// 发送端口
-	uint32_t txPin;					// 发送引脚
-	USART_GPIO_Port rxPort;			// 接收端口
-	uint32_t rxPin;					// 接收引脚
+	USART_GPIO_Port TXPort;			// 发送端口
+	uint32_t TXPin;					// 发送引脚
+	USART_GPIO_Port RXPort;			// 接收端口
+	uint32_t RXPin;					// 接收引脚
 }USARTInfo_t;
 
 typedef struct USARTDev {

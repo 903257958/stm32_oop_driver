@@ -33,5 +33,6 @@
 - **passive_buzzer_pwm**: PWM控制无源蜂鸣器
 - **rtc**: RTC实时时钟
 - **mpu6050_i2c_sw**: 软件I2C + MPU6050
+- **mpu6050_i2c_sw**: 软件I2C + MPU6050 + 中断引脚
 
 

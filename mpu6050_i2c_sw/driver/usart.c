@@ -192,10 +192,10 @@ int usart_init(USARTDev_t *pDev)
 
 	/* 配置时钟与GPIO */
 	__usart_config_clock_enable(pDev->info.usartx);
-	__usart_config_gpio_clock_enable(pDev->info.txPort);
-	__usart_config_gpio_clock_enable(pDev->info.rxPort);
-	__usart_config_io_af_pp(pDev->info.txPort, pDev->info.txPin);
-	__usart_config_io_af_pp(pDev->info.rxPort, pDev->info.rxPin);
+	__usart_config_gpio_clock_enable(pDev->info.TXPort);
+	__usart_config_gpio_clock_enable(pDev->info.RXPort);
+	__usart_config_io_af_pp(pDev->info.TXPort, pDev->info.TXPin);
+	__usart_config_io_af_pp(pDev->info.RXPort, pDev->info.RXPin);
 	
 	#if defined(STM32F40_41xxx)
 	if (pDev->info.usartx == USART1)
