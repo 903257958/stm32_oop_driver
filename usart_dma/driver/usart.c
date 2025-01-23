@@ -1,34 +1,10 @@
+#include <stdlib.h>
+#include <stdarg.h>
+#include <string.h>
+#include <stdio.h>
 #include "usart.h"
 
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
-	
-#define __usart_get_tx_port(USARTx)	(	USARTx == USART1 ? GPIOA : \
-										USARTx == USART2 ? GPIOA : \
-										USARTx == USART3 ? GPIOB : \
-										USARTx == UART4 ? GPIOC : \
-										USARTx == UART5 ? GPIOC : \
-										(int)0	)
-											
-#define __usart_get_rx_port(USARTx)	(	USARTx == USART1 ? GPIOA : \
-										USARTx == USART2 ? GPIOA : \
-										USARTx == USART3 ? GPIOB : \
-										USARTx == UART4 ? GPIOC : \
-										USARTx == UART5 ? GPIOD : \
-										(int)0	)
-											
-#define __usart_get_tx_pin(USARTx)	(	USARTx == USART1 ? GPIO_Pin_9 : \
-										USARTx == USART2 ? GPIO_Pin_2 : \
-										USARTx == USART3 ? GPIO_Pin_10 : \
-										USARTx == UART4 ? GPIO_Pin_10 : \
-										USARTx == UART5 ? GPIO_Pin_12 : \
-										(int)0	)
-											
-#define __usart_get_rx_pin(USARTx)	(	USARTx == USART1 ? GPIO_Pin_10 : \
-										USARTx == USART2 ? GPIO_Pin_3 : \
-										USARTx == USART3 ? GPIO_Pin_11 : \
-										USARTx == UART4 ? GPIO_Pin_11 : \
-										USARTx == UART5 ? GPIO_Pin_2 : \
-										(int)0	)
 											
 #define __usart_get_irqn(USARTx)	(	USARTx == USART1 ? USART1_IRQn : \
 										USARTx == USART2 ? USART2_IRQn : \
@@ -66,7 +42,7 @@
 													else if (USARTx == USART2)	{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);} \
 													else if (USARTx == USART3)	{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);} \
 													else if (USARTx == UART4)	{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA2, ENABLE);} \
-													else						{usart_log("usart dma clock no enable\r\n");} \
+													else						{usart_log("usart clock no enable\r\n");} \
 												}
 
 #define	__usart_config_io_af_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -83,45 +59,7 @@
 												GPIO_Init(port, &GPIO_InitStructure); \
 											}
 
-#define	__usart_get_dma_channel(usartx)		(	usartx == USART1 ? DMA1_Channel5 : \
-												usartx == USART2 ? DMA1_Channel6 : \
-												usartx == USART3 ? DMA1_Channel3 : \
-												usartx == UART4 ? DMA2_Channel3 : \
-												(int)0)
-
 #elif defined(STM32F40_41xxx)
-
-#define __usart_get_tx_port(USARTx)	(	USARTx == USART1 ? GPIOA : \
-										USARTx == USART2 ? GPIOA : \
-										USARTx == USART3 ? GPIOB : \
-										USARTx == UART4 ? GPIOC : \
-										USARTx == UART5 ? GPIOC : \
-										USARTx == USART6 ? GPIOC : \
-										(int)0	)
-											
-#define __usart_get_rx_port(USARTx)	(	USARTx == USART1 ? GPIOA : \
-										USARTx == USART2 ? GPIOA : \
-										USARTx == USART3 ? GPIOB : \
-										USARTx == UART4 ? GPIOC : \
-										USARTx == UART5 ? GPIOD : \
-										USARTx == USART6 ? GPIOC : \
-										(int)0	)
-											
-#define __usart_get_tx_pin(USARTx)	(	USARTx == USART1 ? GPIO_Pin_9 : \
-										USARTx == USART2 ? GPIO_Pin_2 : \
-										USARTx == USART3 ? GPIO_Pin_10 : \
-										USARTx == UART4 ? GPIO_Pin_10 : \
-										USARTx == UART5 ? GPIO_Pin_12 : \
-										USARTx == USART6 ? GPIO_Pin_6 : \
-										(int)0	)
-											
-#define __usart_get_rx_pin(USARTx)	(	USARTx == USART1 ? GPIO_Pin_10 : \
-										USARTx == USART2 ? GPIO_Pin_3 : \
-										USARTx == USART3 ? GPIO_Pin_11 : \
-										USARTx == UART4 ? GPIO_Pin_11 : \
-										USARTx == UART5 ? GPIO_Pin_2 : \
-										USARTx == USART6 ? GPIO_Pin_7 : \
-										(int)0	)
 											
 #define __usart_get_irqn(USARTx)	(	USARTx == USART1 ? USART1_IRQn : \
 										USARTx == USART2 ? USART2_IRQn : \
@@ -164,7 +102,7 @@
 													else if (USARTx == UART4)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);} \
 													else if (USARTx == UART5)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);} \
 													else if (USARTx == USART6)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);} \
-													else						{usart_log("usart dma clock no enable\r\n");} \
+													else						{usart_log("usart clock no enable\r\n");} \
 												}
 
 #define	__usart_config_io_af_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -211,27 +149,14 @@
 #endif
 
 #define MAX_USART_NUM			6									// 串口外设最大数量
-#define MAX_RX_STRING_LENGTH	100									// 接收文本数据包最大长度
-#define RX_HEX_PACKET_LENGTH	4									// 接收HEX数据包长度
-											
-static uint8_t gRxByte[MAX_USART_NUM];								// 接收字节
-static uint8_t gRxByteFlag[MAX_USART_NUM];							// 接收字节标志位
+#define MAX_RX_STRING_LENGTH	1024								// 接收文本数据包最大长度
 
 static char gRxString[MAX_USART_NUM][MAX_RX_STRING_LENGTH];			// 接收文本数据包
 static uint8_t gRxStringFlag[MAX_USART_NUM];						// 接收文本数据包标志位
 
-static uint8_t gRxHexPacket[MAX_USART_NUM][RX_HEX_PACKET_LENGTH];	// 接收HEX数据包
-static uint8_t gRxHexPacketFlag[MAX_USART_NUM];						// 接收HEX数据包标志位
-
-/* USART私有数据结构体 */
+/*USART私有数据结构体*/
 typedef struct {
-	USART_GPIO_Port txPort;			// 发送端口
-	USART_GPIO_Port rxPort;			// 接收端口
-	uint32_t txPin;					// 发送引脚
-	uint32_t rxPin;					// 接收引脚
-	uint32_t irqn;					// 中断号
-	uint8_t index;					// 索引
-	char *rxStringDMA;				// DMA接收文本数据包
+	uint8_t index;	// 索引
 }USARTPrivData_t;
 
 /* 函数声明 */
@@ -242,12 +167,8 @@ static int __usart_send_string(USARTDev_t *pDev, char *str);
 static int __usart_send_number(USARTDev_t *pDev, uint32_t num, uint8_t length);
 static int __usart_send_hex_packet(USARTDev_t *pDev, uint8_t *packet, uint8_t length, uint8_t head, uint8_t end);
 static int __usart_printf(USARTDev_t *pDev, char *format, ...);
-static uint8_t __usart_recv_byte(USARTDev_t *pDev);
-static uint8_t __usart_recv_byte_flag(USARTDev_t *pDev);
 static char *__usart_recv_string(USARTDev_t *pDev);
 static uint8_t __usart_recv_string_flag(USARTDev_t *pDev);
-static uint8_t *__usart_recv_hex_packet(USARTDev_t *pDev);
-static uint8_t __usart_recv_hex_packet_flag(USARTDev_t *pDev);
 static int __usart_deinit(USARTDev_t *pDev);
 
 /******************************************************************************
@@ -266,24 +187,15 @@ int usart_init(USARTDev_t *pDev)
 		return -1;
 	
 	USARTPrivData_t *pPrivData = (USARTPrivData_t *)pDev->pPrivData;
-	
-	pPrivData->txPort = __usart_get_tx_port(pDev->info.usartx);
-	pPrivData->rxPort = __usart_get_rx_port(pDev->info.usartx);
-	pPrivData->txPin = __usart_get_tx_pin(pDev->info.usartx);
-	pPrivData->rxPin = __usart_get_rx_pin(pDev->info.usartx);
-	pPrivData->irqn = __usart_get_irqn(pDev->info.usartx);
+
 	pPrivData->index = __usart_get_index(pDev->info.usartx);
 
 	/* 配置时钟与GPIO */
 	__usart_config_clock_enable(pDev->info.usartx);
-	__usart_config_gpio_clock_enable(pPrivData->txPort);
-	__usart_config_gpio_clock_enable(pPrivData->rxPort);
-	__usart_config_io_af_pp(pPrivData->txPort, pPrivData->txPin);
-	#if defined(STM32F10X_HD) || defined(STM32F10X_MD)
-	__usart_config_io_in_pu(pPrivData->rxPort, pPrivData->rxPin);
-	#elif defined(STM32F40_41xxx)
-	__usart_config_io_af_pp(pPrivData->rxPort, pPrivData->rxPin);
-	#endif
+	__usart_config_gpio_clock_enable(pDev->info.txPort);
+	__usart_config_gpio_clock_enable(pDev->info.rxPort);
+	__usart_config_io_af_pp(pDev->info.txPort, pDev->info.txPin);
+	__usart_config_io_af_pp(pDev->info.rxPort, pDev->info.rxPin);
 	
 	#if defined(STM32F40_41xxx)
 	if (pDev->info.usartx == USART1)
@@ -332,7 +244,7 @@ int usart_init(USARTDev_t *pDev)
 	USART_ITConfig(pDev->info.usartx, USART_IT_RXNE, ENABLE);
 	
 	NVIC_InitTypeDef NVIC_InitStructure;
-	NVIC_InitStructure.NVIC_IRQChannel = pPrivData->irqn;
+	NVIC_InitStructure.NVIC_IRQChannel = __usart_get_irqn(pDev->info.usartx);
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
@@ -348,17 +260,12 @@ int usart_init(USARTDev_t *pDev)
 	pDev->send_number = __usart_send_number;
 	pDev->send_hex_packet = __usart_send_hex_packet;
 	pDev->printf = __usart_printf;
-	pDev->recv_byte = __usart_recv_byte;
-	pDev->recv_byte_flag = __usart_recv_byte_flag;
 	pDev->recv_string = __usart_recv_string;
 	pDev->recv_string_flag = __usart_recv_string_flag;
-	pDev->recv_hex_packet = __usart_recv_hex_packet;
-	pDev->recv_hex_packet_flag = __usart_recv_hex_packet_flag;
 	pDev->deinit = __usart_deinit;
 	
 	pDev->DMAFlag = false;
 	pDev->initFlag = true;
-
 	return 0;
 }
 
@@ -374,19 +281,23 @@ int usart_dma_init(USARTDev_t *pDev)
 	
 	/* 保存私有数据 */
 	USARTPrivData_t *pPrivData = (USARTPrivData_t *)pDev->pPrivData;
-
-	pPrivData->rxStringDMA = (char *)malloc(MAX_RX_STRING_LENGTH * sizeof(char));
 	
 	#if defined(STM32F10X_HD) || defined(STM32F10X_MD)
+	
+	if (pDev->info.usartx == USART1)			{	pPrivData->DMAChannel = DMA1_Channel5;	}
+	else if (pDev->info.usartx == USART2)	{	pPrivData->DMAChannel = DMA1_Channel6;	}
+	else if (pDev->info.usartx == USART3)	{	pPrivData->DMAChannel = DMA1_Channel3;	}
+	else if (pDev->info.usartx == UART4)		{	pPrivData->DMAChannel = DMA2_Channel3;	}
+	else	{return -1;}
 
 	/* 配置DMA */
 	__usart_config_dma_clock_enable(pDev->info.usartx);
 	DMA_InitTypeDef DMA_InitStructure;
-	DMA_DeInit(__usart_get_dma_channel(pDev->info.usartx));								// 将DMA的通道寄存器重设为缺省值
+	DMA_DeInit(pPrivData->DMAChannel);													// 将DMA的通道寄存器重设为缺省值
 	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&pDev->info.usartx->DR;		// DMA外设基地址
-	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)(pPrivData->rxStringDMA);			// DMA内存基地址
+	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)(gRxString[pPrivData->index]);		// DMA内存基地址
 	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;									// 数据传输方向，从外设读取发送到内存
-	DMA_InitStructure.DMA_BufferSize = sizeof(pPrivData->rxStringDMA);					// DMA通道的DMA缓存的大小
+	DMA_InitStructure.DMA_BufferSize = sizeof(gRxString[pPrivData->index]);				// DMA通道的DMA缓存的大小
 	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;					// 外设地址寄存器不变
 	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;								// 内存地址寄存器递增
 	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;				// 数据宽度为8位
@@ -394,14 +305,14 @@ int usart_dma_init(USARTDev_t *pDev)
 	DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;										// 工作在正常模式，一次传输后自动结束
 	DMA_InitStructure.DMA_Priority = DMA_Priority_Medium;								// 中优先级 
 	DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;										// 没有设置为内存到内存传输
-	DMA_Init(__usart_get_dma_channel(pDev->info.usartx), &DMA_InitStructure);
+	DMA_Init(pPrivData->DMAChannel, &DMA_InitStructure);
 
 	/* 中断使能 */
 	USART_ITConfig(pDev->info.usartx, USART_IT_RXNE, DISABLE);							// 关闭串口接受中断
 	USART_ITConfig(pDev->info.usartx, USART_IT_IDLE, ENABLE);							// 使能USART空闲中断
 
 	/* 开启DMA */
-	DMA_Cmd(__usart_get_dma_channel(pDev->info.usartx), ENABLE);
+	DMA_Cmd(pPrivData->DMAChannel, ENABLE);
 
 	/* 启用USART的DMA请求 */
 	USART_DMACmd(pDev->info.usartx, USART_DMAReq_Rx, ENABLE);
@@ -414,9 +325,9 @@ int usart_dma_init(USARTDev_t *pDev)
 	DMA_InitTypeDef DMA_InitStructure;
     DMA_InitStructure.DMA_Channel = __usart_get_dma_channel(pDev->info.usartx);			// 选择DMA通道
     DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&pDev->info.usartx->DR;		// DMA外设基地址
-	DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)(pPrivData->rxStringDMA);			// DMA内存基地址
+    DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)(gRxString[pPrivData->index]);	// DMA内存基地址
     DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;								// 从外设读取发送到内存
-	DMA_InitStructure.DMA_BufferSize = sizeof(pPrivData->rxStringDMA);					// DMA通道的DMA缓存的大小
+    DMA_InitStructure.DMA_BufferSize = sizeof(gRxString[pPrivData->index]);				// DMA通道的DMA缓存的大小
     DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;					// 外设地址不增
     DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;								// 内存地址自增
     DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;				// 外设数据单位8位
@@ -460,29 +371,29 @@ static int __usart_dma_recv_enable(USARTDev_t *pDev)
 	
 	if (!pDev || !pDev->initFlag || !pDev->DMAFlag)
 		return -1;
-
+	
 	#if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 	
 	/* 将接收的内存部分数据清0 */
-	memset(pPrivData->rxStringDMA, 0, sizeof(pPrivData->rxStringDMA));
+	memset(gRxString[pPrivData->index], 0, sizeof(gRxString[pPrivData->index]));
 	
 	/* 重新设置传输数据长度 */
-	DMA_SetCurrDataCounter(__usart_get_dma_channel(pDev->info.usartx), sizeof(pPrivData->rxStringDMA));
+	DMA_SetCurrDataCounter(pPrivData->DMAChannel, sizeof(gRxString[pPrivData->index]));
 
 	/* 重新打开DMA */
-	DMA_Cmd(__usart_get_dma_channel(pDev->info.usartx), ENABLE);
+	DMA_Cmd(pPrivData->DMAChannel, ENABLE);
 	
 	#elif defined(STM32F40_41xxx)
 	
 	/* 将接收的内存部分数据清0 */
-	memset(pPrivData->rxStringDMA, 0, sizeof(pPrivData->rxStringDMA));
+	memset(gRxString[pPrivData->index], 0, sizeof(gRxString[pPrivData->index]));
 
 	/* 清除标志位 */
 	DMA_ClearFlag(__usart_get_dma_stream(pDev->info.usartx), __usart_get_dma_flag(pDev->info.usartx));
 	USART_ClearFlag(pDev->info.usartx, USART_FLAG_IDLE);
 
 	/* 重新设置传输数据长度 */
-	DMA_SetCurrDataCounter(__usart_get_dma_stream(pDev->info.usartx), sizeof(pPrivData->rxStringDMA));
+	DMA_SetCurrDataCounter(__usart_get_dma_stream(pDev->info.usartx), sizeof(gRxString[pPrivData->index]));
 
 	/* 重新打开DMA */
 	DMA_Cmd(__usart_get_dma_stream(pDev->info.usartx), ENABLE);
@@ -637,35 +548,6 @@ static int __usart_printf(USARTDev_t *pDev, char *format, ...)
 }
 
 /******************************************************************************
- * @brief	返回USART接收的一个字节
- * @param	pDev	:  USARTDev_t结构体指针
- * @return	USART接收的一个字节
- ******************************************************************************/
-static uint8_t __usart_recv_byte(USARTDev_t *pDev)
-{
-	USARTPrivData_t *pPrivData = pDev->pPrivData;
-	
-	return gRxByte[pPrivData->index];
-}
-
-/******************************************************************************
- * @brief	获取USART接收一个字节标志位（并自动清除）
- * @param	pDev	:  USARTDev_t结构体指针
- * @return	USART接收一个字节标志位
- ******************************************************************************/
-static uint8_t __usart_recv_byte_flag(USARTDev_t *pDev)
-{
-	USARTPrivData_t *pPrivData = pDev->pPrivData;
-	
-	if (gRxByteFlag[pPrivData->index] == 1)
-	{
-		gRxByteFlag[pPrivData->index] = 0;
-		return 1;
-	}
-	return 0;
-}
-
-/******************************************************************************
  * @brief	返回USART接收的文本数据包的首地址
  * @param	pDev	:  USARTDev_t结构体指针
  * @return	USART接收的文本数据包的首地址
@@ -674,14 +556,7 @@ static char *__usart_recv_string(USARTDev_t *pDev)
 {
 	USARTPrivData_t *pPrivData = pDev->pPrivData;
 	
-	if (!pDev->DMAFlag)
-	{
-		return gRxString[pPrivData->index];
-	}
-	else
-	{
-		return pPrivData->rxStringDMA;
-	}
+	return gRxString[pPrivData->index];
 }
 
 /******************************************************************************
@@ -703,48 +578,16 @@ static uint8_t __usart_recv_string_flag(USARTDev_t *pDev)
 }
 
 /******************************************************************************
- * @brief	返回USART接收的HEX数据包的首地址
- * @param	pDev	:  USARTDev_t结构体指针
- * @return	USART接收的HEX数据包的首地址
- ******************************************************************************/
-static uint8_t *__usart_recv_hex_packet(USARTDev_t *pDev)
-{
-	USARTPrivData_t *pPrivData = pDev->pPrivData;
-	
-	return gRxHexPacket[pPrivData->index];
-}
-
-/******************************************************************************
- * @brief	返回USART接收的HEX数据包标志位（并自动清除）
- * @param	pDev	:  USARTDev_t结构体指针
- * @return	USART接收的HEX数据包标志位
- ******************************************************************************/
-static uint8_t __usart_recv_hex_packet_flag(USARTDev_t *pDev)
-{
-	USARTPrivData_t *pPrivData = pDev->pPrivData;
-	
-	if (gRxHexPacketFlag[pPrivData->index] == 1)
-	{
-		gRxHexPacketFlag[pPrivData->index] = 0;
-		return 1;
-	}
-	return 0;
-}
-
-/******************************************************************************
  * @brief	去初始化USART
  * @param	pDev   :  USARTDev_t
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
 static int __usart_deinit(USARTDev_t *pDev)
 {
-	USARTPrivData_t *pPrivData = pDev->pPrivData;
-
 	if (!pDev || !pDev->initFlag)
 		return -1;
 	
 	/* 释放私有数据内存 */
-	free(pPrivData->rxStringDMA);
 	free(pDev->pPrivData);
     pDev->pPrivData = NULL;
 	
@@ -752,27 +595,6 @@ static int __usart_deinit(USARTDev_t *pDev)
 	pDev->initFlag = false;
 	
 	return 0;
-}
-
-/******************************************************************************
- * @brief	USART接收一个字节中断回调函数
- * @param	usartx	：	串口外设
- * @return	无
- ******************************************************************************/
-static void __usart_recv_byte_callback(USARTx usartx)
-{
-	uint8_t index;
-	if (usartx == USART1)		{index = 0;}
-	else if (usartx == USART2)	{index = 1;}
-	else if (usartx == USART3)	{index = 2;}
-	else if (usartx == UART4)	{index = 3;}
-	else if (usartx == UART5)	{index = 4;}
-	#if defined(STM32F40_41xxx)
-	else if (usartx == USART6)	{index = 5;}
-	#endif
-	
-	gRxByte[index] = USART_ReceiveData(usartx);
-	gRxByteFlag[index] = 1;
 }
 
 /******************************************************************************
@@ -788,78 +610,26 @@ static void __usart_recv_string_callback(USARTx usartx)
 	else if (usartx == USART3)	{index = 2;}
 	else if (usartx == UART4)	{index = 3;}
 	else if (usartx == UART5)	{index = 4;}
-	#if defined(STM32F40_41xxx)
 	else if (usartx == USART6)	{index = 5;}
-	#endif
 	
 	static uint8_t rx_string_num = 0; 						// 接收到文本数据包的数据个数
 	
 	uint8_t rx_byte = USART_ReceiveData(usartx);
 	
-	if (rx_string_num < (sizeof(gRxString[index]) - 1)) 	// 确保不越界
+	if (rx_string_num < (uint8_t)(sizeof(gRxString[index]) - 1)) 	// 确保不越界
 	{
 		gRxString[index][rx_string_num++] = rx_byte;
 		if (rx_byte == '\n' && rx_string_num > 1 && gRxString[index][rx_string_num - 2] == '\r')	// 检查是否接收到完整的数据包
 		{
-			gRxString[index][rx_string_num - 2] = '\0';	// 结束符
-			rx_string_num = 0; 							// 重置接收计数器
-			gRxStringFlag[index] = 1; 					// 标记数据包已接收完成
+            gRxString[index][rx_string_num - 2] = '\0'; // 结束符
+            rx_string_num = 0; 							// 重置接收计数器
+            gRxStringFlag[index] = 1; 					// 标记数据包已接收完成
 		}
 	}
 	else
 	{
 		rx_string_num = 0;								// 如果接收到的数据超出了数组的大小，重置接收计数器
 		gRxStringFlag[index] = 0;
-	}
-}
-
-/******************************************************************************
- * @brief	USART接收HEX数据包中断回调函数
- * @param	usartx	：	串口外设
- * @param	head	：	要接收的HEX数据包头
- * @param	end		：	要接收的HEX数据包尾
- * @return	无
- ******************************************************************************/
-static void __usart_recv_hex_packet_callback(USARTx usartx, uint8_t head, uint8_t end)
-{
-	uint8_t index;
-	if (usartx == USART1)		{index = 0;}
-	else if (usartx == USART2)	{index = 1;}
-	else if (usartx == USART3)	{index = 2;}
-	else if (usartx == UART4)	{index = 3;}
-	else if (usartx == UART5)	{index = 4;}
-	#if defined(STM32F40_41xxx)
-	else if (usartx == USART6)	{index = 5;}
-	#endif
-	
-	static uint8_t rx_state = 0;			// 状态变量
-	static uint8_t rx_hex_packet_num = 0;	// 接收到HEX数据包的数据个数
-	
-	uint8_t rx_byte = USART_ReceiveData(usartx);
-	
-	if (rx_state == 0)
-	{
-		if (rx_byte == head)	// 收到包头
-		{
-			rx_state = 1;
-			rx_hex_packet_num = 0;
-		}
-	}
-	else if (rx_state == 1)
-	{
-		gRxHexPacket[index][rx_hex_packet_num++] = rx_byte;
-		if (rx_hex_packet_num >= RX_HEX_PACKET_LENGTH)
-		{
-			rx_state = 2;
-		}
-	}
-	else if (rx_state == 2)
-	{
-		if (rx_byte == end)	// 收到包尾
-		{
-			rx_state = 0;
-			gRxHexPacketFlag[index] = 1;
-		}
 	}
 }
 
@@ -871,7 +641,6 @@ static void __usart_recv_hex_packet_callback(USARTx usartx, uint8_t head, uint8_
 void USART1_IRQHandler(void)
 {
 	volatile uint8_t clear;
-	
 	
 	if (USART_GetITStatus(USART1, USART_IT_IDLE) != RESET)   // 空闲中断
 	{
@@ -889,9 +658,7 @@ void USART1_IRQHandler(void)
 	
 	if (USART_GetITStatus(USART1, USART_IT_RXNE) == SET)
 	{
-		__usart_recv_byte_callback(USART1);
 		__usart_recv_string_callback(USART1);
-		__usart_recv_hex_packet_callback(USART1, 0x24, 0xFF);
 
 		USART_ClearITPendingBit(USART1, USART_IT_RXNE);	// 清除中断标志位
 	}
@@ -922,10 +689,8 @@ void USART2_IRQHandler(void)
 
 	if (USART_GetITStatus(USART2, USART_IT_RXNE) == SET)
 	{
-		__usart_recv_byte_callback(USART2);
 		__usart_recv_string_callback(USART2);
-		__usart_recv_hex_packet_callback(USART2, 0x24, 0xFF);
-
+		
 		USART_ClearITPendingBit(USART2, USART_IT_RXNE);	// 清除中断标志位
 	}
 }
@@ -955,9 +720,7 @@ void USART3_IRQHandler(void)
 
 	if (USART_GetITStatus(USART3, USART_IT_RXNE) == SET)
 	{
-		__usart_recv_byte_callback(USART3);
 		__usart_recv_string_callback(USART3);
-		__usart_recv_hex_packet_callback(USART3, 0x24, 0xFF);
 
 		USART_ClearITPendingBit(USART3, USART_IT_RXNE);	// 清除中断标志位
 	}
@@ -988,9 +751,7 @@ void UART4_IRQHandler(void)
 
 	if (USART_GetITStatus(UART4, USART_IT_RXNE) == SET)
 	{
-		__usart_recv_byte_callback(UART4);
 		__usart_recv_string_callback(UART4);
-		__usart_recv_hex_packet_callback(UART4, 0x24, 0xFF);
 
 		USART_ClearITPendingBit(UART4, USART_IT_RXNE);	// 清除中断标志位
 	}
@@ -1019,9 +780,7 @@ void UART5_IRQHandler(void)
 	
 	if (USART_GetITStatus(UART5, USART_IT_RXNE) == SET)
 	{
-		__usart_recv_byte_callback(UART5);
 		__usart_recv_string_callback(UART5);
-		__usart_recv_hex_packet_callback(UART5, 0x24, 0xFF);
 
 		USART_ClearITPendingBit(UART5, USART_IT_RXNE);	// 清除中断标志位
 	}
@@ -1049,9 +808,7 @@ void USART6_IRQHandler(void)
 	
 	if (USART_GetITStatus(USART6, USART_IT_RXNE) == SET)
 	{
-		__usart_recv_byte_callback(USART6);
 		__usart_recv_string_callback(USART6);
-		__usart_recv_hex_packet_callback(USART6, 0x24, 0xFF);
 
 		USART_ClearITPendingBit(USART6, USART_IT_RXNE);	// 清除中断标志位
 	}
