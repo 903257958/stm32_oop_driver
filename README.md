@@ -13,8 +13,7 @@
 
 ## 驱动列表
 
-- **led_reg**: 基于寄存器点亮LED
-- **led**: 基于标准库点亮LED
+- **led&delay**: 点亮LED与delay函数的实现
 - **key**: 按键 + 延时消抖
 - **key_fifo_timer**: 按键 + 环形缓冲区 + 定时器中断扫描 + 定时器消抖
 - **timer_irq**: 定时器中断
