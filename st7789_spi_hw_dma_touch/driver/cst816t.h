@@ -10,28 +10,14 @@
 
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 	#include "stm32f10x.h"
+	typedef GPIO_TypeDef*	CST816TGPIOPort_t;
 	
-	typedef GPIO_TypeDef*	CST816T_GPIO_Port;
-	
-#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
+#elif defined(STM32F40_41xxx)
 	#include "stm32f4xx.h"
-	
-	typedef GPIO_TypeDef*	CST816T_GPIO_Port;
+	typedef GPIO_TypeDef*	CST816TGPIOPort_t;
 	
 #else
 	#error cst816t.h: No processor defined!
-#endif
-
-#ifndef FREERTOS
-	#define FREERTOS	0
-#endif
-
-#if FREERTOS
-	#include "timer.h"
-	#include "FreeRTOS.h"
-	#include "task.h"
-
-	extern TimerDev_t timerDelay;
 #endif
 
 #ifndef GPIO_LEVEL_HIGH
@@ -80,29 +66,29 @@
 #define GESTURE_RIGHT		4
 
 typedef struct {
-    CST816T_GPIO_Port SCLPort;		// SCL端口
-	uint32_t SCLPin;				// SCL引脚
-	CST816T_GPIO_Port SDAPort;		// SDA端口
-	uint32_t SDAPin;				// SDA引脚
-    CST816T_GPIO_Port RSTPort;		// RST端口
-	uint32_t RSTPin;				// RST引脚
+    CST816TGPIOPort_t scl_port;		// SCL端口
+	uint32_t scl_pin;				// SCL引脚
+	CST816TGPIOPort_t sda_port;		// SDA端口
+	uint32_t sda_pin;				// SDA引脚
+    CST816TGPIOPort_t rst_port;		// RST端口
+	uint32_t rst_pin;				// RST引脚
 	uint8_t dir;					// 显示方向
 }CST816TInfo_t;
 
 typedef struct CST816TDev {
 	CST816TInfo_t info;
-	bool initFlag;          // 初始化标志
-    void *pPrivData;        // 私有数据指针
+	bool init_flag;          // 初始化标志
+    void *priv_data;        // 私有数据指针
 	uint16_t x;
     uint16_t y;
     uint8_t gesture;
-	void (*get_id)(struct CST816TDev *pDev, uint8_t *id);
-	void (*get_firmware_ver)(struct CST816TDev *pDev, uint8_t *fwVer);
-	uint8_t (*get_finger_num)(struct CST816TDev *pDev);
-    void (*get_action)(struct CST816TDev *pDev);
-	int (*deinit)(struct CST816TDev *pDev); // 去初始化
+	void (*get_id)(struct CST816TDev *dev, uint8_t *id);
+	void (*get_firmware_ver)(struct CST816TDev *dev, uint8_t *fw_ver);
+	uint8_t (*get_finger_num)(struct CST816TDev *dev);
+    void (*get_action)(struct CST816TDev *dev);
+	int (*deinit)(struct CST816TDev *dev); // 去初始化
 }CST816TDev_t;
 
-int cst816t_init(CST816TDev_t *pDev);
+int cst816t_init(CST816TDev_t *dev);
 
 #endif

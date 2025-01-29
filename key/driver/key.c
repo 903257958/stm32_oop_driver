@@ -28,7 +28,7 @@
 
 #define __key_io_read(port, pin)	GPIO_ReadInputDataBit(port, pin)
 
-#elif defined(STM32F40_41xxx)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
 
 #define	__key_config_gpio_clock_enable(port)	{	if(port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);} \
 													else if(port == GPIOB)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);} \
@@ -59,53 +59,54 @@
 #define __key_io_read(port, pin)	GPIO_ReadInputDataBit(port, pin)
 
 #endif
-									
-static bool __key_is_press(KeyDev_t *pDev);
-static int __key_deinit(KeyDev_t *pDev);
+				
+/* 函数声明 */                                            
+static bool __key_is_press(KeyDev_t *dev);
+static int __key_deinit(KeyDev_t *dev);
 										
 /******************************************************************************
  * @brief	初始化按键
- * @param	pDev		:  KeyDev_t结构体指针
+ * @param	dev		:  KeyDev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-int key_init(KeyDev_t *pDev)
+int key_init(KeyDev_t *dev)
 {
-	if (!pDev)
+	if (!dev)
 		return -1;
 	
 	/* 配置时钟与GPIO */
-	__key_config_gpio_clock_enable(pDev->info.port);
+	__key_config_gpio_clock_enable(dev->info.port);
 	
-	if(pDev->info.pressLevel == GPIO_LEVEL_HIGH)			// 根据pressLevel配置为上拉或下拉输入
+	if(dev->info.press_level == GPIO_LEVEL_HIGH)			// 根据press_level配置为上拉或下拉输入
 	{
-		__key_config_io_in_pd(pDev->info.port, pDev->info.pin);
+		__key_config_io_in_pd(dev->info.port, dev->info.pin);
 	}
 	else
 	{
-		__key_config_io_in_pu(pDev->info.port, pDev->info.pin);
+		__key_config_io_in_pu(dev->info.port, dev->info.pin);
 	}
 	
 	/* 函数指针赋值 */
-	pDev->is_press = __key_is_press;
-	pDev->deinit = __key_deinit;
+	dev->is_press = __key_is_press;
+	dev->deinit = __key_deinit;
 	
-	pDev->initFlag = true;
+	dev->init_flag = true;
 	return 0;
 }
 
 /******************************************************************************
  * @brief	判断按键是否被按下
- * @param	pDev   :  KeyDev_t结构体指针
+ * @param	dev   :  KeyDev_t 结构体指针
  * @return	true, 表示按键被按下； false，表示按键未被按下。
  ******************************************************************************/
-static bool __key_is_press(KeyDev_t *pDev)
+static bool __key_is_press(KeyDev_t *dev)
 {
-	if (!pDev || !pDev->initFlag)
+	if (!dev || !dev->init_flag)
 		return -1;
 	
-	if (__key_io_read(pDev->info.port, pDev->info.pin) == pDev->info.pressLevel)
+	if (__key_io_read(dev->info.port, dev->info.pin) == dev->info.press_level)
 	{
-		while((__key_io_read(pDev->info.port, pDev->info.pin) == pDev->info.pressLevel));
+		while((__key_io_read(dev->info.port, dev->info.pin) == dev->info.press_level));
 		return true;
 	}
 	
@@ -114,15 +115,15 @@ static bool __key_is_press(KeyDev_t *pDev)
 
 /******************************************************************************
  * @brief	去初始化按键
- * @param	pDev   :  KeyDev_t结构体指针
+ * @param	dev   :  KeyDev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __key_deinit(KeyDev_t *pDev)
+static int __key_deinit(KeyDev_t *dev)
 {
-	if (!pDev || !pDev->initFlag)
+	if (!dev || !dev->init_flag)
 		return -1;
 	
-	pDev->initFlag = false;	// 修改初始化标志
+	dev->init_flag = false;	// 修改初始化标志
 	
 	return 0;
 }

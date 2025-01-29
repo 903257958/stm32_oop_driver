@@ -1,7 +1,6 @@
 #ifndef __MAIN_H
 #define __MAIN_H
 
-
 /* 标准库头文件 */
 #include <stdio.h>
 #include <string.h>
@@ -9,10 +8,9 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-
 /* 驱动头文件 */
 #include "delay.h"
-#include "lcd.h"
+#include "uart.h"
 #include "w25qx.h"
 
 #endif

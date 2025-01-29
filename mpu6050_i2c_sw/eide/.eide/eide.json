@@ -43,10 +43,10 @@
             "path": "../driver/mpu6050.h"
           },
           {
-            "path": "../driver/usart.c"
+            "path": "../driver/uart.c"
           },
           {
-            "path": "../driver/usart.h"
+            "path": "../driver/uart.h"
           }
         ],
         "folders": []

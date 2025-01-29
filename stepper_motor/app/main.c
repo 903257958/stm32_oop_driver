@@ -1,6 +1,6 @@
 #include "main.h"
 
-StepperMotorDev_t stepperMotor = {.info = {
+StepperMotorDev_t stepper_motor = {.info = {
 	GPIOA, GPIO_Pin_4,
 	GPIOA, GPIO_Pin_5,
 	GPIOA, GPIO_Pin_6,
@@ -9,9 +9,10 @@ StepperMotorDev_t stepperMotor = {.info = {
 
 int main(void)
 {
-	stepper_motor_init(&stepperMotor);
+	delay_init(168);
+	stepper_motor_init(&stepper_motor);
 	
-	stepperMotor.control(&stepperMotor, 4096, 1);	// 顺时针旋转360°
+	stepper_motor.control(&stepper_motor, 4096, 1);	// 顺时针旋转360°
 
 	while(1)
 	{

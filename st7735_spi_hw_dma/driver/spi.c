@@ -51,7 +51,7 @@
 											prescaler == 256 ? SPI_BaudRatePrescaler_256 : \
 											(int)0	)
 						
-#elif defined(STM32F40_41xxx)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
 
 #define	__spi_config_clock_enable(SPIx)		{	if(SPIx == SPI1)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);} \
 												else if(SPIx == SPI2)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);} \
@@ -125,60 +125,60 @@
 #endif					
 										
 /* 引脚配置层 */
-static void __spi_cs_write(SPIDev_t *pDev, uint8_t bitValue);
+static void __spi_cs_write(SPIDev_t *dev, uint8_t bit_val);
 
 /* 协议层 */
-static void __spi_start(SPIDev_t *pDev);
-static void __spi_stop(SPIDev_t *pDev);
-static uint8_t __spi_swap_byte(SPIDev_t *pDev, uint8_t sendByte);
-static int __spi_deinit(SPIDev_t *pDev);
+static void __spi_start(SPIDev_t *dev);
+static void __spi_stop(SPIDev_t *dev);
+static uint8_t __spi_swap_byte(SPIDev_t *dev, uint8_t send_byte);
+static int __spi_deinit(SPIDev_t *dev);
 										
 /******************************************************************************
  * @brief	初始化硬件SPI
- * @param	pDev	:	SPIDev_t结构体指针
+ * @param	dev	:	SPIDev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-int spi_init(SPIDev_t *pDev)
+int spi_init(SPIDev_t *dev)
 {
-	if (!pDev)
+	if (!dev)
 		return -1;
 	
 	/* 配置时钟与GPIO */
-	__spi_config_clock_enable(pDev->info.spix);
-	__spi_config_gpio_clock_enable(pDev->info.SCKPort);
-	__spi_config_gpio_clock_enable(pDev->info.MOSIPort);
-	__spi_config_gpio_clock_enable(pDev->info.MISOPort);
-	__spi_config_gpio_clock_enable(pDev->info.CSPort);
+	__spi_config_clock_enable(dev->info.spix);
+	__spi_config_gpio_clock_enable(dev->info.sck_port);
+	__spi_config_gpio_clock_enable(dev->info.mosi_port);
+	__spi_config_gpio_clock_enable(dev->info.miso_port);
+	__spi_config_gpio_clock_enable(dev->info.cs_port);
 	
-	__spi_config_io_af_pp(pDev->info.SCKPort, pDev->info.SCKPin);
-	__spi_config_io_af_pp(pDev->info.MOSIPort, pDev->info.MOSIPin);
-	__spi_config_io_af_pp(pDev->info.MISOPort, pDev->info.MISOPin);
-	__spi_config_io_out_pp(pDev->info.CSPort, pDev->info.CSPin);
+	__spi_config_io_af_pp(dev->info.sck_port, dev->info.sck_pin);
+	__spi_config_io_af_pp(dev->info.mosi_port, dev->info.mosi_pin);
+	__spi_config_io_af_pp(dev->info.miso_port, dev->info.miso_pin);
+	__spi_config_io_out_pp(dev->info.cs_port, dev->info.cs_pin);
 	
 	#if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 	
 	/* STM32F1的PB3、PB4、PA15为JTAG引脚，配置SPI3时需要解除JTAG */
-	if(pDev->info.spix == SPI3)
+	if(dev->info.spix == SPI3)
 	{
 		RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
 		GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);
 		DBGMCU->CR &= ~((uint32_t)1 << 5);
 	}
 	
-	#elif defined(STM32F40_41xxx)
+	#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
 	
 	/* STM32F4配置为复用输出时需要配置引脚复用映射 */
-	GPIO_PinAFConfig(	pDev->info.SCKPort, 
-						__spi_get_gpio_pin_sourse(pDev->info.SCKPin), 
-						__spi_get_gpio_af(pDev->info.spix)	);
+	GPIO_PinAFConfig(	dev->info.sck_port, 
+						__spi_get_gpio_pin_sourse(dev->info.sck_pin), 
+						__spi_get_gpio_af(dev->info.spix)	);
 						
-	GPIO_PinAFConfig(	pDev->info.MOSIPort, 
-						__spi_get_gpio_pin_sourse(pDev->info.MOSIPin), 
-						__spi_get_gpio_af(pDev->info.spix)	);
+	GPIO_PinAFConfig(	dev->info.mosi_port, 
+						__spi_get_gpio_pin_sourse(dev->info.mosi_pin), 
+						__spi_get_gpio_af(dev->info.spix)	);
 						
-	GPIO_PinAFConfig(	pDev->info.MISOPort, 
-						__spi_get_gpio_pin_sourse(pDev->info.MISOPin), 
-						__spi_get_gpio_af(pDev->info.spix)	);
+	GPIO_PinAFConfig(	dev->info.miso_port, 
+						__spi_get_gpio_pin_sourse(dev->info.miso_pin), 
+						__spi_get_gpio_af(dev->info.spix)	);
 	
 	#endif
 		
@@ -188,108 +188,108 @@ int spi_init(SPIDev_t *pDev)
 	SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;						// 双线全双工
 	SPI_InitStructure.SPI_DataSize = SPI_DataSize_8b;										// 8位数据帧
 	SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;										// 高位先行
-	SPI_InitStructure.SPI_BaudRatePrescaler = __spi_get_prescaler(pDev->info.prescaler);	// 分频系数
-	if(pDev->info.mode == SPI_MODE_0)											// 模式0
+	SPI_InitStructure.SPI_BaudRatePrescaler = __spi_get_prescaler(dev->info.prescaler);		// 分频系数
+	if(dev->info.mode == SPI_MODE_0)											// 模式0
 	{
 		SPI_InitStructure.SPI_CPOL = SPI_CPOL_Low;
 		SPI_InitStructure.SPI_CPHA = SPI_CPHA_1Edge;
 	}
-	else if(pDev->info.mode == SPI_MODE_1)										// 模式1
+	else if(dev->info.mode == SPI_MODE_1)										// 模式1
 	{
 		SPI_InitStructure.SPI_CPOL = SPI_CPOL_Low;
 		SPI_InitStructure.SPI_CPHA = SPI_CPHA_2Edge;
 	}
-	else if(pDev->info.mode == SPI_MODE_2)										// 模式2
+	else if(dev->info.mode == SPI_MODE_2)										// 模式2
 	{
 		SPI_InitStructure.SPI_CPOL = SPI_CPOL_High;
 		SPI_InitStructure.SPI_CPHA = SPI_CPHA_1Edge;
 	}
-	else if(pDev->info.mode == SPI_MODE_3)										// 模式3
+	else if(dev->info.mode == SPI_MODE_3)										// 模式3
 	{
 		SPI_InitStructure.SPI_CPOL = SPI_CPOL_High;
 		SPI_InitStructure.SPI_CPHA = SPI_CPHA_2Edge;
 	}
 	SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;									// 软件NSS
 	SPI_InitStructure.SPI_CRCPolynomial = 7;									// CRC，不使用
-	SPI_Init(pDev->info.spix, &SPI_InitStructure);
+	SPI_Init(dev->info.spix, &SPI_InitStructure);
 	
 	/* 开启硬件SPI */
-	SPI_Cmd(pDev->info.spix, ENABLE);
+	SPI_Cmd(dev->info.spix, ENABLE);
 	
 	/* 函数指针赋值 */
-	pDev->cs_write = __spi_cs_write;
-	pDev->start = __spi_start;
-	pDev->stop = __spi_stop;
-	pDev->swap_byte = __spi_swap_byte;
-	pDev->deinit = __spi_deinit;
+	dev->cs_write = __spi_cs_write;
+	dev->start = __spi_start;
+	dev->stop = __spi_stop;
+	dev->swap_byte = __spi_swap_byte;
+	dev->deinit = __spi_deinit;
 	
 	/* 设置默认电平 */
-	__spi_cs_write(pDev, 1);
+	__spi_cs_write(dev, 1);
 	
-	pDev->initFlag = true;
+	dev->init_flag = true;
 	return 0;
 }
 
 /******************************************************************************
  * @brief	硬件SPI写CS引脚电平
- * @param	pDev		:	SPIDev_t结构体指针
- * @param	bitValue	:	协议层传入的当前需要写入CS的电平，范围0~1
+ * @param	dev		:	SPIDev_t 结构体指针
+ * @param	bit_val	:	协议层传入的当前需要写入CS的电平，范围0~1
  * @return	无
  ******************************************************************************/
-static void __spi_cs_write(SPIDev_t *pDev, uint8_t bitValue)
+static void __spi_cs_write(SPIDev_t *dev, uint8_t bit_val)
 {
-	__spi_io_write(pDev->info.CSPort, pDev->info.CSPin, bitValue);
+	__spi_io_write(dev->info.cs_port, dev->info.cs_pin, bit_val);
 }
 
 /******************************************************************************
  * @brief	硬件SPI起始
- * @param	pDev	:  SPIDev_t结构体指针
+ * @param	dev	:  SPIDev_t 结构体指针
  * @return	无
  ******************************************************************************/
-static void __spi_start(SPIDev_t *pDev)
+static void __spi_start(SPIDev_t *dev)
 {
-	__spi_cs_write(pDev, 0);
+	__spi_cs_write(dev, 0);
 }
 
 /******************************************************************************
  * @brief	硬件SPI停止
- * @param	pDev	:  SPIDev_t结构体指针
+ * @param	dev	:  SPIDev_t 结构体指针
  * @return	无
  ******************************************************************************/
-static void __spi_stop(SPIDev_t *pDev)
+static void __spi_stop(SPIDev_t *dev)
 {
-	__spi_cs_write(pDev, 1);
+	__spi_cs_write(dev, 1);
 }
 
 /******************************************************************************
  * @brief	硬件SPI交换一个字节
- * @param	pDev		:  SPIDev_t结构体指针
- * @param	sendByte	:  发送的字节
+ * @param	dev			:  SPIDev_t 结构体指针
+ * @param	send_byte	:  发送的字节
  * @return	接收的字节
  ******************************************************************************/
-static uint8_t __spi_swap_byte(SPIDev_t *pDev, uint8_t sendByte)
+static uint8_t __spi_swap_byte(SPIDev_t *dev, uint8_t send_byte)
 {
-	#if defined(STM32F10X_HD) || defined(STM32F10X_MD) || defined(STM32F40_41xxx)
+	#if defined(STM32F10X_HD) || defined(STM32F10X_MD) || defined(STM32F40_41xxx) || defined(STM32F411xE)
 	
-	while(SPI_I2S_GetFlagStatus(pDev->info.spix, SPI_I2S_FLAG_TXE) != SET);		// 等待TXE置1，表示发送寄存器为空，发送一个字节
-	SPI_I2S_SendData(pDev->info.spix, sendByte);								// 发送字节
-	while(SPI_I2S_GetFlagStatus(pDev->info.spix, SPI_I2S_FLAG_RXNE) != SET);	// 等待RXNE置1，表示接收寄存器非空，收到一个字节
+	while(SPI_I2S_GetFlagStatus(dev->info.spix, SPI_I2S_FLAG_TXE) != SET);		// 等待TXE置1，表示发送寄存器为空，发送一个字节
+	SPI_I2S_SendData(dev->info.spix, send_byte);								// 发送字节
+	while(SPI_I2S_GetFlagStatus(dev->info.spix, SPI_I2S_FLAG_RXNE) != SET);		// 等待RXNE置1，表示接收寄存器非空，收到一个字节
 	
-	return SPI_I2S_ReceiveData(pDev->info.spix);	// 读取接收到的字节
+	return SPI_I2S_ReceiveData(dev->info.spix);	// 读取接收到的字节
 	
 	#endif
 }
 
 /******************************************************************************
  * @brief      去初始化硬件SPI
- * @param[in]  pDev   :  SPIDev_t结构体指针
+ * @param[in]  dev   :  SPIDev_t结构体指针
  * @return     0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __spi_deinit(SPIDev_t *pDev)
+static int __spi_deinit(SPIDev_t *dev)
 {
-	if (!pDev || !pDev->initFlag)
+	if (!dev || !dev->init_flag)
 		return -1;
 	
-	pDev->initFlag = false;	// 修改初始化标志
+	dev->init_flag = false;	// 修改初始化标志
 	return 0;
 }

@@ -21,7 +21,7 @@
 
 #define	__led_io_write(port, pin, value)	GPIO_WriteBit(port, pin, (BitAction)value)
 
-#elif defined(STM32F40_41xxx)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
 
 #define	__led_config_gpio_clock_enable(port)	{	if(port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);} \
 													else if(port == GPIOB)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);} \
@@ -51,116 +51,116 @@ typedef struct {
 	bool status;		// 状态，false灭/true亮，默认灭
 }LEDPrivData_t;
 
-static int __led_on(LEDDev_t *pDev);
-static int __led_off(LEDDev_t *pDev);
-static int __led_get_status(LEDDev_t *pDev);
-static int __led_toggle(LEDDev_t *pDev);
-static int __led_deinit(LEDDev_t *pDev);
+static int __led_on(LEDDev_t *dev);
+static int __led_off(LEDDev_t *dev);
+static int __led_get_status(LEDDev_t *dev);
+static int __led_toggle(LEDDev_t *dev);
+static int __led_deinit(LEDDev_t *dev);
 
 /******************************************************************************
  * @brief	初始化LED
- * @param	pDev	:  LEDDev_t结构体指针
+ * @param	dev	:  LEDDev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-int led_init(LEDDev_t *pDev)
+int led_init(LEDDev_t *dev)
 {
-	if (!pDev)
+	if (!dev)
 		return -1;
 	
 	/* 初始化私有数据 */
-	pDev->pPrivData = (LEDPrivData_t *)malloc(sizeof(LEDPrivData_t));
-	if (!pDev->pPrivData)
+	dev->priv_data = (LEDPrivData_t *)malloc(sizeof(LEDPrivData_t));
+	if (!dev->priv_data)
 		return -1;
 	
-	LEDPrivData_t *pPrivData = (LEDPrivData_t *)pDev->pPrivData;
+	LEDPrivData_t *priv_data = (LEDPrivData_t *)dev->priv_data;
 	
 	/* 配置时钟与GPIO */	
-	__led_config_gpio_clock_enable(pDev->info.port);
-	__led_config_io_out_pp(pDev->info.port, pDev->info.pin);
+	__led_config_gpio_clock_enable(dev->info.port);
+	__led_config_io_out_pp(dev->info.port, dev->info.pin);
 	
 	/* 函数指针赋值 */
-	pDev->on = __led_on;
-	pDev->off = __led_off;
-	pDev->get_status = __led_get_status;
-	pDev->toggle = __led_toggle;
-	pDev->deinit = __led_deinit;
+	dev->on = __led_on;
+	dev->off = __led_off;
+	dev->get_status = __led_get_status;
+	dev->toggle = __led_toggle;
+	dev->deinit = __led_deinit;
 	
 	/* 默认关闭 */
-	pPrivData->status = false;
-	__led_off(pDev);
+	priv_data->status = false;
+	__led_off(dev);
 	
-	pDev->initFlag = true;
+	dev->init_flag = true;
 	return 0;
 }
 
 /******************************************************************************
  * @brief	打开LED
- * @param	pDev   :  LEDDev_t结构体指针
+ * @param	dev   :  LEDDev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __led_on(LEDDev_t *pDev)
+static int __led_on(LEDDev_t *dev)
 {
-	LEDPrivData_t *pPrivData = (LEDPrivData_t *)pDev->pPrivData;
+	LEDPrivData_t *priv_data = (LEDPrivData_t *)dev->priv_data;
 	
-	if (!pDev || !pDev->initFlag)
+	if (!dev || !dev->init_flag)
 		return -1;
 	
-	 __led_io_write(pDev->info.port, pDev->info.pin, !pDev->info.offLevel);	// LED亮
-	pPrivData->status = true;												// 保存此时LED的状态
+	 __led_io_write(dev->info.port, dev->info.pin, !dev->info.off_level);	// LED亮
+	priv_data->status = true;												// 保存此时LED的状态
 	
 	return 0;
 }
 
 /******************************************************************************
  * @brief	关闭LED
- * @param	pDev   :  LEDDev_t结构体指针
+ * @param	dev   :  LEDDev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __led_off(LEDDev_t *pDev)
+static int __led_off(LEDDev_t *dev)
 {
-	LEDPrivData_t *pPrivData = (LEDPrivData_t *)pDev->pPrivData;
+	LEDPrivData_t *priv_data = (LEDPrivData_t *)dev->priv_data;
 	
-	if (!pDev || !pDev->initFlag)
+	if (!dev || !dev->init_flag)
 		return -1;
 	
-	 __led_io_write(pDev->info.port, pDev->info.pin, pDev->info.offLevel);	// LED灭
-	pPrivData->status = false;												// 保存此时LED的状态
+	 __led_io_write(dev->info.port, dev->info.pin, dev->info.off_level);	// LED灭
+	priv_data->status = false;												// 保存此时LED的状态
 	
 	return 0;
 }
 
 /******************************************************************************
  * @brief	获取LED的状态
- * @param	pDev   :  LEDDev_t结构体指针
+ * @param	dev   :  LEDDev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __led_get_status(LEDDev_t *pDev)
+static int __led_get_status(LEDDev_t *dev)
 {
-	LEDPrivData_t *pPrivData = (LEDPrivData_t *)pDev->pPrivData;
+	LEDPrivData_t *priv_data = (LEDPrivData_t *)dev->priv_data;
 	
-	if (!pDev || !pDev->initFlag)
+	if (!dev || !dev->init_flag)
 		return -1;
 	
-	return pPrivData->status;
+	return priv_data->status;
 }
 
 /******************************************************************************
  * @brief	翻转LED
- * @param	pDev   :  LEDDev_t结构体指针
+ * @param	dev   :  LEDDev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __led_toggle(LEDDev_t *pDev)
+static int __led_toggle(LEDDev_t *dev)
 {
-	if (!pDev || !pDev->initFlag)
+	if (!dev || !dev->init_flag)
 		return -1;
 	
-	if(pDev->get_status(pDev))
+	if(dev->get_status(dev))
 	{
-		pDev->off(pDev);
+		dev->off(dev);
 	}
 	else
 	{
-		pDev->on(pDev);
+		dev->on(dev);
 	}
 	
 	return 0;
@@ -168,19 +168,19 @@ static int __led_toggle(LEDDev_t *pDev)
 
 /******************************************************************************
  * @brief	去初始化LED
- * @param	pDev   :  LEDDev_t结构体指针
+ * @param	dev   :  LEDDev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __led_deinit(LEDDev_t *pDev)
+static int __led_deinit(LEDDev_t *dev)
 {
-	if (!pDev || !pDev->initFlag)
+	if (!dev || !dev->init_flag)
 		return -1;
 	
 	/* 释放私有数据内存 */
-	free(pDev->pPrivData);
-    pDev->pPrivData = NULL;
+	free(dev->priv_data);
+    dev->priv_data = NULL;
 	
-	pDev->initFlag = false;	// 修改初始化标志
+	dev->init_flag = false;	// 修改初始化标志
 	
 	return 0;
 }

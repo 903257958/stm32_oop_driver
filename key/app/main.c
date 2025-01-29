@@ -8,6 +8,8 @@ KeyDev_t key2 = {.info = {GPIOA, GPIO_Pin_4, GPIO_LEVEL_LOW}};
 
 int main(void)
 {
+    delay_init(168);
+    
 	led_init(&led1);
 	led_init(&led2);
 	

@@ -1,4 +1,4 @@
-#include "PWM.h"
+#include "pwm.h"
 
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 
@@ -81,45 +81,45 @@
 #endif
 
 /* 函数声明 */									
-static void __pwm_set_psc(PWMDev_t *pDev, uint16_t psc);
-static void __pwm_set_arr(PWMDev_t *pDev, uint16_t arr);
-static void __pwm_set_compare(PWMDev_t *pDev, uint16_t compare);
-static int __pwm_deinit(PWMDev_t *pDev);
+static void __pwm_set_psc(PWMDev_t *dev, uint16_t psc);
+static void __pwm_set_arr(PWMDev_t *dev, uint16_t arr);
+static void __pwm_set_compare(PWMDev_t *dev, uint16_t compare);
+static int __pwm_deinit(PWMDev_t *dev);
 
 /******************************************************************************
  * @brief	初始化PWM
-			主频72MHz，72M/PSC为计数频率，其倒数为计数周期
+			例如STM32F1主频72MHz，72M/PSC为计数频率，其倒数为计数周期
 			用作微秒级定时器时，PSC = 72 - 1，计数周期 = 1us，定时周期 = (ASC + 1)(us)，最大定时周期约为65.5ms
 			用作毫秒级定时器时，PSC = 7200 - 1，计数周期 = 0.1ms，定时周期 = ((ASC + 1)/10))(ms)，最大定时周期约为6.55s
- * @param	pDev	:	PWMDev_t结构体指针
+ * @param	dev	:	PWMDev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-int pwm_init(PWMDev_t *pDev)
+int pwm_init(PWMDev_t *dev)
 {
-	if (!pDev)
+	if (!dev)
 		return -1;
 	
 	/* 配置时钟与GPIO */
-	__pwm_config_timer_clock_enable(pDev->info.timx);
-	__pwm_config_gpio_clock_enable(pDev->info.port);
+	__pwm_config_timer_clock_enable(dev->info.timx);
+	__pwm_config_gpio_clock_enable(dev->info.port);
 	
-	__pwm_config_io_af_pp(pDev->info.port, pDev->info.pin);					// 复用推挽输出
+	__pwm_config_io_af_pp(dev->info.port, dev->info.pin);					// 复用推挽输出
 
 	#if defined(STM32F40_41xxx) || defined(STM32F411xE)
-	GPIO_PinAFConfig(pDev->info.port, __pwm_get_gpio_pin_source(pDev->info.pin), __pwm_get_gpio_af(pDev->info.timx));
+	GPIO_PinAFConfig(dev->info.port, __pwm_get_gpio_pin_source(dev->info.pin), __pwm_get_gpio_af(dev->info.timx));
 	#endif
 	
 	/* 配置时钟源 */
-	TIM_InternalClockConfig(pDev->info.timx);
+	TIM_InternalClockConfig(dev->info.timx);
 	
 	/* 时基单元初始化 */
 	TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure;
 	TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;				// 时钟分频参数，不分频
 	TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up;			// 计数器模式：向上计数
-	TIM_TimeBaseInitStructure.TIM_Prescaler = pDev->info.psc;				// PSC预分频器的值，范围0~65535
-	TIM_TimeBaseInitStructure.TIM_Period = pDev->info.arr;					// ARR自动重装器的值，范围0~65535
+	TIM_TimeBaseInitStructure.TIM_Prescaler = dev->info.psc;				// PSC预分频器的值，范围0~65535
+	TIM_TimeBaseInitStructure.TIM_Period = dev->info.arr;					// ARR自动重装器的值，范围0~65535
 	TIM_TimeBaseInitStructure.TIM_RepetitionCounter = 0;					// 重复计数器的值（高级定时器用）
-	TIM_TimeBaseInit(pDev->info.timx, &TIM_TimeBaseInitStructure);
+	TIM_TimeBaseInit(dev->info.timx, &TIM_TimeBaseInitStructure);
 	
 	/* 输出比较配置 */
 	TIM_OCInitTypeDef TIM_OCInitStructure;
@@ -128,101 +128,101 @@ int pwm_init(PWMDev_t *pDev)
 	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;				// 设置输出比较极性：高极性（REF极性不反转）
 	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;			// 设置输出使能
 	TIM_OCInitStructure.TIM_Pulse = 1;		// 设置CCR	Freq=CK_PSC/(PSC+1)/(ARR+1)	Duty=CCR/(ARR+1)	Reso=1/(ARR+1)
-	if (pDev->info.OCChannel == 1)
+	if (dev->info.oc_channel == 1)
 	{
-		TIM_OC1Init(pDev->info.timx, &TIM_OCInitStructure);
+		TIM_OC1Init(dev->info.timx, &TIM_OCInitStructure);
 	}
-	else if (pDev->info.OCChannel == 2)
+	else if (dev->info.oc_channel == 2)
 	{
-		TIM_OC2Init(pDev->info.timx, &TIM_OCInitStructure);
+		TIM_OC2Init(dev->info.timx, &TIM_OCInitStructure);
 	}
-	else if (pDev->info.OCChannel == 3)
+	else if (dev->info.oc_channel == 3)
 	{
-		TIM_OC3Init(pDev->info.timx, &TIM_OCInitStructure);
+		TIM_OC3Init(dev->info.timx, &TIM_OCInitStructure);
 	}
-	else if (pDev->info.OCChannel == 4)
+	else if (dev->info.oc_channel == 4)
 	{
-		TIM_OC4Init(pDev->info.timx, &TIM_OCInitStructure);
+		TIM_OC4Init(dev->info.timx, &TIM_OCInitStructure);
 	}
 	
 	/* 启用定时器 */
-	TIM_Cmd(pDev->info.timx, ENABLE);
+	TIM_Cmd(dev->info.timx, ENABLE);
 	
 	/* 函数指针赋值 */
-	pDev->set_psc = __pwm_set_psc;
-	pDev->set_arr = __pwm_set_arr;
-	pDev->set_compare = __pwm_set_compare;
-	pDev->deinit = __pwm_deinit;
+	dev->set_psc = __pwm_set_psc;
+	dev->set_arr = __pwm_set_arr;
+	dev->set_compare = __pwm_set_compare;
+	dev->deinit = __pwm_deinit;
 	
-	pDev->initFlag = true;
+	dev->init_flag = true;
 	return 0;
 }
 
 /******************************************************************************
  * @brief	PWM设置PSC的值
- * @param	pDev	：	PWMDev_t结构体指针
+ * @param	dev	：	PWMDev_t 结构体指针
  * @param	psc		：	要写入的PSC的值
  * @return	无
  ******************************************************************************/
-static void __pwm_set_psc(PWMDev_t *pDev, uint16_t psc)
+static void __pwm_set_psc(PWMDev_t *dev, uint16_t psc)
 {
-    TIM_Cmd(pDev->info.timx, DISABLE);
-    pDev->info.timx->PSC = psc;
-    pDev->info.timx->EGR = TIM_PSCReloadMode_Update;	 // 重新加载预分频器值
-    TIM_Cmd(pDev->info.timx, ENABLE);
+    TIM_Cmd(dev->info.timx, DISABLE);
+    dev->info.timx->PSC = psc;
+    dev->info.timx->EGR = TIM_PSCReloadMode_Update;	 // 重新加载预分频器值
+    TIM_Cmd(dev->info.timx, ENABLE);
 }
 
 /******************************************************************************
  * @brief	PWM设置ARR的值
- * @param	pDev	：	PWMDev_t结构体指针
+ * @param	dev	：	PWMDev_t 结构体指针
  * @param	arr		：	要写入的ARR的值
  * @return	无
  ******************************************************************************/
-static void __pwm_set_arr(PWMDev_t *pDev, uint16_t arr)
+static void __pwm_set_arr(PWMDev_t *dev, uint16_t arr)
 {
-    TIM_Cmd(pDev->info.timx, DISABLE);
-	pDev->info.timx->ARR = arr;
-    pDev->info.timx->EGR = TIM_PSCReloadMode_Update;	 // 重新加载预分频器值
-    TIM_Cmd(pDev->info.timx, ENABLE);
+    TIM_Cmd(dev->info.timx, DISABLE);
+	dev->info.timx->ARR = arr;
+    dev->info.timx->EGR = TIM_PSCReloadMode_Update;	 // 重新加载预分频器值
+    TIM_Cmd(dev->info.timx, ENABLE);
 }
 
 /******************************************************************************
  * @brief	PWM设置CCR的值
- * @param	pDev	：	PWMDev_t结构体指针
+ * @param	dev	：	PWMDev_t 结构体指针
  * @param	compare	：	要写入的CCR的值
  * @return	无
  ******************************************************************************/
-static void __pwm_set_compare(PWMDev_t *pDev, uint16_t compare)
+static void __pwm_set_compare(PWMDev_t *dev, uint16_t compare)
 {
-	if(pDev->info.OCChannel == 1)
+	if(dev->info.oc_channel == 1)
 	{
-		TIM_SetCompare1(pDev->info.timx, compare);
+		TIM_SetCompare1(dev->info.timx, compare);
 	}
-	else if(pDev->info.OCChannel == 2)
+	else if(dev->info.oc_channel == 2)
 	{
-		TIM_SetCompare2(pDev->info.timx, compare);
+		TIM_SetCompare2(dev->info.timx, compare);
 	}
-	else if(pDev->info.OCChannel == 3)
+	else if(dev->info.oc_channel == 3)
 	{
-		TIM_SetCompare3(pDev->info.timx, compare);
+		TIM_SetCompare3(dev->info.timx, compare);
 	}
-	else if(pDev->info.OCChannel == 4)
+	else if(dev->info.oc_channel == 4)
 	{
-		TIM_SetCompare4(pDev->info.timx, compare);
+		TIM_SetCompare4(dev->info.timx, compare);
 	}
 }
 
 /******************************************************************************
  * @brief	去初始化PWM
- * @param	pDev   :  PWMDev_t结构体指针
+ * @param	dev   :  PWMDev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __pwm_deinit(PWMDev_t *pDev)
+static int __pwm_deinit(PWMDev_t *dev)
 {
-	if (!pDev || !pDev->initFlag)
+	if (!dev || !dev->init_flag)
 		return -1;
 	
-	pDev->initFlag = false;	// 修改初始化标志
+	dev->init_flag = false;	// 修改初始化标志
 	
 	return 0;
 }

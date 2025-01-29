@@ -31,14 +31,14 @@ typedef struct {
 typedef struct RTCDev {
     RTCTime_t time;
     RTCDate_t date;
-	bool initFlag;							// 初始化标志
-    int (*set_time)(struct RTCDev *pDev, RTCTime_t *pTime);
-    int (*set_date)(struct RTCDev *pDev, RTCDate_t *pDate);
-    void (*get_time)(struct RTCDev *pDev, RTCTime_t *pTime);
-    void (*get_date)(struct RTCDev *pDev, RTCDate_t *pDate);
-	int (*deinit)(struct RTCDev *pDev);		// 去初始化
+	bool init_flag;							// 初始化标志
+    int (*set_time)(struct RTCDev *dev, RTCTime_t *time);
+    int (*set_date)(struct RTCDev *dev, RTCDate_t *date);
+    void (*get_time)(struct RTCDev *dev, RTCTime_t *time);
+    void (*get_date)(struct RTCDev *dev, RTCDate_t *date);
+	int (*deinit)(struct RTCDev *dev);		// 去初始化
 }RTCDev_t;
 
-int rtc_init(RTCDev_t *pDev);
+int rtc_init(RTCDev_t *dev);
 
 #endif

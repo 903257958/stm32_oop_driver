@@ -410,6 +410,16 @@
               <FilePath>..\driver\delay.c</FilePath>
             </File>
             <File>
+              <FileName>uart.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\driver\uart.h</FilePath>
+            </File>
+            <File>
+              <FileName>uart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\driver\uart.c</FilePath>
+            </File>
+            <File>
               <FileName>i2c.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\driver\i2c.h</FilePath>
@@ -428,36 +438,6 @@
               <FileName>mpu6050.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\driver\mpu6050.c</FilePath>
-            </File>
-            <File>
-              <FileName>lcd.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\driver\lcd.h</FilePath>
-            </File>
-            <File>
-              <FileName>lcd.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\driver\lcd.c</FilePath>
-            </File>
-            <File>
-              <FileName>lcd_data.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\driver\lcd_data.h</FilePath>
-            </File>
-            <File>
-              <FileName>lcd_data.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\driver\lcd_data.c</FilePath>
-            </File>
-            <File>
-              <FileName>usart.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\driver\usart.h</FilePath>
-            </File>
-            <File>
-              <FileName>usart.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\driver\usart.c</FilePath>
             </File>
           </Files>
         </Group>

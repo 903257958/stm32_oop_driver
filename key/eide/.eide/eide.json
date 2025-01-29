@@ -13,10 +13,10 @@
         "name": "app",
         "files": [
           {
-            "path": "../app/main.h"
+            "path": "../app/main.c"
           },
           {
-            "path": "../app/main.c"
+            "path": "../app/main.h"
           }
         ],
         "folders": []
@@ -25,22 +25,22 @@
         "name": "driver",
         "files": [
           {
-            "path": "../driver/delay.h"
-          },
-          {
             "path": "../driver/delay.c"
           },
           {
-            "path": "../driver/led.h"
+            "path": "../driver/delay.h"
           },
           {
-            "path": "../driver/led.c"
+            "path": "../driver/key.c"
           },
           {
             "path": "../driver/key.h"
           },
           {
-            "path": "../driver/key.c"
+            "path": "../driver/led.c"
+          },
+          {
+            "path": "../driver/led.h"
           }
         ],
         "folders": []

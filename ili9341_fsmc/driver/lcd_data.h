@@ -44,9 +44,9 @@ extern const ChineseCell24_t LCD_CF24x24[];
 extern const ChineseCell32_t LCD_CF32x32[];
 
 /*获取字数*/
-int GetChineseNum(uint8_t fontSize);
+int get_Chinese_num(uint8_t font_size);
 
 /*图像数据声明*/
-extern const uint8_t imageTest[];
+extern const uint8_t image_test[];
 
 #endif

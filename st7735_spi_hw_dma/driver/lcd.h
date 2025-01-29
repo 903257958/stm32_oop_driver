@@ -10,25 +10,14 @@
 
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
     #include "stm32f10x.h"
-	
-    typedef GPIO_TypeDef*			LCD_GPIO_Port;
+    typedef GPIO_TypeDef*		LCDGPIOPort_t;
 	
 #elif defined(STM32F40_41xxx)
 	#include "stm32f4xx.h"
-
-	typedef GPIO_TypeDef*		LCD_GPIO_Port;
+	typedef GPIO_TypeDef*		LCDGPIOPort_t;
 	
 #else
     #error lcd.h: No processor defined!
-#endif
-
-#ifndef FREERTOS
-	#define FREERTOS	0
-#endif
-
-#if FREERTOS
-#include "FreeRTOS.h"
-#include "task.h"
 #endif
 
 #ifndef lcd_log
@@ -98,44 +87,44 @@ typedef enum {
 }LCDUseDMA_t;
 
 typedef struct {
-	SPIx spix;						// SPI外设
-	LCD_GPIO_Port SCKPort;			// SCK端口
-	uint32_t SCKPin;				// SCK引脚
-	LCD_GPIO_Port MOSIPort;			// MOSI端口
-	uint32_t MOSIPin;				// MOSI引脚
-	LCD_GPIO_Port RESPort;			// RES端口
-	uint32_t RESPin;				// RES引脚
-	LCD_GPIO_Port DCPort;			// DC端口
-	uint32_t DCPin;					// DC引脚
-	LCD_GPIO_Port CSPort;			// CS端口
-	uint32_t CSPin;					// CS引脚
-	LCD_GPIO_Port BLPort;			// BL端口
-	uint32_t BLPin;					// BL引脚
+	SPIPER_t spix;					// SPI外设
+	LCDGPIOPort_t sck_port;			// SCK端口
+	uint32_t sck_pin;				// SCK引脚
+	LCDGPIOPort_t mosi_port;		// MOSI端口
+	uint32_t mosi_pin;				// MOSI引脚
+	LCDGPIOPort_t res_port;			// RES端口
+	uint32_t res_pin;				// RES引脚
+	LCDGPIOPort_t dc_port;			// DC端口
+	uint32_t dc_pin;				// DC引脚
+	LCDGPIOPort_t cs_port;			// CS端口
+	uint32_t cs_pin;				// CS引脚
+	LCDGPIOPort_t bl_port;			// BL端口
+	uint32_t bl_pin;				// BL引脚
 	uint16_t prescaler;				// 预分频系数
 	SPIMode_t mode;					// SPI模式
-	LCDUseDMA_t useDMA;				// 是否使用DMA
+	LCDUseDMA_t use_dma;			// 是否使用DMA
 }LCDInfo_t;
 
 typedef struct LCDDev {
 	LCDInfo_t info;
-	bool initFlag;													// 初始化标志
-	void *pPrivData;												// 私有数据指针
-	void (*update)(struct LCDDev *pDev);							// DMA传输更新显存函数
-	void (*fill)(struct LCDDev *pDev, uint16_t color);				// LCD填充颜色
-	void (*fill_area)(struct LCDDev *pDev, uint16_t x1, uint16_t y1, uint16_t width, uint16_t height, uint16_t color);						//LCD指定区域填充颜色
-	void (*show_char)(struct LCDDev *pDev, uint16_t x, uint16_t y, uint8_t num, uint16_t fc, uint16_t bc, uint8_t size);					//LCD显示字符
-	void (*show_string)(struct LCDDev *pDev, uint16_t x, uint16_t y, char *string, uint16_t fc, uint16_t bc, uint8_t size);					//LCD显示字符串
-	void (*show_num)(struct LCDDev *pDev, uint16_t x, uint16_t y, uint32_t num, uint8_t len, uint16_t fc, uint16_t bc , uint8_t size);		//LCD显示整型数字
-	void (*show_float_num)(struct LCDDev *pDev, uint16_t x, uint16_t y, float num, uint8_t intLen, uint8_t fraLen, uint16_t fc, uint16_t bc, uint8_t size);	//LCD显示两位浮点数
-	void (*show_chinese)(struct LCDDev *pDev, uint16_t x, uint16_t y, char *Chinese, uint16_t fc, uint16_t bc, uint8_t size);				//LCD显示汉字串
-	void (*show_image)(struct LCDDev *pDev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, const uint8_t pic[]);					//LCD显示图片
-	void (*draw_point)(struct LCDDev *pDev, uint16_t x, uint16_t y, uint16_t color);														//LCD画点
-	void (*draw_line)(struct LCDDev *pDev, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color);								//LCD画线
-	void (*draw_rectangle)(struct LCDDev *pDev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color, uint8_t isFilled);	//LCD画矩形
-	void (*draw_circle)(struct LCDDev *pDev, uint16_t x, uint16_t y, uint8_t radius, uint16_t color);										//LCD画圆
-	int (*deinit)(struct LCDDev *pDev);																										//去初始化
+	bool init_flag;													// 初始化标志
+	void *priv_data;												// 私有数据指针
+	void (*update)(struct LCDDev *dev);							// DMA传输更新显存函数
+	void (*fill)(struct LCDDev *dev, uint16_t color);				// LCD填充颜色
+	void (*fill_area)(struct LCDDev *dev, uint16_t x1, uint16_t y1, uint16_t width, uint16_t height, uint16_t color);						//LCD指定区域填充颜色
+	void (*show_char)(struct LCDDev *dev, uint16_t x, uint16_t y, uint8_t num, uint16_t fc, uint16_t bc, uint8_t size);					//LCD显示字符
+	void (*show_string)(struct LCDDev *dev, uint16_t x, uint16_t y, char *string, uint16_t fc, uint16_t bc, uint8_t size);					//LCD显示字符串
+	void (*show_num)(struct LCDDev *dev, uint16_t x, uint16_t y, uint32_t num, uint8_t len, uint16_t fc, uint16_t bc , uint8_t size);		//LCD显示整型数字
+	void (*show_float_num)(struct LCDDev *dev, uint16_t x, uint16_t y, float num, uint8_t int_len, uint8_t fra_len, uint16_t fc, uint16_t bc, uint8_t size);	//LCD显示两位浮点数
+	void (*show_chinese)(struct LCDDev *dev, uint16_t x, uint16_t y, char *Chinese, uint16_t fc, uint16_t bc, uint8_t size);				//LCD显示汉字串
+	void (*show_image)(struct LCDDev *dev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, const uint8_t pic[]);					//LCD显示图片
+	void (*draw_point)(struct LCDDev *dev, uint16_t x, uint16_t y, uint16_t color);														//LCD画点
+	void (*draw_line)(struct LCDDev *dev, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color);								//LCD画线
+	void (*draw_rectangle)(struct LCDDev *dev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color, uint8_t is_filled);	//LCD画矩形
+	void (*draw_circle)(struct LCDDev *dev, uint16_t x, uint16_t y, uint8_t radius, uint16_t color);										//LCD画圆
+	int (*deinit)(struct LCDDev *dev);																										//去初始化
 }LCDDev_t;
 
-int lcd_init(LCDDev_t *pDev);
+int lcd_init(LCDDev_t *dev);
 
 #endif

@@ -410,6 +410,16 @@
               <FilePath>..\driver\delay.c</FilePath>
             </File>
             <File>
+              <FileName>uart.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\driver\uart.h</FilePath>
+            </File>
+            <File>
+              <FileName>uart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\driver\uart.c</FilePath>
+            </File>
+            <File>
               <FileName>i2c.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\driver\i2c.h</FilePath>
@@ -428,16 +438,6 @@
               <FileName>mpu6050.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\driver\mpu6050.c</FilePath>
-            </File>
-            <File>
-              <FileName>usart.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\driver\usart.h</FilePath>
-            </File>
-            <File>
-              <FileName>usart.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\driver\usart.c</FilePath>
             </File>
             <File>
               <FileName>exti.h</FileName>

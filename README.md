@@ -13,13 +13,12 @@
 
 ## 驱动列表
 
-- **led&delay**: 点亮LED与delay函数的实现
+- **led_and_delay**: 点亮LED与delay函数的实现
 - **key**: 按键 + 延时消抖
 - **key_fifo_timer**: 按键 + 环形缓冲区 + 定时器中断扫描 + 定时器消抖
 - **timer_irq**: 定时器中断
 - **usart_dma**: 串口 + 空闲中断 + DMA
 - **esp_at**: ESP32通过AT命令获取天气与时间
-- **esp_tcp**: ESP8266通过AT命令实现TCP透传
 - **w25qx_spi_hw**: 硬件SPI读写外部Flash
 - **w25qx_spi_sw**: 软件SPI读写外部Flash
 - **ssd1306_spi_hw_dma**: 硬件SPI + DMA驱动 SSD1306主控 分辨率128*64 0.96寸OLED屏幕
@@ -27,11 +26,10 @@
 - **st7789_spi_hw_dma**: 硬件SPI + DMA驱动 ST7789主控 分辨率240*280 1.69寸LCD屏幕
 - **st7789_spi_hw_dma_touch**: 硬件SPI + DMA驱动 ST7789主控 分辨率240*280 1.69寸LCD屏幕 + CST816T电容触摸
 - **ili9341_fsmc**: FSMC驱动 ILI9341主控 分辨率240*320 2.8寸LCD屏幕
-- **ili9341_fsmc_touch**: FSMC驱动 ILI9341主控 分辨率240*320 2.8寸LCD屏幕 + XPT2046电阻触摸
 - **stepper_motor**: 步进电机
 - **passive_buzzer_pwm**: PWM控制无源蜂鸣器
 - **rtc**: RTC实时时钟
 - **mpu6050_i2c_sw**: 软件I2C + MPU6050
-- **mpu6050_i2c_sw**: 软件I2C + MPU6050 + 中断引脚
+- **mpu6050_i2c_sw_irq**: 软件I2C + MPU6050 + 中断引脚
 
 

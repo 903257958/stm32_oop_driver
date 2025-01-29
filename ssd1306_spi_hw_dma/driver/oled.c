@@ -10,29 +10,13 @@
 													else if(port == GPIOE)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);} \
 													else if(port == GPIOF)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE);} \
 													else if(port == GPIOG)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, ENABLE);} \
-													else					{OLED_Log("oled gpio clock no enable\r\n");} \
-												}
-
-#define	__oled_config_gpio_clock_disable(port)	{	if(port == GPIOA)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, DISABLE);} \
-													else if(port == GPIOB)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, DISABLE);} \
-													else if(port == GPIOC)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, DISABLE);} \
-													else if(port == GPIOD)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, DISABLE);} \
-													else if(port == GPIOE)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, DISABLE);} \
-													else if(port == GPIOF)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, DISABLE);} \
-													else if(port == GPIOG)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, DISABLE);} \
-													else					{OLED_Log("oled gpio clock no disable\r\n");} \
+													else					{oled_log("oled gpio clock no enable\r\n");} \
 												}
 												
 #define	__oled_config_dma_clock_enable(spix)	{	if(spix == SPI1)		{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);} \
 													else if(spix == SPI2)	{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);} \
 													else if(spix == SPI3)	{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA2, ENABLE);} \
-													else					{OLED_Log("oled dma clock no enable\r\n");} \
-												}
-
-#define	__oled_config_dma_clock_disable(spix)	{	if(spix == SPI1)		{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, DISABLE);} \
-													else if(spix == SPI2)	{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, DISABLE);} \
-													else if(spix == SPI3)	{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA2, DISABLE);} \
-													else					{OLED_Log("oled dma clock no disable\r\n");} \
+													else					{oled_log("oled dma clock no enable\r\n");} \
 												}
 													
 #define	__oled_config_io_out_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -53,10 +37,8 @@
 											spix == SPI2 ? DMA1_FLAG_TC5 : \
 											spix == SPI3 ? DMA2_FLAG_TC2 : \
 											(int)0)
-
-#define __oled_gpio_deinit(port)	GPIO_DeInit(port)
 			
-#elif defined(STM32F40_41xxx)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
 
 #define	__oled_config_gpio_clock_enable(port)	{	if(port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);} \
 													else if(port == GPIOB)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);} \
@@ -65,39 +47,13 @@
 													else if(port == GPIOE)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);} \
 													else if(port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);} \
 													else if(port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);} \
-													else					{OLED_Log("oled gpio clock no enable\r\n");} \
-												}
-
-#define	__oled_config_gpio_clock_disable(port)	{	if(port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, DISABLE);} \
-													else if(port == GPIOB)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, DISABLE);} \
-													else if(port == GPIOC)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, DISABLE);} \
-													else if(port == GPIOD)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, DISABLE);} \
-													else if(port == GPIOE)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, DISABLE);} \
-													else if(port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, DISABLE);} \
-													else if(port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, DISABLE);} \
-													else					{OLED_Log("oled gpio clock no disable\r\n");} \
-												}
-
-#define	__oled_config_gpio_clock_disable(port)	{	if(port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, DISABLE);} \
-													else if(port == GPIOB)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, DISABLE);} \
-													else if(port == GPIOC)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, DISABLE);} \
-													else if(port == GPIOD)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, DISABLE);} \
-													else if(port == GPIOE)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, DISABLE);} \
-													else if(port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, DISABLE);} \
-													else if(port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, DISABLE);} \
-													else					{OLED_Log("oled gpio clock no disable\r\n");} \
+													else					{oled_log("oled gpio clock no enable\r\n");} \
 												}
 
 #define	__oled_config_dma_clock_enable(spix)	{	if(spix == SPI1)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);} \
 													else if(spix == SPI2)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);} \
 													else if(spix == SPI3)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);} \
-													else					{OLED_Log("oled dma clock no enable\r\n");} \
-												}
-
-#define	__oled_config_dma_clock_disable(spix)	{	if(spix == SPI1)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, DISABLE);} \
-													else if(spix == SPI2)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, DISABLE);} \
-													else if(spix == SPI3)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, DISABLE);} \
-													else					{OLED_Log("oled dma clock no disable\r\n");} \
+													else					{oled_log("oled dma clock no enable\r\n");} \
 												}
 													
 #define	__oled_config_io_out_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -125,13 +81,11 @@
 											spix == SPI2 ? DMA_FLAG_TCIF4 : \
 											spix == SPI3 ? DMA_FLAG_TCIF5 : \
 											(int)0)
-
-#define __oled_gpio_deinit(port)	GPIO_DeInit(port)
 											
 #endif
 
 /* 最大OLED设备数量 */			
-#define MAX_OLED_NUM 4
+#define MAX_OLED_NUM 1
 
 /**
   * OLED显存数组
@@ -139,59 +93,59 @@
   * 随后调用__oled_update函数或__oled_update_area函数
   * 才会将显存数组的数据发送到OLED硬件，进行显示
   */
-uint8_t gOLEDDisplayBuf[MAX_OLED_NUM][8][128];			
+uint8_t g_oled_display_buf[MAX_OLED_NUM][8][128];			
 						
 /* 全局变量用于给注册的OLED设备分配索引 */
-static uint8_t gIndex = 0;
+static uint8_t g_index = 0;
 
 /* OLED私有数据结构体 */
 typedef struct {
-	SPIDev_t oledSPI;		// 硬件SPI设备
-	uint8_t index;			// 索引
+	SPIDev_t spi;		// 硬件SPI设备
+	uint8_t index;		// 索引
 }OLEDPrivData_t;
 				
 /* 通信协议 */
-static void __oled_res_write(OLEDDev_t *pDev, uint8_t bitValue);
-static void __oled_dc_write(OLEDDev_t *pDev, uint8_t bitValue);
-static int __oled_write_command(OLEDDev_t *pDev, uint8_t command);
-static int __oled_write_data(OLEDDev_t *pDev, uint8_t *data, uint8_t count);
-static int __oled_write_data_dma(OLEDDev_t *pDev, uint8_t *data, uint16_t count);
+static void __oled_res_write(OLEDDev_t *dev, uint8_t bit_val);
+static void __oled_dc_write(OLEDDev_t *dev, uint8_t bit_val);
+static int __oled_write_command(OLEDDev_t *dev, uint8_t command);
+static int __oled_write_data(OLEDDev_t *dev, uint8_t *data, uint8_t count);
+static int __oled_write_data_dma(OLEDDev_t *dev, uint8_t *data, uint16_t count);
 
 /* 功能函数 */
-static int __oled_update(OLEDDev_t *pDev);
-static int __oled_update_area(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t width, uint8_t height);
-static int __oled_clear(OLEDDev_t *pDev);
-static int __oled_clear_area(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t width, uint8_t height);
-static int __oled_reverse(OLEDDev_t *pDev);
-static int __oled_reverse_area(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t width, uint8_t height);
-static int __oled_show_image(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t width, uint8_t height, const uint8_t *image);
-static int __oled_show_char(OLEDDev_t *pDev, uint8_t x, uint8_t y, char Char, uint8_t fontSize);
-static int __oled_show_string(OLEDDev_t *pDev, uint8_t x, uint8_t y, char *string, uint8_t fontSize);
-static int __oled_show_num(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint32_t number, uint8_t length, uint8_t fontSize);
-static int __oled_show_signed_num(OLEDDev_t *pDev, uint8_t x, uint8_t y, int32_t number, uint8_t length, uint8_t fontSize);
-static int __oled_show_hex_num(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint32_t number, uint8_t length, uint8_t fontSize);
-static int __oled_show_bin_num(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint32_t number, uint8_t length, uint8_t fontSize);
-static int __oled_show_float_num(OLEDDev_t *pDev, uint8_t x, uint8_t y, double number, uint8_t intLength, uint8_t fraLength, uint8_t fontSize);
-static int __oled_show_chinese(OLEDDev_t *pDev, uint8_t x, uint8_t y, char *Chinese);
-static int __oled_printf(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t fontSize, char *format, ...);
-static int __oled_draw_point(OLEDDev_t *pDev, uint8_t x, uint8_t y);
-static uint8_t __oled_get_point(OLEDDev_t *pDev, uint8_t x, uint8_t y);
-static int __oled_draw_line(OLEDDev_t *pDev, uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1);
-static int __oled_draw_rectangle(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint8_t isFilled);
-static int __oled_draw_triangle(OLEDDev_t *pDev, uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, uint8_t IsFilled);
-static int __oled_draw_circle(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t radius, uint8_t IsFilled);
-static int __oled_draw_ellipse(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t a, uint8_t b, uint8_t isFilled);
-static int __oled_draw_arc(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t radius, int16_t startAngle, int16_t endAngle, uint8_t isFilled);
-static int __oled_deinit(OLEDDev_t *pDev);
+static int __oled_update(OLEDDev_t *dev);
+static int __oled_update_area(OLEDDev_t *dev, uint8_t x, uint8_t y, uint8_t width, uint8_t height);
+static int __oled_clear(OLEDDev_t *dev);
+static int __oled_clear_area(OLEDDev_t *dev, uint8_t x, uint8_t y, uint8_t width, uint8_t height);
+static int __oled_reverse(OLEDDev_t *dev);
+static int __oled_reverse_area(OLEDDev_t *dev, uint8_t x, uint8_t y, uint8_t width, uint8_t height);
+static int __oled_show_image(OLEDDev_t *dev, uint8_t x, uint8_t y, uint8_t width, uint8_t height, const uint8_t *image);
+static int __oled_show_char(OLEDDev_t *dev, uint8_t x, uint8_t y, char chr, uint8_t size);
+static int __oled_show_string(OLEDDev_t *dev, uint8_t x, uint8_t y, char *string, uint8_t size);
+static int __oled_show_num(OLEDDev_t *dev, uint8_t x, uint8_t y, uint32_t num, uint8_t length, uint8_t size);
+static int __oled_show_signed_num(OLEDDev_t *dev, uint8_t x, uint8_t y, int32_t num, uint8_t length, uint8_t size);
+static int __oled_show_hex_num(OLEDDev_t *dev, uint8_t x, uint8_t y, uint32_t num, uint8_t length, uint8_t size);
+static int __oled_show_bin_num(OLEDDev_t *dev, uint8_t x, uint8_t y, uint32_t num, uint8_t length, uint8_t size);
+static int __oled_show_float_num(OLEDDev_t *dev, uint8_t x, uint8_t y, double num, uint8_t int_length, uint8_t fra_length, uint8_t size);
+static int __oled_show_chinese(OLEDDev_t *dev, uint8_t x, uint8_t y, char *Chinese);
+static int __oled_printf(OLEDDev_t *dev, uint8_t x, uint8_t y, uint8_t size, char *format, ...);
+static int __oled_draw_point(OLEDDev_t *dev, uint8_t x, uint8_t y);
+static uint8_t __oled_get_point(OLEDDev_t *dev, uint8_t x, uint8_t y);
+static int __oled_draw_line(OLEDDev_t *dev, uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1);
+static int __oled_draw_rectangle(OLEDDev_t *dev, uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint8_t is_filled);
+static int __oled_draw_triangle(OLEDDev_t *dev, uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, uint8_t is_filled);
+static int __oled_draw_circle(OLEDDev_t *dev, uint8_t x, uint8_t y, uint8_t radius, uint8_t is_filled);
+static int __oled_draw_ellipse(OLEDDev_t *dev, uint8_t x, uint8_t y, uint8_t a, uint8_t b, uint8_t is_filled);
+static int __oled_draw_arc(OLEDDev_t *dev, uint8_t x, uint8_t y, uint8_t radius, int16_t start_angle, int16_t end_angle, uint8_t is_filled);
+static int __oled_deinit(OLEDDev_t *dev);
 
 /******************************************************************************
  * @brief	初始化OLED
- * @param	pDev		:	OLEDDev_t结构体指针
+ * @param	dev		:	OLEDDev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-int oled_init(OLEDDev_t *pDev)
+int oled_init(OLEDDev_t *dev)
 {
-	if (!pDev)
+	if (!dev)
 		return -1;
 	
 	/* 在初始化前，加入适量延时，待OLED供电稳定 */
@@ -199,118 +153,118 @@ int oled_init(OLEDDev_t *pDev)
 		for (uint32_t j = 0; j < 1000; j ++);
 	
 	/* 保存私有数据 */
-	pDev->pPrivData = (OLEDPrivData_t *)malloc(sizeof(OLEDPrivData_t));
-	if (!pDev->pPrivData)
+	dev->priv_data = (OLEDPrivData_t *)malloc(sizeof(OLEDPrivData_t));
+	if (!dev->priv_data)
 		return -1;
 	
-	OLEDPrivData_t *pPrivData = (OLEDPrivData_t *)pDev->pPrivData;
+	OLEDPrivData_t *priv_data = (OLEDPrivData_t *)dev->priv_data;
 	
-	pPrivData->oledSPI.info.spix = pDev->info.spix;
-	pPrivData->oledSPI.info.SCKPort = pDev->info.SCKPort;
-	pPrivData->oledSPI.info.SCKPin = pDev->info.SCKPin;
-	pPrivData->oledSPI.info.MOSIPort = pDev->info.MOSIPort;
-	pPrivData->oledSPI.info.MOSIPin = pDev->info.MOSIPin;
-	pPrivData->oledSPI.info.MISOPort = NULL;
-	pPrivData->oledSPI.info.MISOPin = NULL;
-	pPrivData->oledSPI.info.CSPort = pDev->info.CSPort;
-	pPrivData->oledSPI.info.CSPin = pDev->info.CSPin;
-	pPrivData->oledSPI.info.prescaler = pDev->info.prescaler;
-	pPrivData->oledSPI.info.mode = pDev->info.mode;
+	priv_data->spi.info.spix = dev->info.spix;
+	priv_data->spi.info.sck_port = dev->info.sck_port;
+	priv_data->spi.info.sck_pin = dev->info.sck_pin;
+	priv_data->spi.info.mosi_port = dev->info.mosi_port;
+	priv_data->spi.info.mosi_pin = dev->info.mosi_pin;
+	priv_data->spi.info.miso_port = NULL;
+	priv_data->spi.info.miso_pin = NULL;
+	priv_data->spi.info.cs_port = dev->info.cs_port;
+	priv_data->spi.info.cs_pin = dev->info.cs_pin;
+	priv_data->spi.info.prescaler = dev->info.prescaler;
+	priv_data->spi.info.mode = dev->info.mode;
 	
-	pPrivData->index = gIndex++;
+	priv_data->index = g_index++;
 	
 	/* 配置硬件SPI */
-	spi_init(&pPrivData->oledSPI);
+	spi_init(&priv_data->spi);
 	
 	/* 配置时钟与GPIO */
-	__oled_config_gpio_clock_enable(pDev->info.RESPort);
-	__oled_config_gpio_clock_enable(pDev->info.DCPort);
+	__oled_config_gpio_clock_enable(dev->info.res_port);
+	__oled_config_gpio_clock_enable(dev->info.dc_port);
 	
-	__oled_config_io_out_pp(pDev->info.RESPort, pDev->info.RESPin);
-	__oled_config_io_out_pp(pDev->info.DCPort, pDev->info.DCPin);
+	__oled_config_io_out_pp(dev->info.res_port, dev->info.res_pin);
+	__oled_config_io_out_pp(dev->info.dc_port, dev->info.dc_pin);
 	
 	/* 置引脚默认电平 */
-	__oled_res_write(pDev, 1);
-	__oled_dc_write(pDev, 1);
-	pPrivData->oledSPI.cs_write(&pPrivData->oledSPI, 1);
+	__oled_res_write(dev, 1);
+	__oled_dc_write(dev, 1);
+	priv_data->spi.cs_write(&priv_data->spi, 1);
 	
 	/* 函数指针赋值 */
-	pDev->update = __oled_update;
-	pDev->update_area = __oled_update_area;
-	pDev->clear = __oled_clear;
-	pDev->clear_area = __oled_clear_area;
-	pDev->reverse = __oled_reverse;
-	pDev->reverse_area = __oled_reverse_area;
-	pDev->show_image = __oled_show_image;
-	pDev->show_char = __oled_show_char;
-	pDev->show_string = __oled_show_string;
-	pDev->show_num = __oled_show_num;
-	pDev->show_signed_num = __oled_show_signed_num;
-	pDev->show_hex_num = __oled_show_hex_num;
-	pDev->show_bin_num = __oled_show_bin_num;
-	pDev->show_float_num = __oled_show_float_num;
-	pDev->show_chinese = __oled_show_chinese;
-	pDev->printf = __oled_printf;
-	pDev->draw_point = __oled_draw_point;
-	pDev->get_point = __oled_get_point;
-	pDev->draw_line = __oled_draw_line;
-	pDev->draw_rectangle = __oled_draw_rectangle;
-	pDev->draw_triangle = __oled_draw_triangle;
-	pDev->draw_circle = __oled_draw_circle;
-	pDev->draw_ellipse = __oled_draw_ellipse;
-	pDev->draw_arc = __oled_draw_arc;
-	pDev->deinit = __oled_deinit;
+	dev->update = __oled_update;
+	dev->update_area = __oled_update_area;
+	dev->clear = __oled_clear;
+	dev->clear_area = __oled_clear_area;
+	dev->reverse = __oled_reverse;
+	dev->reverse_area = __oled_reverse_area;
+	dev->show_image = __oled_show_image;
+	dev->show_char = __oled_show_char;
+	dev->show_string = __oled_show_string;
+	dev->show_num = __oled_show_num;
+	dev->show_signed_num = __oled_show_signed_num;
+	dev->show_hex_num = __oled_show_hex_num;
+	dev->show_bin_num = __oled_show_bin_num;
+	dev->show_float_num = __oled_show_float_num;
+	dev->show_chinese = __oled_show_chinese;
+	dev->printf = __oled_printf;
+	dev->draw_point = __oled_draw_point;
+	dev->get_point = __oled_get_point;
+	dev->draw_line = __oled_draw_line;
+	dev->draw_rectangle = __oled_draw_rectangle;
+	dev->draw_triangle = __oled_draw_triangle;
+	dev->draw_circle = __oled_draw_circle;
+	dev->draw_ellipse = __oled_draw_ellipse;
+	dev->draw_arc = __oled_draw_arc;
+	dev->deinit = __oled_deinit;
 	
-	pDev->initFlag = true;
+	dev->init_flag = true;
 	
 	/* 配置OLED */
-	__oled_write_command(pDev, 0xAE);	// 设置显示开启/关闭，0xAE关闭，0xAF开启
+	__oled_write_command(dev, 0xAE);	// 设置显示开启/关闭，0xAE关闭，0xAF开启
 	
-	__oled_write_command(pDev, 0xD5);	// 设置显示时钟分频比/振荡器频率
-	__oled_write_command(pDev, 0x80);	// 0x00~0xFF
+	__oled_write_command(dev, 0xD5);	// 设置显示时钟分频比/振荡器频率
+	__oled_write_command(dev, 0x80);	// 0x00~0xFF
 	
-	__oled_write_command(pDev, 0xA8);	// 设置多路复用率
-	__oled_write_command(pDev, 0x3F);	// 0x0E~0x3F
+	__oled_write_command(dev, 0xA8);	// 设置多路复用率
+	__oled_write_command(dev, 0x3F);	// 0x0E~0x3F
 	
-	__oled_write_command(pDev, 0xD3);	// 设置显示偏移
-	__oled_write_command(pDev, 0x00);	// 0x00~0x7F
+	__oled_write_command(dev, 0xD3);	// 设置显示偏移
+	__oled_write_command(dev, 0x00);	// 0x00~0x7F
 	
-	__oled_write_command(pDev, 0x40);	// 设置显示开始行，0x40~0x7F
+	__oled_write_command(dev, 0x40);	// 设置显示开始行，0x40~0x7F
 	
 	if(!OLED_DIRECTION)
 	{
-		__oled_write_command(pDev, 0xA1);	// 设置左右方向，0xA1正常，0xA0左右反置
-		__oled_write_command(pDev, 0xC8);	// 设置上下方向，0xC8正常，0xC0上下反置
+		__oled_write_command(dev, 0xA1);	// 设置左右方向，0xA1正常，0xA0左右反置
+		__oled_write_command(dev, 0xC8);	// 设置上下方向，0xC8正常，0xC0上下反置
 	}
 	else
 	{
-		__oled_write_command(pDev, 0xA0);	// 设置左右方向，0xA1正常，0xA0左右反置
-		__oled_write_command(pDev, 0xC0);	// 设置上下方向，0xC8正常，0xC0上下反置
+		__oled_write_command(dev, 0xA0);	// 设置左右方向，0xA1正常，0xA0左右反置
+		__oled_write_command(dev, 0xC0);	// 设置上下方向，0xC8正常，0xC0上下反置
 	}
 	
-	__oled_write_command(pDev, 0xDA);	// 设置COM引脚硬件配置
-	__oled_write_command(pDev, 0x12);
+	__oled_write_command(dev, 0xDA);	// 设置COM引脚硬件配置
+	__oled_write_command(dev, 0x12);
 	
-	__oled_write_command(pDev, 0x81);	// 设置对比度
-	__oled_write_command(pDev, 0xCF);	// 0x00~0xFF
+	__oled_write_command(dev, 0x81);	// 设置对比度
+	__oled_write_command(dev, 0xCF);	// 0x00~0xFF
 	
-	__oled_write_command(pDev, 0xD9);	// 设置预充电周期
-	__oled_write_command(pDev, 0xF1);
+	__oled_write_command(dev, 0xD9);	// 设置预充电周期
+	__oled_write_command(dev, 0xF1);
 	
-	__oled_write_command(pDev, 0xDB);	// 设置VCOMH取消选择级别
-	__oled_write_command(pDev, 0x30);
+	__oled_write_command(dev, 0xDB);	// 设置VCOMH取消选择级别
+	__oled_write_command(dev, 0x30);
 	
-	__oled_write_command(pDev, 0xA4);	// 设置整个显示打开/关闭
+	__oled_write_command(dev, 0xA4);	// 设置整个显示打开/关闭
 	
-	__oled_write_command(pDev, 0xA6);	// 设置正常/反色显示，0xA6正常，0xA7反色
+	__oled_write_command(dev, 0xA6);	// 设置正常/反色显示，0xA6正常，0xA7反色
 	
-	__oled_write_command(pDev, 0x8D);	// 设置充电泵
-	__oled_write_command(pDev, 0x14);
+	__oled_write_command(dev, 0x8D);	// 设置充电泵
+	__oled_write_command(dev, 0x14);
 
-	__oled_write_command(pDev, 0xAF);	// 开启显示
+	__oled_write_command(dev, 0xAF);	// 开启显示
 	
-	__oled_clear(pDev);					// 清空显存数组
-	__oled_update(pDev);				// 更新显示，清屏，防止初始化后未显示内容时花屏
+	__oled_clear(dev);					// 清空显存数组
+	__oled_update(dev);				// 更新显示，清屏，防止初始化后未显示内容时花屏
 
 	return 0;
 }
@@ -319,97 +273,97 @@ int oled_init(OLEDDev_t *pDev)
 
 /******************************************************************************
  * @brief	OLED写RES高低电平
- * @param	pDev		:	OLEDDev_t结构体指针
- * @param	bitValue	:	要写入RES的电平值，范围：0/1
+ * @param	dev		:	OLEDDev_t 结构体指针
+ * @param	bit_val	:	要写入RES的电平值，范围：0/1
  * @return	无
  ******************************************************************************/
-static void __oled_res_write(OLEDDev_t *pDev, uint8_t bitValue)
+static void __oled_res_write(OLEDDev_t *dev, uint8_t bit_val)
 {
-	__oled_io_write(pDev->info.RESPort, pDev->info.RESPin, bitValue);
+	__oled_io_write(dev->info.res_port, dev->info.res_pin, bit_val);
 }
 
 /******************************************************************************
  * @brief	OLED写DC高低电平
- * @param	pDev		:	OLEDDev_t结构体指针
- * @param	bitValue	:	要写入DC的电平值，范围：0/1
+ * @param	dev		:	OLEDDev_t 结构体指针
+ * @param	bit_val	:	要写入DC的电平值，范围：0/1
  * @return	无
  ******************************************************************************/
-static void __oled_dc_write(OLEDDev_t *pDev, uint8_t bitValue)
+static void __oled_dc_write(OLEDDev_t *dev, uint8_t bit_val)
 {
-	__oled_io_write(pDev->info.DCPort, pDev->info.DCPin, bitValue);
+	__oled_io_write(dev->info.dc_port, dev->info.dc_pin, bit_val);
 }
 
 /******************************************************************************
  * @brief	OLED写命令
- * @param	pDev	:	OLEDDev_t结构体指针
+ * @param	dev	:	OLEDDev_t 结构体指针
  * @param	command	:	要写入的命令值，范围：0x00~0xFF
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __oled_write_command(OLEDDev_t *pDev, uint8_t command)
+static int __oled_write_command(OLEDDev_t *dev, uint8_t command)
 {
-	OLEDPrivData_t *pPrivData = (OLEDPrivData_t *)pDev->pPrivData;
+	OLEDPrivData_t *priv_data = (OLEDPrivData_t *)dev->priv_data;
 	
-	if (!pDev || !pDev->initFlag)
+	if (!dev || !dev->init_flag)
 		return -1;
 	
-	pPrivData->oledSPI.start(&pPrivData->oledSPI);					// 拉低CS，开始通信
-	__oled_dc_write(pDev, 0);									// 拉低DC，表示即将发送命令
-	pPrivData->oledSPI.swap_byte(&pPrivData->oledSPI, command);		// 写入指定命令
-	pPrivData->oledSPI.stop(&pPrivData->oledSPI);						// 拉高CS，结束通信
+	priv_data->spi.start(&priv_data->spi);					// 拉低CS，开始通信
+	__oled_dc_write(dev, 0);									// 拉低DC，表示即将发送命令
+	priv_data->spi.swap_byte(&priv_data->spi, command);		// 写入指定命令
+	priv_data->spi.stop(&priv_data->spi);						// 拉高CS，结束通信
 	
 	return 0;
 }
 
 /******************************************************************************
  * @brief	OLED写数据
- * @param	pDev	:	OLEDDev_t结构体指针
+ * @param	dev		:	OLEDDev_t 结构体指针
  * @param	data	:	要写入数据的起始地址
  * @param	count	:	要写入数据的数量
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __oled_write_data(OLEDDev_t *pDev, uint8_t *data, uint8_t count)
+static int __oled_write_data(OLEDDev_t *dev, uint8_t *data, uint8_t count)
 {
-	OLEDPrivData_t *pPrivData = (OLEDPrivData_t *)pDev->pPrivData;
+	OLEDPrivData_t *priv_data = (OLEDPrivData_t *)dev->priv_data;
 	
-	if (!pDev || !pDev->initFlag)
+	if (!dev || !dev->init_flag)
 		return -1;
 	
 	uint8_t i;
 	
-	pPrivData->oledSPI.start(&pPrivData->oledSPI);				// 拉低CS，开始通信
-	__oled_dc_write(pDev, 1);								// 拉高DC，表示即将发送数据
+	priv_data->spi.start(&priv_data->spi);				// 拉低CS，开始通信
+	__oled_dc_write(dev, 1);								// 拉高DC，表示即将发送数据
 	/* 循环count次，进行连续的数据写入 */
 	for (i = 0; i < count; i++)
 	{
-		pPrivData->oledSPI.swap_byte(&pPrivData->oledSPI, data[i]);
+		priv_data->spi.swap_byte(&priv_data->spi, data[i]);
 	}
-	pPrivData->oledSPI.stop(&pPrivData->oledSPI);					// 拉高CS，结束通信
+	priv_data->spi.stop(&priv_data->spi);					// 拉高CS，结束通信
 	
 	return 0;
 }
 
 /******************************************************************************
  * @brief	OLED写数据（DMA）
- * @param	pDev	:	OLEDDev_t结构体指针
+ * @param	dev		:	OLEDDev_t 结构体指针
  * @param	data	:	要写入数据的起始地址
  * @param	count	:	要写入数据的数量
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __oled_write_data_dma(OLEDDev_t *pDev, uint8_t *data, uint16_t count)
+static int __oled_write_data_dma(OLEDDev_t *dev, uint8_t *data, uint16_t count)
 {
-	OLEDPrivData_t *pPrivData = (OLEDPrivData_t *)pDev->pPrivData;
-	if (!pDev || !pDev->initFlag) return -1;
+	OLEDPrivData_t *priv_data = (OLEDPrivData_t *)dev->priv_data;
+	if (!dev || !dev->init_flag) return -1;
 	
-	pPrivData->oledSPI.start(&pPrivData->oledSPI);				// SPI起始
-	__oled_dc_write(pDev, 1);								// 拉高DC，表示即将发送数据
+	priv_data->spi.start(&priv_data->spi);				// SPI起始
+	__oled_dc_write(dev, 1);								// 拉高DC，表示即将发送数据
 	
-	__oled_config_dma_clock_enable(pDev->info.spix);		// 开启DMA时钟
+	__oled_config_dma_clock_enable(dev->info.spix);		// 开启DMA时钟
 	
 	#if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 	
 	DMA_InitTypeDef DMA_InitStructure;
-	DMA_DeInit(__oled_get_dma_channel(pDev->info.spix));
-	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&pDev->info.spix->DR;
+	DMA_DeInit(__oled_get_dma_channel(dev->info.spix));
+	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&dev->info.spix->DR;
 	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)data;
 	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;
 	DMA_InitStructure.DMA_BufferSize = count;
@@ -420,24 +374,24 @@ static int __oled_write_data_dma(OLEDDev_t *pDev, uint8_t *data, uint16_t count)
 	DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
 	DMA_InitStructure.DMA_Priority = DMA_Priority_High;
 	DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
-	DMA_Init(__oled_get_dma_channel(pDev->info.spix), &DMA_InitStructure);
+	DMA_Init(__oled_get_dma_channel(dev->info.spix), &DMA_InitStructure);
 	
-	SPI_I2S_DMACmd(pDev->info.spix, SPI_I2S_DMAReq_Tx, ENABLE);			// 配置SPI为DMA模式
+	SPI_I2S_DMACmd(dev->info.spix, SPI_I2S_DMAReq_Tx, ENABLE);			// 配置SPI为DMA模式
 	
-	DMA_Cmd(__oled_get_dma_channel(pDev->info.spix), ENABLE);			// 启动DMA传输
+	DMA_Cmd(__oled_get_dma_channel(dev->info.spix), ENABLE);			// 启动DMA传输
 	
-	while (!DMA_GetFlagStatus(__oled_get_dma_flag(pDev->info.spix)));	// 等待DMA传输完成
+	while (!DMA_GetFlagStatus(__oled_get_dma_flag(dev->info.spix)));	// 等待DMA传输完成
 	
-	DMA_ClearFlag(__oled_get_dma_flag(pDev->info.spix));				// 清除DMA传输完成标志
+	DMA_ClearFlag(__oled_get_dma_flag(dev->info.spix));				// 清除DMA传输完成标志
 	
-	DMA_Cmd(__oled_get_dma_channel(pDev->info.spix), DISABLE);			// 禁用DMA传输
+	DMA_Cmd(__oled_get_dma_channel(dev->info.spix), DISABLE);			// 禁用DMA传输
 	
 	#elif defined(STM32F40_41xxx)
 	
 	DMA_InitTypeDef DMA_InitStructure;
-	DMA_DeInit(__oled_get_dma_stream(pDev->info.spix));
-	DMA_InitStructure.DMA_Channel = __oled_get_dma_channel(pDev->info.spix);
-	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&pDev->info.spix->DR;
+	DMA_DeInit(__oled_get_dma_stream(dev->info.spix));
+	DMA_InitStructure.DMA_Channel = __oled_get_dma_channel(dev->info.spix);
+	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&dev->info.spix->DR;
 	DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)data;
 	DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;
 	DMA_InitStructure.DMA_BufferSize = count;
@@ -451,23 +405,23 @@ static int __oled_write_data_dma(OLEDDev_t *pDev, uint8_t *data, uint16_t count)
 	DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_Full;
 	DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;
 	DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
-	DMA_Init(__oled_get_dma_stream(pDev->info.spix), &DMA_InitStructure);
+	DMA_Init(__oled_get_dma_stream(dev->info.spix), &DMA_InitStructure);
 	
-	SPI_I2S_DMACmd(pDev->info.spix, SPI_I2S_DMAReq_Tx, ENABLE);				// 配置SPI为DMA模式
+	SPI_I2S_DMACmd(dev->info.spix, SPI_I2S_DMAReq_Tx, ENABLE);				// 配置SPI为DMA模式
 	
-	DMA_Cmd(__oled_get_dma_stream(pDev->info.spix), ENABLE);				// 启动DMA传输
+	DMA_Cmd(__oled_get_dma_stream(dev->info.spix), ENABLE);					// 启动DMA传输
 	
-	while (!DMA_GetFlagStatus(	__oled_get_dma_stream(pDev->info.spix), 
-								__oled_get_dma_flag(pDev->info.spix))	);	// 等待DMA传输完成
+	while (!DMA_GetFlagStatus(	__oled_get_dma_stream(dev->info.spix), 
+								__oled_get_dma_flag(dev->info.spix))	);	// 等待DMA传输完成
 	
-	DMA_ClearFlag(	__oled_get_dma_stream(pDev->info.spix), 
-					__oled_get_dma_flag(pDev->info.spix)	);				// 清除DMA传输完成标志
+	DMA_ClearFlag(	__oled_get_dma_stream(dev->info.spix), 
+					__oled_get_dma_flag(dev->info.spix)	);					// 清除DMA传输完成标志
 	
-	DMA_Cmd(__oled_get_dma_stream(pDev->info.spix), DISABLE);				// 禁用DMA传输
+	DMA_Cmd(__oled_get_dma_stream(dev->info.spix), DISABLE);				// 禁用DMA传输
 	
 	#endif
 	
-	pPrivData->oledSPI.stop(&pPrivData->oledSPI);	// SPI终止
+	priv_data->spi.stop(&priv_data->spi);	// SPI终止
 	
 	return 0;
 }
@@ -478,14 +432,14 @@ static int __oled_write_data_dma(OLEDDev_t *pDev, uint8_t *data, uint16_t count)
 
 /******************************************************************************
  * @brief	OLED设置显示光标位置，OLED默认的y轴，只能8个Bit为一组写入，即1页等于8个y轴坐标
- * @param	pDev	:	OLEDDev_t结构体指针
+ * @param	dev		:	OLEDDev_t 结构体指针
  * @param	page	:	指定光标所在的页，范围：0~7
  * @param	x		:	指定光标所在的x轴坐标，范围：0~127
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int OLED_SetCursor(OLEDDev_t *pDev, uint8_t page, uint8_t x)
+static int OLED_SetCursor(OLEDDev_t *dev, uint8_t page, uint8_t x)
 {	
-	if (!pDev || !pDev->initFlag)
+	if (!dev || !dev->init_flag)
 		return -1;
 	
 	/*如果使用此程序驱动1.3寸的OLED显示屏，则需要解除此注释*/
@@ -495,9 +449,9 @@ static int OLED_SetCursor(OLEDDev_t *pDev, uint8_t page, uint8_t x)
 //	x += 2;
 	
 	/* 通过指令设置页地址和列地址 */
-	__oled_write_command(pDev, 0xB0 | page);				// 设置页位置
-	__oled_write_command(pDev, 0x10 | ((x & 0xF0) >> 4));	// 设置x位置高4位
-	__oled_write_command(pDev, 0x00 | (x & 0x0F));			// 设置x位置低4位
+	__oled_write_command(dev, 0xB0 | page);				// 设置页位置
+	__oled_write_command(dev, 0x10 | ((x & 0xF0) >> 4));	// 设置x位置高4位
+	__oled_write_command(dev, 0x00 | (x & 0x0F));			// 设置x位置低4位
 	
 	return 0;
 }
@@ -548,20 +502,20 @@ uint8_t OLED_pnpoly(uint8_t nvert, int16_t *vertx, int16_t *verty, int16_t testx
 
 /******************************************************************************
  * @brief	判断指定点是否在指定角度内部
- * @param	x y					:	指定点的坐标
- * @param	StartAngle EndAngle	:	起始角度和终止角度，范围：-180~180
+ * @param	x y						:	指定点的坐标
+ * @param	start_angle end_angle	:	起始角度和终止角度，范围：-180~180
 			水平向右为0度，水平向左为180度或-180度，下方为正数，上方为负数，顺时针旋转
- * @param	testx testy	:  测试点的x和y坐标
+ * @param	testx testy				:  测试点的x和y坐标
  * @return	指定点是否在指定角度内部，1：在内部，0：不在内部
  ******************************************************************************/
-uint8_t OLED_IsInAngle(int16_t x, int16_t y, int16_t startAngle, int16_t endAngle)
+uint8_t OLED_IsInAngle(int16_t x, int16_t y, int16_t start_angle, int16_t end_angle)
 {
-	int16_t PointAngle;
-	PointAngle = atan2(y, x) / 3.14 * 180;	// 计算指定点的弧度，并转换为角度表示
-	if (startAngle < endAngle)	// 起始角度小于终止角度的情况
+	int16_t point_angle;
+	point_angle = atan2(y, x) / 3.14 * 180;	// 计算指定点的弧度，并转换为角度表示
+	if (start_angle < end_angle)	// 起始角度小于终止角度的情况
 	{
 		/* 如果指定角度在起始终止角度之间，则判定指定点在指定角度 */
-		if (PointAngle >= startAngle && PointAngle <= endAngle)
+		if (point_angle >= start_angle && point_angle <= end_angle)
 		{
 			return 1;
 		}
@@ -569,7 +523,7 @@ uint8_t OLED_IsInAngle(int16_t x, int16_t y, int16_t startAngle, int16_t endAngl
 	else			// 起始角度大于于终止角度的情况
 	{
 		/* 如果指定角度大于起始角度或者小于终止角度，则判定指定点在指定角度 */
-		if (PointAngle >= startAngle || PointAngle <= endAngle)
+		if (point_angle >= start_angle || point_angle <= end_angle)
 		{
 			return 1;
 		}
@@ -583,41 +537,41 @@ uint8_t OLED_IsInAngle(int16_t x, int16_t y, int16_t startAngle, int16_t endAngl
 
 /******************************************************************************
  * @brief	将OLED显存数组更新到OLED屏幕
- * @param	pDev	:	OLEDDev_t结构体指针
+ * @param	dev	:	OLEDDev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __oled_update(OLEDDev_t *pDev)
+static int __oled_update(OLEDDev_t *dev)
 {
-    OLEDPrivData_t *pPrivData = (OLEDPrivData_t *)pDev->pPrivData;
-    if (!pDev || !pDev->initFlag) return -1;
+    OLEDPrivData_t *priv_data = (OLEDPrivData_t *)dev->priv_data;
+    if (!dev || !dev->init_flag) return -1;
 
     uint8_t j;
     /* 遍历每一页 */
     for (j = 0; j < 8; j++) {
         /* 设置光标位置为每一页的第一列 */
-        OLED_SetCursor(pDev, j, 0);
+        OLED_SetCursor(dev, j, 0);
 
         /* 使用DMA传输数据 */
-        __oled_write_data_dma(pDev, gOLEDDisplayBuf[pPrivData->index][j], 128);
-		//__oled_write_data(pDev, gOLEDDisplayBuf[pPrivData->index][j], 128);
+        __oled_write_data_dma(dev, g_oled_display_buf[priv_data->index][j], 128);
+		//__oled_write_data(dev, g_oled_display_buf[priv_data->index][j], 128);
     }
     return 0;
 }
 /******************************************************************************
  * @brief	将OLED显存数组部分更新到OLED屏幕，此函数会至少更新参数指定的区域
 			如果更新区域y轴只包含部分页，则同一页的剩余部分会跟随一起更新
- * @param	pDev	:	OLEDDev_t结构体指针
+ * @param	dev		:	OLEDDev_t 结构体指针
  * @param	x		:	指定区域左上角的横坐标，范围：0~127
  * @param	y		:	指定区域左上角的纵坐标，范围：0~63
  * @param	width	:	指定区域的宽度，范围：0~128
  * @param	height	:	指定区域的高度，范围：0~64
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __oled_update_area(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t width, uint8_t height)
+static int __oled_update_area(OLEDDev_t *dev, uint8_t x, uint8_t y, uint8_t width, uint8_t height)
 {
-	OLEDPrivData_t *pPrivData = (OLEDPrivData_t *)pDev->pPrivData;
+	OLEDPrivData_t *priv_data = (OLEDPrivData_t *)dev->priv_data;
 	
-	if (!pDev || !pDev->initFlag)
+	if (!dev || !dev->init_flag)
 		return -1;
 	
 	uint8_t j;
@@ -633,9 +587,9 @@ static int __oled_update_area(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t wid
 	for (j = y / 8; j < (y + height - 1) / 8 + 1; j ++)
 	{
 		/* 设置光标位置为相关页的指定列 */
-		OLED_SetCursor(pDev, j, x);
+		OLED_SetCursor(dev, j, x);
 		/* 连续写入width个数据，将显存数组的数据写入到OLED硬件 */
-		__oled_write_data(pDev, &gOLEDDisplayBuf[pPrivData->index][j][x], width);
+		__oled_write_data(dev, &g_oled_display_buf[priv_data->index][j][x], width);
 	}
 	
 	return 0;
@@ -643,14 +597,14 @@ static int __oled_update_area(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t wid
 
 /******************************************************************************
  * @brief	将OLED显存数组全部清零
- * @param	pDev	:	OLEDDev_t结构体指针
+ * @param	dev	:	OLEDDev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __oled_clear(OLEDDev_t *pDev)
+static int __oled_clear(OLEDDev_t *dev)
 {
-	OLEDPrivData_t *pPrivData = (OLEDPrivData_t *)pDev->pPrivData;
+	OLEDPrivData_t *priv_data = (OLEDPrivData_t *)dev->priv_data;
 	
-	if (!pDev || !pDev->initFlag)
+	if (!dev || !dev->init_flag)
 		return -1;
 	
 	uint8_t i, j;
@@ -658,7 +612,7 @@ static int __oled_clear(OLEDDev_t *pDev)
 	{
 		for (i = 0; i < 128; i ++)			// 遍历128列
 		{
-			gOLEDDisplayBuf[pPrivData->index][j][i] = 0x00;	// 将显存数组数据全部清零
+			g_oled_display_buf[priv_data->index][j][i] = 0x00;	// 将显存数组数据全部清零
 		}
 	}
 	
@@ -667,18 +621,18 @@ static int __oled_clear(OLEDDev_t *pDev)
 
 /******************************************************************************
  * @brief	将OLED显存数组部分清零
- * @param	pDev	:	OLEDDev_t结构体指针
+ * @param	dev		:	OLEDDev_t 结构体指针
  * @param	x		:	指定区域左上角的横坐标，范围：0~127
  * @param	y		:	指定区域左上角的纵坐标，范围：0~63
  * @param	width	:	指定区域的宽度，范围：0~128
  * @param	height	:	指定区域的高度，范围：0~64
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __oled_clear_area(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t width, uint8_t height)
+static int __oled_clear_area(OLEDDev_t *dev, uint8_t x, uint8_t y, uint8_t width, uint8_t height)
 {
-	OLEDPrivData_t *pPrivData = (OLEDPrivData_t *)pDev->pPrivData;
+	OLEDPrivData_t *priv_data = (OLEDPrivData_t *)dev->priv_data;
 	
-	if (!pDev || !pDev->initFlag)
+	if (!dev || !dev->init_flag)
 		return -1;
 	
 	uint8_t i, j;
@@ -693,7 +647,7 @@ static int __oled_clear_area(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t widt
 	{
 		for (i = x; i < x + width; i ++)	// 遍历指定列
 		{
-			gOLEDDisplayBuf[pPrivData->index][j / 8][i] &= ~(0x01 << (j % 8));	// 将显存数组指定数据清零
+			g_oled_display_buf[priv_data->index][j / 8][i] &= ~(0x01 << (j % 8));	// 将显存数组指定数据清零
 		}
 	}
 	
@@ -702,14 +656,14 @@ static int __oled_clear_area(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t widt
 
 /******************************************************************************
  * @brief	将OLED显存数组全部取反
- * @param	pDev	:	OLEDDev_t结构体指针
+ * @param	dev	:	OLEDDev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __oled_reverse(OLEDDev_t *pDev)
+static int __oled_reverse(OLEDDev_t *dev)
 {
-	OLEDPrivData_t *pPrivData = (OLEDPrivData_t *)pDev->pPrivData;
+	OLEDPrivData_t *priv_data = (OLEDPrivData_t *)dev->priv_data;
 	
-	if (!pDev || !pDev->initFlag)
+	if (!dev || !dev->init_flag)
 		return -1;
 	
 	uint8_t i, j;
@@ -717,7 +671,7 @@ static int __oled_reverse(OLEDDev_t *pDev)
 	{
 		for (i = 0; i < 128; i ++)			// 遍历128列
 		{
-			gOLEDDisplayBuf[pPrivData->index][j][i] ^= 0xFF;	// 将显存数组数据全部取反
+			g_oled_display_buf[priv_data->index][j][i] ^= 0xFF;	// 将显存数组数据全部取反
 		}
 	}
 	
@@ -726,18 +680,18 @@ static int __oled_reverse(OLEDDev_t *pDev)
 
 /******************************************************************************
  * @brief	将OLED显存数组部分取反
- * @param	pDev	:	OLEDDev_t结构体指针
+ * @param	dev		:	OLEDDev_t 结构体指针
  * @param	x		:	指定区域左上角的横坐标，范围：0~127
  * @param	y		:	指定区域左上角的纵坐标，范围：0~63
  * @param	width	:	指定区域的宽度，范围：0~128
  * @param	height	:	指定区域的高度，范围：0~64
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __oled_reverse_area(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t width, uint8_t height)
+static int __oled_reverse_area(OLEDDev_t *dev, uint8_t x, uint8_t y, uint8_t width, uint8_t height)
 {
-	OLEDPrivData_t *pPrivData = (OLEDPrivData_t *)pDev->pPrivData;
+	OLEDPrivData_t *priv_data = (OLEDPrivData_t *)dev->priv_data;
 	
-	if (!pDev || !pDev->initFlag)
+	if (!dev || !dev->init_flag)
 		return -1;
 	
 	uint8_t i, j;
@@ -752,7 +706,7 @@ static int __oled_reverse_area(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t wi
 	{
 		for (i = x; i < x + width; i ++)	// 遍历指定列
 		{
-			gOLEDDisplayBuf[pPrivData->index][j / 8][i] ^= 0x01 << (j % 8);	// 将显存数组指定数据取反
+			g_oled_display_buf[priv_data->index][j / 8][i] ^= 0x01 << (j % 8);	// 将显存数组指定数据取反
 		}
 	}
 	
@@ -761,7 +715,7 @@ static int __oled_reverse_area(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t wi
 
 /******************************************************************************
  * @brief	OLED显示图像
- * @param	pDev	:	OLEDDev_t结构体指针
+ * @param	dev		:	OLEDDev_t 结构体指针
  * @param	x		:	指定图像左上角的横坐标，范围：0~127
  * @param	y		:	指定图像左上角的纵坐标，范围：0~63
  * @param	width	:	指定图像的宽度，范围：0~128
@@ -769,11 +723,11 @@ static int __oled_reverse_area(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t wi
  * @param	image	:	指定要显示的图像
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __oled_show_image(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t width, uint8_t height, const uint8_t *image)
+static int __oled_show_image(OLEDDev_t *dev, uint8_t x, uint8_t y, uint8_t width, uint8_t height, const uint8_t *image)
 {
-	OLEDPrivData_t *pPrivData = (OLEDPrivData_t *)pDev->pPrivData;
+	OLEDPrivData_t *priv_data = (OLEDPrivData_t *)dev->priv_data;
 	
-	if (!pDev || !pDev->initFlag)
+	if (!dev || !dev->init_flag)
 		return -1;
 	
 	uint8_t i, j;
@@ -783,7 +737,7 @@ static int __oled_show_image(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t widt
 	if (y > 63) {return -1;}
 	
 	/* 将图像所在区域清空 */
-	__oled_clear_area(pDev, x, y, width, height);
+	__oled_clear_area(dev, x, y, width, height);
 	
 	/* 遍历指定图像涉及的相关页*/
 	/* (height - 1) / 8 + 1的目的是height / 8并向上取整 */
@@ -797,14 +751,14 @@ static int __oled_show_image(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t widt
 			if (y / 8 + j > 7) {return -1;}
 			
 			/* 显示图像在当前页的内容 */
-			gOLEDDisplayBuf[pPrivData->index][y / 8 + j][x + i] |= image[j * width + i] << (y % 8);
+			g_oled_display_buf[priv_data->index][y / 8 + j][x + i] |= image[j * width + i] << (y % 8);
 			
 			/* 超出边界，则跳过显示 */
 			/* 使用continue的目的是，下一页超出边界时，上一页的后续内容还需要继续显示 */
 			if (y / 8 + j + 1 > 7) {continue;}
 			
 			/* 显示图像在下一页的内容 */
-			gOLEDDisplayBuf[pPrivData->index][y / 8 + j + 1][x + i] |= image[j * width + i] >> (8 - y % 8);
+			g_oled_display_buf[priv_data->index][y / 8 + j + 1][x + i] |= image[j * width + i] >> (8 - y % 8);
 		}
 	}
 	
@@ -813,29 +767,29 @@ static int __oled_show_image(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t widt
 
 /******************************************************************************
  * @brief	OLED显示一个字符
- * @param	pDev		:	OLEDDev_t结构体指针
- * @param	x			:	指定字符左上角的横坐标，范围：0~127
- * @param	y			:	指定区域左上角的纵坐标，范围：0~63
- * @param	character	:	指定要显示的字符，范围：ASCII码可见字符
- * @param	fontSize	:	指定字体大小
+ * @param	dev		:	OLEDDev_t 结构体指针
+ * @param	x		:	指定字符左上角的横坐标，范围：0~127
+ * @param	y		:	指定区域左上角的纵坐标，范围：0~63
+ * @param	chr		:	指定要显示的字符，范围：ASCII码可见字符
+ * @param	size	:	指定字体大小
 			范围	OLED_8X16	宽8像素，高16像素
 					OLED_6X8	宽6像素，高8像素
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __oled_show_char(OLEDDev_t *pDev, uint8_t x, uint8_t y, char Char, uint8_t fontSize)
+static int __oled_show_char(OLEDDev_t *dev, uint8_t x, uint8_t y, char chr, uint8_t size)
 {	
-	if (!pDev || !pDev->initFlag)
+	if (!dev || !dev->init_flag)
 		return -1;
 	
-	if (fontSize == OLED_8X16)		// 字体为宽8像素，高16像素
+	if (size == OLED_8X16)		// 字体为宽8像素，高16像素
 	{
 		/* 将ASCII字模库OLED_F8x16的指定数据以8*16的图像格式显示 */
-		__oled_show_image(pDev, x, y, 8, 16, OLED_F8x16[Char - ' ']);
+		__oled_show_image(dev, x, y, 8, 16, OLED_F8x16[chr - ' ']);
 	}
-	else if(fontSize == OLED_6X8)	//字体为宽6像素，高8像素
+	else if(size == OLED_6X8)	//字体为宽6像素，高8像素
 	{
 		/* 将ASCII字模库OLED_F6x8的指定数据以6*8的图像格式显示 */
-		__oled_show_image(pDev, x, y, 6, 8, OLED_F6x8[Char - ' ']);
+		__oled_show_image(dev, x, y, 6, 8, OLED_F6x8[chr - ' ']);
 	}
 	
 	return 0;
@@ -843,25 +797,25 @@ static int __oled_show_char(OLEDDev_t *pDev, uint8_t x, uint8_t y, char Char, ui
 
 /******************************************************************************
  * @brief	OLED显示字符串
- * @param	pDev		:	OLEDDev_t结构体指针
- * @param	x			:	指定字符串左上角的横坐标，范围：0~127
- * @param	y			:	指定字符串左上角的纵坐标，范围：0~63
- * @param	string		:	指定要显示的字符串，范围：ASCII码可见字符组成的字符串
- * @param	fontSize	:	指定字体大小
+ * @param	dev		:	OLEDDev_t 结构体指针
+ * @param	x		:	指定字符串左上角的横坐标，范围：0~127
+ * @param	y		:	指定字符串左上角的纵坐标，范围：0~63
+ * @param	string	:	指定要显示的字符串，范围：ASCII码可见字符组成的字符串
+ * @param	size	:	指定字体大小
 			范围	OLED_8X16	宽8像素，高16像素
 					OLED_6X8	宽6像素，高8像素
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __oled_show_string(OLEDDev_t *pDev, uint8_t x, uint8_t y, char *string, uint8_t fontSize)
+static int __oled_show_string(OLEDDev_t *dev, uint8_t x, uint8_t y, char *string, uint8_t size)
 {	
-	if (!pDev || !pDev->initFlag)
+	if (!dev || !dev->init_flag)
 		return -1;
 	
 	uint8_t i;
 	for (i = 0; string[i] != '\0'; i++)		//遍历字符串的每个字符
 	{
 		/* 调用__oled_show_char函数，依次显示每个字符 */
-		__oled_show_char(pDev, x + i * fontSize, y, string[i], fontSize);
+		__oled_show_char(dev, x + i * size, y, string[i], size);
 	}
 	
 	return 0;
@@ -869,19 +823,19 @@ static int __oled_show_string(OLEDDev_t *pDev, uint8_t x, uint8_t y, char *strin
 
 /******************************************************************************
  * @brief	OLED显示数字（十进制，正整数）
- * @param	pDev		:	OLEDDev_t结构体指针
- * @param	x			:	指定数字左上角的横坐标，范围：0~127
- * @param	y			:	指定数字左上角的纵坐标，范围：0~63
- * @param	number		:	指定要显示的数字，范围：0~4294967295
- * @param	length		:	指定数字的长度，范围：0~10
- * @param	fontSize	:	指定字体大小
+ * @param	dev		:	OLEDDev_t 结构体指针
+ * @param	x		:	指定数字左上角的横坐标，范围：0~127
+ * @param	y		:	指定数字左上角的纵坐标，范围：0~63
+ * @param	num		:	指定要显示的数字，范围：0~4294967295
+ * @param	length	:	指定数字的长度，范围：0~10
+ * @param	size	:	指定字体大小
 			范围	OLED_8X16	宽8像素，高16像素
 					OLED_6X8	宽6像素，高8像素
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __oled_show_num(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint32_t number, uint8_t length, uint8_t fontSize)
+static int __oled_show_num(OLEDDev_t *dev, uint8_t x, uint8_t y, uint32_t num, uint8_t length, uint8_t size)
 {	
-	if (!pDev || !pDev->initFlag)
+	if (!dev || !dev->init_flag)
 		return -1;
 	
 	uint8_t i;
@@ -890,7 +844,7 @@ static int __oled_show_num(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint32_t numbe
 		/* 调用__oled_show_char函数，依次显示每个数字 */
 		/* Number / OLED_Pow(10, length - i - 1) % 10 可以十进制提取数字的每一位 */
 		/* + '0' 可将数字转换为字符格式 */
-		__oled_show_char(pDev, x + i * fontSize, y, number / OLED_Pow(10, length - i - 1) % 10 + '0', fontSize);
+		__oled_show_char(dev, x + i * size, y, num / OLED_Pow(10, length - i - 1) % 10 + '0', size);
 	}
 	
 	return 0;
@@ -898,41 +852,41 @@ static int __oled_show_num(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint32_t numbe
 
 /******************************************************************************
  * @brief	OLED显示有符号数字（十进制，整数）
- * @param	pDev		:	OLEDDev_t结构体指针
- * @param	x			:	指定数字左上角的横坐标，范围：0~127
- * @param	y			:	指定数字左上角的纵坐标，范围：0~63
- * @param	number		:	指定要显示的数字，范围：-2147483648~2147483647
- * @param	length		:	指定数字的长度，范围：0~10
- * @param	fontSize	:	指定字体大小
+ * @param	dev		:	OLEDDev_t 结构体指针
+ * @param	x		:	指定数字左上角的横坐标，范围：0~127
+ * @param	y		:	指定数字左上角的纵坐标，范围：0~63
+ * @param	num		:	指定要显示的数字，范围：-2147483648~2147483647
+ * @param	length	:	指定数字的长度，范围：0~10
+ * @param	size	:	指定字体大小
 			范围	OLED_8X16	宽8像素，高16像素
 					OLED_6X8	宽6像素，高8像素
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __oled_show_signed_num(OLEDDev_t *pDev, uint8_t x, uint8_t y, int32_t number, uint8_t length, uint8_t fontSize)
+static int __oled_show_signed_num(OLEDDev_t *dev, uint8_t x, uint8_t y, int32_t num, uint8_t length, uint8_t size)
 {	
-	if (!pDev || !pDev->initFlag)
+	if (!dev || !dev->init_flag)
 		return -1;
 	
 	uint8_t i;
-	uint32_t Number1;
+	uint32_t num1;
 	
-	if (number >= 0)								// 数字大于等于0
+	if (num >= 0)								// 数字大于等于0
 	{
-		__oled_show_char(pDev, x, y, '+', fontSize);// 显示+号
-		Number1 = number;							// Number1直接等于Number
+		__oled_show_char(dev, x, y, '+', size);// 显示+号
+		num1 = num;							// Number1直接等于Number
 	}
 	else											// 数字小于0
 	{
-		__oled_show_char(pDev, x, y, '-', fontSize);// 显示-号
-		Number1 = -number;							// Number1等于Number取负
+		__oled_show_char(dev, x, y, '-', size);// 显示-号
+		num1 = -num;							// Number1等于Number取负
 	}
 	
 	for (i = 0; i < length; i++)					// 遍历数字的每一位								
 	{
 		/* 调用__oled_show_char函数，依次显示每个数字 */
-		/* Number1 / OLED_Pow(10, length - i - 1) % 10 可以十进制提取数字的每一位 */
+		/* num1 / OLED_Pow(10, length - i - 1) % 10 可以十进制提取数字的每一位 */
 		/* + '0' 可将数字转换为字符格式 */
-		__oled_show_char(pDev, x + (i + 1) * fontSize, y, Number1 / OLED_Pow(10, length - i - 1) % 10 + '0', fontSize);
+		__oled_show_char(dev, x + (i + 1) * size, y, num1 / OLED_Pow(10, length - i - 1) % 10 + '0', size);
 	}
 	
 	return 0;
@@ -940,38 +894,38 @@ static int __oled_show_signed_num(OLEDDev_t *pDev, uint8_t x, uint8_t y, int32_t
 
 /******************************************************************************
  * @brief	OLED显示十六进制数字（十六进制，正整数）
- * @param	pDev		:	OLEDDev_t结构体指针
+ * @param	dev		:	OLEDDev_t 结构体指针
  * @param	x			:	指定数字左上角的横坐标，范围：0~127
  * @param	y			:	指定数字左上角的纵坐标，范围：0~63
- * @param	number		:	指定要显示的数字，范围：0x00000000~0xFFFFFFFF
+ * @param	num		:	指定要显示的数字，范围：0x00000000~0xFFFFFFFF
  * @param	length		:	指定数字的长度，范围：0~8
- * @param	fontSize	:	指定字体大小
+ * @param	size	:	指定字体大小
 			范围	OLED_8X16	宽8像素，高16像素
 					OLED_6X8	宽6像素，高8像素
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __oled_show_hex_num(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint32_t number, uint8_t length, uint8_t fontSize)
+static int __oled_show_hex_num(OLEDDev_t *dev, uint8_t x, uint8_t y, uint32_t num, uint8_t length, uint8_t size)
 {	
-	if (!pDev || !pDev->initFlag)
+	if (!dev || !dev->init_flag)
 		return -1;
 	
-	uint8_t i, SingleNumber;
+	uint8_t i, single_num;
 	for (i = 0; i < length; i++)		// 遍历数字的每一位
 	{
 		/* 以十六进制提取数字的每一位 */
-		SingleNumber = number / OLED_Pow(16, length - i - 1) % 16;
+		single_num = num / OLED_Pow(16, length - i - 1) % 16;
 		
-		if (SingleNumber < 10)			// 单个数字小于10
+		if (single_num < 10)			// 单个数字小于10
 		{
 			/* 调用__oled_show_char函数，显示此数字 */
 			/* + '0' 可将数字转换为字符格式 */
-			__oled_show_char(pDev, x + i * fontSize, y, SingleNumber + '0', fontSize);
+			__oled_show_char(dev, x + i * size, y, single_num + '0', size);
 		}
 		else							// 单个数字大于10
 		{
 			/* 调用__oled_show_char函数，显示此数字 */
 			/* + 'A' 可将数字转换为从A开始的十六进制字符 */
-			__oled_show_char(pDev, x + i * fontSize, y, SingleNumber - 10 + 'A', fontSize);
+			__oled_show_char(dev, x + i * size, y, single_num - 10 + 'A', size);
 		}
 	}
 	
@@ -980,19 +934,19 @@ static int __oled_show_hex_num(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint32_t n
 
 /******************************************************************************
  * @brief	OLED显示二进制数字（二进制，正整数）
- * @param	pDev		:	OLEDDev_t结构体指针
+ * @param	dev		:	OLEDDev_t 结构体指针
  * @param	x			:	指定数字左上角的横坐标，范围：0~127
  * @param	y			:	指定数字左上角的纵坐标，范围：0~63
- * @param	number		:	指定要显示的数字，范围：0x00000000~0xFFFFFFFF
+ * @param	num		:	指定要显示的数字，范围：0x00000000~0xFFFFFFFF
  * @param	length		:	指定数字的长度，范围：0~16
- * @param	fontSize	:	指定字体大小
+ * @param	size	:	指定字体大小
 			范围	OLED_8X16	宽8像素，高16像素
 					OLED_6X8	宽6像素，高8像素
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __oled_show_bin_num(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint32_t number, uint8_t length, uint8_t fontSize)
+static int __oled_show_bin_num(OLEDDev_t *dev, uint8_t x, uint8_t y, uint32_t num, uint8_t length, uint8_t size)
 {	
-	if (!pDev || !pDev->initFlag)
+	if (!dev || !dev->init_flag)
 		return -1;
 	
 	uint8_t i;
@@ -1001,7 +955,7 @@ static int __oled_show_bin_num(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint32_t n
 		/* 调用__oled_show_char函数，依次显示每个数字 */
 		/* Number / OLED_Pow(2, length - i - 1) % 2 可以二进制提取数字的每一位 */
 		/* + '0' 可将数字转换为字符格式 */
-		__oled_show_char(pDev, x + i * fontSize, y, number / OLED_Pow(2, length - i - 1) % 2 + '0', fontSize);
+		__oled_show_char(dev, x + i * size, y, num / OLED_Pow(2, length - i - 1) % 2 + '0', size);
 	}
 	
 	return 0;
@@ -1009,96 +963,96 @@ static int __oled_show_bin_num(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint32_t n
 
 /******************************************************************************
  * @brief	OLED显示二进制数字（二进制，正整数）
- * @param	pDev		:	OLEDDev_t结构体指针
+ * @param	dev			:	OLEDDev_t 结构体指针
  * @param	x			:	指定数字左上角的横坐标，范围：0~127
  * @param	y			:	指定数字左上角的纵坐标，范围：0~63
- * @param	number		:	指定要显示的数字，范围：-4294967295.0~4294967295.0
- * @param	intLength	:	指定数字的整数位长度，范围：0~10
- * @param	fraLength	:	指定数字的小数位长度，范围：0~9，小数进行四舍五入显示
- * @param	fontSize	:	指定字体大小
+ * @param	num			:	指定要显示的数字，范围：-4294967295.0~4294967295.0
+ * @param	int_length	:	指定数字的整数位长度，范围：0~10
+ * @param	fra_length	:	指定数字的小数位长度，范围：0~9，小数进行四舍五入显示
+ * @param	size		:	指定字体大小
 			范围	OLED_8X16	宽8像素，高16像素
 					OLED_6X8	宽6像素，高8像素
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __oled_show_float_num(OLEDDev_t *pDev, uint8_t x, uint8_t y, double number, uint8_t intLength, uint8_t fraLength, uint8_t fontSize)
+static int __oled_show_float_num(OLEDDev_t *dev, uint8_t x, uint8_t y, double num, uint8_t int_length, uint8_t fra_length, uint8_t size)
 {	
-	if (!pDev || !pDev->initFlag)
+	if (!dev || !dev->init_flag)
 		return -1;
 	
-	uint32_t PowNum, IntNum, FraNum;
+	uint32_t pow_num, int_num, fra_num;
 	
-	if (number >= 0)						// 数字大于等于0
+	if (num >= 0)						// 数字大于等于0
 	{
-		__oled_show_char(pDev, x, y, '+', fontSize);	// 显示+号
+		__oled_show_char(dev, x, y, '+', size);	// 显示+号
 	}
 	else									// 数字小于0
 	{
-		__oled_show_char(pDev, x, y, '-', fontSize);	// 显示-号
-		number = -number;					// Number取负
+		__oled_show_char(dev, x, y, '-', size);	// 显示-号
+		num = -num;					// Number取负
 	}
 	
 	/* 提取整数部分和小数部分 */
-	IntNum = number;						// 直接赋值给整型变量，提取整数
-	number -= IntNum;						// 将Number的整数减掉，防止之后将小数乘到整数时因数过大造成错误
-	PowNum = OLED_Pow(10, fraLength);		// 根据指定小数的位数，确定乘数
-	FraNum = round(number * PowNum);		// 将小数乘到整数，同时四舍五入，避免显示误差
-	IntNum += FraNum / PowNum;				// 若四舍五入造成了进位，则需要再加给整数
+	int_num = num;						// 直接赋值给整型变量，提取整数
+	num -= int_num;						// 将Number的整数减掉，防止之后将小数乘到整数时因数过大造成错误
+	pow_num = OLED_Pow(10, fra_length);		// 根据指定小数的位数，确定乘数
+	fra_num = round(num * pow_num);		// 将小数乘到整数，同时四舍五入，避免显示误差
+	int_num += fra_num / pow_num;				// 若四舍五入造成了进位，则需要再加给整数
 	
 	/* 显示整数部分 */
-	__oled_show_num(pDev, x + fontSize, y, IntNum, intLength, fontSize);
+	__oled_show_num(dev, x + size, y, int_num, int_length, size);
 	
 	/* 显示小数点 */
-	__oled_show_char(pDev, x + (intLength + 1) * fontSize, y, '.', fontSize);
+	__oled_show_char(dev, x + (int_length + 1) * size, y, '.', size);
 	
 	/* 显示小数部分 */
-	__oled_show_num(pDev, x + (intLength + 2) * fontSize, y, FraNum, fraLength, fontSize);
+	__oled_show_num(dev, x + (int_length + 2) * size, y, fra_num, fra_length, size);
 	
 	return 0;
 }
 
 /******************************************************************************
  * @brief	OLED显示汉字串
- * @param	pDev		:	OLEDDev_t结构体指针
- * @param	x			:	指定汉字串左上角的横坐标，范围：0~127
- * @param	y			:	指定汉字串左上角的纵坐标，范围：0~63
- * @param	Chinese		:	指定要显示的汉字串，范围：必须全部为汉字或者全角字符，不要加入任何半角字符
-							显示的汉字需要在OLED_Data.c里的OLED_CF16x16数组定义
-							未找到指定汉字时，会显示默认图形（一个方框，内部一个问号）
+ * @param	dev		:	OLEDDev_t 结构体指针
+ * @param	x		:	指定汉字串左上角的横坐标，范围：0~127
+ * @param	y		:	指定汉字串左上角的纵坐标，范围：0~63
+ * @param	Chinese	:	指定要显示的汉字串，范围：必须全部为汉字或者全角字符，不要加入任何半角字符
+						显示的汉字需要在OLED_Data.c里的OLED_CF16x16数组定义
+						未找到指定汉字时，会显示默认图形（一个方框，内部一个问号）
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __oled_show_chinese(OLEDDev_t *pDev, uint8_t x, uint8_t y, char *Chinese)
+static int __oled_show_chinese(OLEDDev_t *dev, uint8_t x, uint8_t y, char *Chinese)
 {	
-	if (!pDev || !pDev->initFlag)
+	if (!dev || !dev->init_flag)
 		return -1;
 	
-	uint8_t pChinese = 0;
-	uint8_t pIndex;
+	uint8_t p_Chinese = 0;
+	uint8_t p_index;
 	uint8_t i;
 	char SingleChinese[OLED_CHN_CHAR_WIDTH + 1] = {0};
 	
 	for (i = 0; Chinese[i] != '\0'; i ++)		// 遍历汉字串
 	{
-		SingleChinese[pChinese] = Chinese[i];	// 提取汉字串数据到单个汉字数组
-		pChinese ++;							// 计次自增
+		SingleChinese[p_Chinese] = Chinese[i];	// 提取汉字串数据到单个汉字数组
+		p_Chinese ++;							// 计次自增
 		
 		/* 当提取次数到达OLED_CHN_CHAR_WIDTH时，即代表提取到了一个完整的汉字 */
-		if (pChinese >= OLED_CHN_CHAR_WIDTH)
+		if (p_Chinese >= OLED_CHN_CHAR_WIDTH)
 		{
-			pChinese = 0;		// 计次归零
+			p_Chinese = 0;		// 计次归零
 			
 			/* 遍历整个汉字字模库，寻找匹配的汉字 */
 			/* 如果找到最后一个汉字（定义为空字符串），则表示汉字未在字模库定义，停止寻找 */
-			for (pIndex = 0; strcmp(OLED_CF16x16[pIndex].Index, "") != 0; pIndex ++)
+			for (p_index = 0; strcmp(OLED_CF16x16[p_index].Index, "") != 0; p_index ++)
 			{
 				/* 找到匹配的汉字 */
-				if (strcmp(OLED_CF16x16[pIndex].Index, SingleChinese) == 0)
+				if (strcmp(OLED_CF16x16[p_index].Index, SingleChinese) == 0)
 				{
 					break;		// 跳出循环，此时pIndex的值为指定汉字的索引
 				}
 			}
 			
 			/* 将汉字字模库OLED_CF16x16的指定数据以16*16的图像格式显示 */
-			__oled_show_image(pDev, x + ((i + 1) / OLED_CHN_CHAR_WIDTH - 1) * 16, y, 16, 16, OLED_CF16x16[pIndex].Data);
+			__oled_show_image(dev, x + ((i + 1) / OLED_CHN_CHAR_WIDTH - 1) * 16, y, 16, 16, OLED_CF16x16[p_index].Data);
 		}
 	}
 	
@@ -1107,19 +1061,19 @@ static int __oled_show_chinese(OLEDDev_t *pDev, uint8_t x, uint8_t y, char *Chin
 
 /******************************************************************************
  * @brief	OLED使用printf函数打印格式化字符串
- * @param	pDev		:	OLEDDev_t结构体指针
+ * @param	dev		:	OLEDDev_t 结构体指针
  * @param	x			:	指定格式化字符串左上角的横坐标，范围：0~127
  * @param	y			:	指定格式化字符串左上角的纵坐标，范围：0~63
- * @param	fontSize	:	指定字体大小
+ * @param	size	:	指定字体大小
 			范围	OLED_8X16	宽8像素，高16像素
 					OLED_6X8	宽6像素，高8像素
  * @param	format		:	指定要显示的格式化字符串，范围：ASCII码可见字符组成的字符串
  * @param	...			:	格式化字符串参数列表
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __oled_printf(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t fontSize, char *format, ...)
+static int __oled_printf(OLEDDev_t *dev, uint8_t x, uint8_t y, uint8_t size, char *format, ...)
 {	
-	if (!pDev || !pDev->initFlag)
+	if (!dev || !dev->init_flag)
 		return -1;
 	
 	char string[30];						// 定义字符数组
@@ -1127,23 +1081,23 @@ static int __oled_printf(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t fontSize
 	va_start(arg, format);					// 从format开始，接收参数列表到arg变量
 	vsprintf(string, format, arg);			// 使用vsprintf打印格式化字符串和参数列表到字符数组中
 	va_end(arg);							// 结束变量arg
-	__oled_show_string(pDev, x, y, string, fontSize);// OLED显示字符数组（字符串）
+	__oled_show_string(dev, x, y, string, size);// OLED显示字符数组（字符串）
 	
 	return 0;
 }
 
 /******************************************************************************
  * @brief	OLED在指定位置画一个点
- * @param	pDev	:	OLEDDev_t结构体指针
+ * @param	dev	:	OLEDDev_t 结构体指针
  * @param	x		:	指定点的横坐标，范围：0~127
  * @param	y		:	指定点的纵坐标，范围：0~63
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __oled_draw_point(OLEDDev_t *pDev, uint8_t x, uint8_t y)
+static int __oled_draw_point(OLEDDev_t *dev, uint8_t x, uint8_t y)
 {
-	OLEDPrivData_t *pPrivData = (OLEDPrivData_t *)pDev->pPrivData;
+	OLEDPrivData_t *priv_data = (OLEDPrivData_t *)dev->priv_data;
 	
-	if (!pDev || !pDev->initFlag)
+	if (!dev || !dev->init_flag)
 		return -1;
 	
 	/* 参数检查，保证指定位置不会超出屏幕范围 */
@@ -1151,28 +1105,28 @@ static int __oled_draw_point(OLEDDev_t *pDev, uint8_t x, uint8_t y)
 	if (y > 63) {return -1;}
 	
 	/* 将显存数组指定位置的一个Bit数据置1 */
-	gOLEDDisplayBuf[pPrivData->index][y / 8][x] |= 0x01 << (y % 8);
+	g_oled_display_buf[priv_data->index][y / 8][x] |= 0x01 << (y % 8);
 	
 	return 0;
 }
 
 /******************************************************************************
  * @brief	OLED获取指定位置点的值
- * @param	pDev	:	OLEDDev_t结构体指针
+ * @param	dev	:	OLEDDev_t 结构体指针
  * @param	x		:	指定点的横坐标，范围：0~127
  * @param	y		:	指定点的纵坐标，范围：0~63
  * @return	指定位置点是否处于点亮状态，1：点亮，0：熄灭
  ******************************************************************************/
-static uint8_t __oled_get_point(OLEDDev_t *pDev, uint8_t x, uint8_t y)
+static uint8_t __oled_get_point(OLEDDev_t *dev, uint8_t x, uint8_t y)
 {
-	OLEDPrivData_t *pPrivData = (OLEDPrivData_t *)pDev->pPrivData;
+	OLEDPrivData_t *priv_data = (OLEDPrivData_t *)dev->priv_data;
 	
 	/* 参数检查，保证指定位置不会超出屏幕范围 */
 	if (x > 127) {return 0;}
 	if (y > 63) {return 0;}
 	
 	/* 判断指定位置的数据 */
-	if (gOLEDDisplayBuf[pPrivData->index][y / 8][x] & 0x01 << (y % 8))
+	if (g_oled_display_buf[priv_data->index][y / 8][x] & 0x01 << (y % 8))
 	{
 		return 1;	// 为1，返回1
 	}
@@ -1181,19 +1135,19 @@ static uint8_t __oled_get_point(OLEDDev_t *pDev, uint8_t x, uint8_t y)
 
 /******************************************************************************
  * @brief	OLED画线
- * @param	pDev	:	OLEDDev_t结构体指针
+ * @param	dev		:	OLEDDev_t 结构体指针
  * @param	x0		:	指定一个端点的横坐标，范围：0~127
  * @param	y0		:	指定一个端点的纵坐标，范围：0~63
  * @param	x1		:	指定另一个端点的横坐标，范围：0~127
  * @param	y1		:	指定另一个端点的纵坐标，范围：0~63
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __oled_draw_line(OLEDDev_t *pDev, uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1)
+static int __oled_draw_line(OLEDDev_t *dev, uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1)
 {	
-	if (!pDev || !pDev->initFlag)
+	if (!dev || !dev->init_flag)
 		return -1;
 	
-	int16_t x, y, dx, dy, d, incrE, incrNE, temp;
+	int16_t x, y, dx, dy, d, incrE, incr_ne, temp;
 	uint8_t yflag = 0, xyflag = 0;
 	
 	if (y0 == y1)		// 横线单独处理
@@ -1204,7 +1158,7 @@ static int __oled_draw_line(OLEDDev_t *pDev, uint8_t x0, uint8_t y0, uint8_t x1,
 		/* 遍历X坐标 */
 		for (x = x0; x <= x1; x ++)
 		{
-			__oled_draw_point(pDev, x, y0);	// 依次画点
+			__oled_draw_point(dev, x, y0);	// 依次画点
 		}
 	}
 	else if (x0 == x1)	// 竖线单独处理
@@ -1215,7 +1169,7 @@ static int __oled_draw_line(OLEDDev_t *pDev, uint8_t x0, uint8_t y0, uint8_t x1,
 		/* 遍历Y坐标 */
 		for (y = y0; y <= y1; y ++)
 		{
-			__oled_draw_point(pDev, x0, y);	// 依次画点
+			__oled_draw_point(dev, x0, y);	// 依次画点
 		}
 	}
 	else				// 斜线
@@ -1259,16 +1213,16 @@ static int __oled_draw_line(OLEDDev_t *pDev, uint8_t x0, uint8_t y0, uint8_t x1,
 		dx = x1 - x0;
 		dy = y1 - y0;
 		incrE = 2 * dy;
-		incrNE = 2 * (dy - dx);
+		incr_ne = 2 * (dy - dx);
 		d = 2 * dy - dx;
 		x = x0;
 		y = y0;
 		
 		/* 画起始点，同时判断标志位，将坐标换回来 */
-		if (yflag && xyflag){__oled_draw_point(pDev, y, -x);}
-		else if (yflag)		{__oled_draw_point(pDev, x, -y);}
-		else if (xyflag)	{__oled_draw_point(pDev, y, x);}
-		else				{__oled_draw_point(pDev, x, y);}
+		if (yflag && xyflag){__oled_draw_point(dev, y, -x);}
+		else if (yflag)		{__oled_draw_point(dev, x, -y);}
+		else if (xyflag)	{__oled_draw_point(dev, y, x);}
+		else				{__oled_draw_point(dev, x, y);}
 		
 		while (x < x1)		// 遍历X轴的每个点
 		{
@@ -1280,14 +1234,14 @@ static int __oled_draw_line(OLEDDev_t *pDev, uint8_t x0, uint8_t y0, uint8_t x1,
 			else			// 下一个点在当前点东北方
 			{
 				y ++;
-				d += incrNE;
+				d += incr_ne;
 			}
 			
 			/* 画每一个点，同时判断标志位，将坐标换回来 */
-			if (yflag && xyflag){__oled_draw_point(pDev, y, -x);}
-			else if (yflag)		{__oled_draw_point(pDev, x, -y);}
-			else if (xyflag)	{__oled_draw_point(pDev, y, x);}
-			else				{__oled_draw_point(pDev, x, y);}
+			if (yflag && xyflag){__oled_draw_point(dev, y, -x);}
+			else if (yflag)		{__oled_draw_point(dev, x, -y);}
+			else if (xyflag)	{__oled_draw_point(dev, y, x);}
+			else				{__oled_draw_point(dev, x, y);}
 		}	
 	}
 	
@@ -1296,35 +1250,35 @@ static int __oled_draw_line(OLEDDev_t *pDev, uint8_t x0, uint8_t y0, uint8_t x1,
 
 /******************************************************************************
  * @brief	OLED矩形
- * @param	pDev		:	OLEDDev_t结构体指针
+ * @param	dev			:	OLEDDev_t 结构体指针
  * @param	x			:	指定矩形左上角的横坐标，范围：0~127
  * @param	y			:	指定矩形左上角的纵坐标，范围：0~63
  * @param	width		:	指定矩形的宽度，范围：0~128
  * @param	height		:	指定矩形的高度，范围：0~64
- * @param	isFilled	:	指定矩形是否填充
+ * @param	is_filled	:	指定矩形是否填充
 			范围		:	OLED_UNFILLED	不填充
 							OLED_FILLED		填充
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __oled_draw_rectangle(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint8_t isFilled)
+static int __oled_draw_rectangle(OLEDDev_t *dev, uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint8_t is_filled)
 {	
-	if (!pDev || !pDev->initFlag)
+	if (!dev || !dev->init_flag)
 		return -1;
 	
 	uint8_t i, j;
-	if (!isFilled)		// 指定矩形不填充
+	if (!is_filled)		// 指定矩形不填充
 	{
 		/* 遍历上下x坐标，画矩形上下两条线 */
 		for (i = x; i < x + width; i ++)
 		{
-			__oled_draw_point(pDev, i, y);
-			__oled_draw_point(pDev, i, y + height - 1);
+			__oled_draw_point(dev, i, y);
+			__oled_draw_point(dev, i, y + height - 1);
 		}
 		/* 遍历左右y坐标，画矩形左右两条线 */
 		for (i = y; i < y + height; i ++)
 		{
-			__oled_draw_point(pDev, x, i);
-			__oled_draw_point(pDev, x + width - 1, i);
+			__oled_draw_point(dev, x, i);
+			__oled_draw_point(dev, x + width - 1, i);
 		}
 	}
 	else				// 指定矩形填充
@@ -1336,7 +1290,7 @@ static int __oled_draw_rectangle(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t 
 			for (j = y; j < y + height; j ++)
 			{
 				/* 在指定区域画点，填充满矩形 */
-				__oled_draw_point(pDev, i, j);
+				__oled_draw_point(dev, i, j);
 			}
 		}
 	}
@@ -1346,21 +1300,21 @@ static int __oled_draw_rectangle(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t 
 
 /******************************************************************************
  * @brief	OLED三角形
- * @param	pDev		:	OLEDDev_t结构体指针
+ * @param	dev			:	OLEDDev_t 结构体指针
  * @param	x0			:	指定第一个端点的横坐标，范围：0~127
  * @param	y0			:	指定第一个端点的纵坐标，范围：0~63
  * @param	x1			:	指定第二个端点的横坐标，范围：0~127
  * @param	y1			:	指定第二个端点的纵坐标，范围：0~63
  * @param	x2			:	指定第三个端点的横坐标，范围：0~127
  * @param	y2			:	指定第三个端点的纵坐标，范围：0~63
- * @param	isFilled	:	指定三角形是否填充
+ * @param	is_filled	:	指定三角形是否填充
 			范围		:	OLED_UNFILLED	不填充
 							OLED_FILLED		填充
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __oled_draw_triangle(OLEDDev_t *pDev, uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, uint8_t IsFilled)
+static int __oled_draw_triangle(OLEDDev_t *dev, uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, uint8_t is_filled)
 {	
-	if (!pDev || !pDev->initFlag)
+	if (!dev || !dev->init_flag)
 		return -1;
 	
 	uint8_t minx = x0, miny = y0, maxx = x0, maxy = y0;
@@ -1368,12 +1322,12 @@ static int __oled_draw_triangle(OLEDDev_t *pDev, uint8_t x0, uint8_t y0, uint8_t
 	int16_t vx[] = {x0, x1, x2};
 	int16_t vy[] = {y0, y1, y2};
 	
-	if (!IsFilled)			// 指定三角形不填充
+	if (!is_filled)			// 指定三角形不填充
 	{
 		/* 调用画线函数，将三个点用直线连接 */
-		__oled_draw_line(pDev, x0, y0, x1, y1);
-		__oled_draw_line(pDev, x0, y0, x2, y2);
-		__oled_draw_line(pDev, x1, y1, x2, y2);
+		__oled_draw_line(dev, x0, y0, x1, y1);
+		__oled_draw_line(dev, x0, y0, x2, y2);
+		__oled_draw_line(dev, x1, y1, x2, y2);
 	}
 	else					// 指定三角形填充
 	{
@@ -1399,7 +1353,7 @@ static int __oled_draw_triangle(OLEDDev_t *pDev, uint8_t x0, uint8_t y0, uint8_t
 			{
 				/* 调用OLED_pnpoly，判断指定点是否在指定三角形之中 */
 				/* 如果在，则画点，如果不在，则不做处理 */
-				if (OLED_pnpoly(3, vx, vy, i, j)) {__oled_draw_point(pDev, i, j);}
+				if (OLED_pnpoly(3, vx, vy, i, j)) {__oled_draw_point(dev, i, j);}
 			}
 		}
 	}
@@ -1409,18 +1363,18 @@ static int __oled_draw_triangle(OLEDDev_t *pDev, uint8_t x0, uint8_t y0, uint8_t
 
 /******************************************************************************
  * @brief	OLED画圆
- * @param	pDev		:	OLEDDev_t结构体指针
+ * @param	dev			:	OLEDDev_t 结构体指针
  * @param	x			:	指定圆的圆心横坐标，范围：0~127
  * @param	y			:	指定圆的圆心纵坐标，范围：0~63
  * @param	radius		:	指定圆的半径，范围：0~255
- * @param	isFilled	:	指定圆是否填充
+ * @param	is_filled	:	指定圆是否填充
 			范围		:	OLED_UNFILLED	不填充
 							OLED_FILLED		填充
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __oled_draw_circle(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t radius, uint8_t IsFilled)
+static int __oled_draw_circle(OLEDDev_t *dev, uint8_t x, uint8_t y, uint8_t radius, uint8_t is_filled)
 {	
-	if (!pDev || !pDev->initFlag)
+	if (!dev || !dev->init_flag)
 		return -1;
 	
 	int16_t x1, y1, d, j;
@@ -1434,18 +1388,18 @@ static int __oled_draw_circle(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t rad
 	y1 = radius;
 	
 	/* 画每个八分之一圆弧的起始点 */
-	__oled_draw_point(pDev, x + x1, y + y1);
-	__oled_draw_point(pDev, x - x1, y - y1);
-	__oled_draw_point(pDev, x + y1, y + x1);
-	__oled_draw_point(pDev, x - y1, y - x1);
+	__oled_draw_point(dev, x + x1, y + y1);
+	__oled_draw_point(dev, x - x1, y - y1);
+	__oled_draw_point(dev, x + y1, y + x1);
+	__oled_draw_point(dev, x - y1, y - x1);
 	
-	if (IsFilled)		// 指定圆填充
+	if (is_filled)		// 指定圆填充
 	{
 		/* 遍历起始点Y坐标 */
 		for (j = -y1; j < y1; j ++)
 		{
 			/* 在指定区域画点，填充部分圆 */
-			__oled_draw_point(pDev, x, y + j);
+			__oled_draw_point(dev, x, y + j);
 		}
 	}
 	
@@ -1463,31 +1417,31 @@ static int __oled_draw_circle(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t rad
 		}
 		
 		/* 画每个八分之一圆弧的点 */
-		__oled_draw_point(pDev, x + x1, y + y1);
-		__oled_draw_point(pDev, x + y1, y + x1);
-		__oled_draw_point(pDev, x - x1, y - y1);
-		__oled_draw_point(pDev, x - y1, y - x1);
-		__oled_draw_point(pDev, x + x1, y - y1);
-		__oled_draw_point(pDev, x + y1, y - x1);
-		__oled_draw_point(pDev, x - x1, y + y1);
-		__oled_draw_point(pDev, x - y1, y + x1);
+		__oled_draw_point(dev, x + x1, y + y1);
+		__oled_draw_point(dev, x + y1, y + x1);
+		__oled_draw_point(dev, x - x1, y - y1);
+		__oled_draw_point(dev, x - y1, y - x1);
+		__oled_draw_point(dev, x + x1, y - y1);
+		__oled_draw_point(dev, x + y1, y - x1);
+		__oled_draw_point(dev, x - x1, y + y1);
+		__oled_draw_point(dev, x - y1, y + x1);
 		
-		if (IsFilled)	// 指定圆填充
+		if (is_filled)	// 指定圆填充
 		{
 			/* 遍历中间部分 */
 			for (j = -y1; j < y1; j ++)
 			{
 				/* 在指定区域画点，填充部分圆 */
-				__oled_draw_point(pDev, x + x1, y + j);
-				__oled_draw_point(pDev, x - x1, y + j);
+				__oled_draw_point(dev, x + x1, y + j);
+				__oled_draw_point(dev, x - x1, y + j);
 			}
 			
 			/* 遍历两侧部分 */
 			for (j = -x1; j < x1; j ++)
 			{
 				/* 在指定区域画点，填充部分圆 */
-				__oled_draw_point(pDev, x - y1, y + j);
-				__oled_draw_point(pDev, x + y1, y + j);
+				__oled_draw_point(dev, x - y1, y + j);
+				__oled_draw_point(dev, x + y1, y + j);
 			}
 		}
 	}
@@ -1497,19 +1451,19 @@ static int __oled_draw_circle(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t rad
 
 /******************************************************************************
  * @brief	OLED画椭圆
- * @param	pDev		:	OLEDDev_t结构体指针
+ * @param	dev			:	OLEDDev_t 结构体指针
  * @param	x			:	指定椭圆的圆心横坐标，范围：0~127
  * @param	y			:	指定椭圆的圆心纵坐标，范围：0~63
  * @param	a			:	指定椭圆的横向半轴长度，范围：0~255
  * @param	b			:	指定椭圆的纵向半轴长度，范围：0~255
- * @param	isFilled	:	指定椭圆是否填充
+ * @param	is_filled	:	指定椭圆是否填充
 			范围		:	OLED_UNFILLED	不填充
 							OLED_FILLED		填充
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __oled_draw_ellipse(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t a, uint8_t b, uint8_t isFilled)
+static int __oled_draw_ellipse(OLEDDev_t *dev, uint8_t x, uint8_t y, uint8_t a, uint8_t b, uint8_t is_filled)
 {	
-	if (!pDev || !pDev->initFlag)
+	if (!dev || !dev->init_flag)
 		return -1;
 	
 	int16_t x1, y1, j;
@@ -1522,22 +1476,22 @@ static int __oled_draw_ellipse(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t a,
 	y1 = b;
 	d1 = b * b + a * a * (-b + 0.5);
 	
-	if (isFilled)	// 指定椭圆填充
+	if (is_filled)	// 指定椭圆填充
 	{
 		/* 遍历起始点Y坐标 */
 		for (j = -y1; j < y1; j ++)
 		{
 			/* 在指定区域画点，填充部分椭圆 */
-			__oled_draw_point(pDev, x, y + j);
-			__oled_draw_point(pDev, x, y + j);
+			__oled_draw_point(dev, x, y + j);
+			__oled_draw_point(dev, x, y + j);
 		}
 	}
 	
 	/* 画椭圆弧的起始点 */
-	__oled_draw_point(pDev, x + x1, y + y1);
-	__oled_draw_point(pDev, x - x1, y - y1);
-	__oled_draw_point(pDev, x - x1, y + y1);
-	__oled_draw_point(pDev, x + x1, y - y1);
+	__oled_draw_point(dev, x + x1, y + y1);
+	__oled_draw_point(dev, x - x1, y - y1);
+	__oled_draw_point(dev, x - x1, y + y1);
+	__oled_draw_point(dev, x + x1, y - y1);
 	
 	/* 画椭圆中间部分 */
 	while (b * b * (x1 + 1) < a * a * (y1 - 0.5))
@@ -1553,22 +1507,22 @@ static int __oled_draw_ellipse(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t a,
 		}
 		x1 ++;
 		
-		if (isFilled)	// 指定椭圆填充
+		if (is_filled)	// 指定椭圆填充
 		{
 			/* 遍历中间部分 */
 			for (j = -y1; j < y1; j ++)
 			{
 				/* 在指定区域画点，填充部分椭圆 */
-				__oled_draw_point(pDev, x + x1, y + j);
-				__oled_draw_point(pDev, x - x1, y + j);
+				__oled_draw_point(dev, x + x1, y + j);
+				__oled_draw_point(dev, x - x1, y + j);
 			}
 		}
 		
 		/* 画椭圆中间部分圆弧 */
-		__oled_draw_point(pDev, x + x1, y + y1);
-		__oled_draw_point(pDev, x - x1, y - y1);
-		__oled_draw_point(pDev, x - x1, y + y1);
-		__oled_draw_point(pDev, x + x1, y - y1);
+		__oled_draw_point(dev, x + x1, y + y1);
+		__oled_draw_point(dev, x - x1, y - y1);
+		__oled_draw_point(dev, x - x1, y + y1);
+		__oled_draw_point(dev, x + x1, y - y1);
 	}                               
 	
 	/* 画椭圆两侧部分*/
@@ -1588,22 +1542,22 @@ static int __oled_draw_ellipse(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t a,
 		}
 		y1 --;
 		
-		if (isFilled)	// 指定椭圆填充
+		if (is_filled)	// 指定椭圆填充
 		{
 			/* 遍历两侧部分 */
 			for (j = -y1; j < y1; j ++)
 			{
 				/* 在指定区域画点，填充部分椭圆 */
-				__oled_draw_point(pDev, x + x1, y + j);
-				__oled_draw_point(pDev, x - x1, y + j);
+				__oled_draw_point(dev, x + x1, y + j);
+				__oled_draw_point(dev, x - x1, y + j);
 			}
 		}
 		
 		/* 画椭圆两侧部分圆弧 */
-		__oled_draw_point(pDev, x + x1, y + y1);
-		__oled_draw_point(pDev, x - x1, y - y1);
-		__oled_draw_point(pDev, x - x1, y + y1);
-		__oled_draw_point(pDev, x + x1, y - y1);
+		__oled_draw_point(dev, x + x1, y + y1);
+		__oled_draw_point(dev, x - x1, y - y1);
+		__oled_draw_point(dev, x - x1, y + y1);
+		__oled_draw_point(dev, x + x1, y - y1);
 	}
 	
 	return 0;
@@ -1611,22 +1565,22 @@ static int __oled_draw_ellipse(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t a,
 
 /******************************************************************************
  * @brief	OLED画圆弧
- * @param	pDev		:	OLEDDev_t结构体指针
+ * @param	dev			:	OLEDDev_t 结构体指针
  * @param	x			:	指定圆弧的圆心横坐标，范围：0~127
  * @param	y			:	指定圆弧的圆心纵坐标，范围：0~63
  * @param	radius		:	指定圆弧的半径，范围：0~255
- * @param	startAngle	:	指定圆弧的起始角度，范围：-180~180
+ * @param	start_angle	:	指定圆弧的起始角度，范围：-180~180
 			水平向右为0度，水平向左为180度或-180度，下方为正数，上方为负数，顺时针旋转
- * @param	endAngle	:	指定圆弧的终止角度，范围：-180~180
+ * @param	end_angle	:	指定圆弧的终止角度，范围：-180~180
 			水平向右为0度，水平向左为180度或-180度，下方为正数，上方为负数，顺时针旋转
- * @param	isFilled	:	指定圆弧是否填充，填充后为扇形
+ * @param	is_filled	:	指定圆弧是否填充，填充后为扇形
 			范围		:	OLED_UNFILLED	不填充
 							OLED_FILLED		填充
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __oled_draw_arc(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t radius, int16_t startAngle, int16_t endAngle, uint8_t isFilled)
+static int __oled_draw_arc(OLEDDev_t *dev, uint8_t x, uint8_t y, uint8_t radius, int16_t start_angle, int16_t end_angle, uint8_t is_filled)
 {	
-	if (!pDev || !pDev->initFlag)
+	if (!dev || !dev->init_flag)
 		return -1;
 	
 	int16_t x1, y1, d, j;
@@ -1638,18 +1592,18 @@ static int __oled_draw_arc(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t radius
 	y1 = radius;
 	
 	/* 在画圆的每个点时，判断指定点是否在指定角度内，在，则画点，不在，则不做处理 */
-	if (OLED_IsInAngle(x1, y1, startAngle, endAngle))	{__oled_draw_point(pDev, x + x1, y + y1);}
-	if (OLED_IsInAngle(-x1, -y1, startAngle, endAngle)) {__oled_draw_point(pDev, x - x1, y - y1);}
-	if (OLED_IsInAngle(y1, x1, startAngle, endAngle)) {__oled_draw_point(pDev, x + y1, y + x1);}
-	if (OLED_IsInAngle(-y1, -x1, startAngle, endAngle)) {__oled_draw_point(pDev, x - y1, y - x1);}
+	if (OLED_IsInAngle(x1, y1, start_angle, end_angle))	{__oled_draw_point(dev, x + x1, y + y1);}
+	if (OLED_IsInAngle(-x1, -y1, start_angle, end_angle)) {__oled_draw_point(dev, x - x1, y - y1);}
+	if (OLED_IsInAngle(y1, x1, start_angle, end_angle)) {__oled_draw_point(dev, x + y1, y + x1);}
+	if (OLED_IsInAngle(-y1, -x1, start_angle, end_angle)) {__oled_draw_point(dev, x - y1, y - x1);}
 	
-	if (isFilled)	// 指定圆弧填充
+	if (is_filled)	// 指定圆弧填充
 	{
 		/* 遍历起始点Y坐标 */
 		for (j = -y1; j < y1; j ++)
 		{
 			/* 在填充圆的每个点时，判断指定点是否在指定角度内，在，则画点，不在，则不做处理 */
-			if (OLED_IsInAngle(0, j, startAngle, endAngle)) {__oled_draw_point(pDev, x, y + j);}
+			if (OLED_IsInAngle(0, j, start_angle, end_angle)) {__oled_draw_point(dev, x, y + j);}
 		}
 	}
 	
@@ -1667,31 +1621,31 @@ static int __oled_draw_arc(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t radius
 		}
 		
 		/* 在画圆的每个点时，判断指定点是否在指定角度内，在，则画点，不在，则不做处理 */
-		if (OLED_IsInAngle(x1, y1, startAngle, endAngle)) {__oled_draw_point(pDev, x + x1, y + y1);}
-		if (OLED_IsInAngle(y1, x1, startAngle, endAngle)) {__oled_draw_point(pDev, x + y1, y + x1);}
-		if (OLED_IsInAngle(-x1, -y1, startAngle, endAngle)) {__oled_draw_point(pDev, x - x1, y - y1);}
-		if (OLED_IsInAngle(-y1, -x1, startAngle, endAngle)) {__oled_draw_point(pDev, x - y1, y - x1);}
-		if (OLED_IsInAngle(x1, -y1, startAngle, endAngle)) {__oled_draw_point(pDev, x + x1, y - y1);}
-		if (OLED_IsInAngle(y1, -x1, startAngle, endAngle)) {__oled_draw_point(pDev, x + y1, y - x1);}
-		if (OLED_IsInAngle(-x1, y1, startAngle, endAngle)) {__oled_draw_point(pDev, x - x1, y + y1);}
-		if (OLED_IsInAngle(-y1, x1, startAngle, endAngle)) {__oled_draw_point(pDev, x - y1, y + x1);}
+		if (OLED_IsInAngle(x1, y1, start_angle, end_angle)) {__oled_draw_point(dev, x + x1, y + y1);}
+		if (OLED_IsInAngle(y1, x1, start_angle, end_angle)) {__oled_draw_point(dev, x + y1, y + x1);}
+		if (OLED_IsInAngle(-x1, -y1, start_angle, end_angle)) {__oled_draw_point(dev, x - x1, y - y1);}
+		if (OLED_IsInAngle(-y1, -x1, start_angle, end_angle)) {__oled_draw_point(dev, x - y1, y - x1);}
+		if (OLED_IsInAngle(x1, -y1, start_angle, end_angle)) {__oled_draw_point(dev, x + x1, y - y1);}
+		if (OLED_IsInAngle(y1, -x1, start_angle, end_angle)) {__oled_draw_point(dev, x + y1, y - x1);}
+		if (OLED_IsInAngle(-x1, y1, start_angle, end_angle)) {__oled_draw_point(dev, x - x1, y + y1);}
+		if (OLED_IsInAngle(-y1, x1, start_angle, end_angle)) {__oled_draw_point(dev, x - y1, y + x1);}
 		
-		if (isFilled)	// 指定圆弧填充
+		if (is_filled)	// 指定圆弧填充
 		{
 			/* 遍历中间部分 */
 			for (j = -y1; j < y1; j ++)
 			{
 				/* 在填充圆的每个点时，判断指定点是否在指定角度内，在，则画点，不在，则不做处理 */
-				if (OLED_IsInAngle(x1, j, startAngle, endAngle)) {__oled_draw_point(pDev, x + x1, y + j);}
-				if (OLED_IsInAngle(-x1, j, startAngle, endAngle)) {__oled_draw_point(pDev, x - x1, y + j);}
+				if (OLED_IsInAngle(x1, j, start_angle, end_angle)) {__oled_draw_point(dev, x + x1, y + j);}
+				if (OLED_IsInAngle(-x1, j, start_angle, end_angle)) {__oled_draw_point(dev, x - x1, y + j);}
 			}
 			
 			/*遍历两侧部分*/
 			for (j = -x1; j < x1; j ++)
 			{
 				/* 在填充圆的每个点时，判断指定点是否在指定角度内，在，则画点，不在，则不做处理 */
-				if (OLED_IsInAngle(-y1, j, startAngle, endAngle)) {__oled_draw_point(pDev, x - y1, y + j);}
-				if (OLED_IsInAngle(y1, j, startAngle, endAngle)) {__oled_draw_point(pDev, x + y1, y + j);}
+				if (OLED_IsInAngle(-y1, j, start_angle, end_angle)) {__oled_draw_point(dev, x - y1, y + j);}
+				if (OLED_IsInAngle(y1, j, start_angle, end_angle)) {__oled_draw_point(dev, x + y1, y + j);}
 			}
 		}
 	}
@@ -1701,33 +1655,24 @@ static int __oled_draw_arc(OLEDDev_t *pDev, uint8_t x, uint8_t y, uint8_t radius
 
 /******************************************************************************
  * @brief	去初始化OLED
- * @param	pDev   :  OLEDDev_t结构体指针
+ * @param	dev   :  OLEDDev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __oled_deinit(OLEDDev_t *pDev)
+static int __oled_deinit(OLEDDev_t *dev)
 {  
-	if (!pDev || !pDev->initFlag)
+	if (!dev || !dev->init_flag)
 		return -1;
 	
-	OLEDPrivData_t *pPrivData = (OLEDPrivData_t *)pDev->pPrivData;
-	
-	/* 关闭时钟 */
-	__oled_config_gpio_clock_disable(pDev->info.RESPort);
-	__oled_config_gpio_clock_disable(pDev->info.DCPort);
-	__oled_config_dma_clock_disable(pDev->info.spix);
-	
-	/* 复位GPIO */
-	__oled_gpio_deinit(pDev->info.RESPort);
-	__oled_gpio_deinit(pDev->info.DCPort);
+	OLEDPrivData_t *priv_data = (OLEDPrivData_t *)dev->priv_data;
 	
 	/* 去初始化硬件SPI */
-	pPrivData->oledSPI.deinit(&pPrivData->oledSPI);
+	priv_data->spi.deinit(&priv_data->spi);
 	
 	/* 释放私有数据内存 */
-	free(pDev->pPrivData);
-	pDev->pPrivData = NULL;
+	free(dev->priv_data);
+	dev->priv_data = NULL;
 	
-	pDev->initFlag = false;	// 修改初始化标志
+	dev->init_flag = false;	// 修改初始化标志
 	return 0;
 }
 

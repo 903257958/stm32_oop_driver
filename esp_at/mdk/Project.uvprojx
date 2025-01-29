@@ -410,14 +410,14 @@
               <FilePath>..\driver\delay.c</FilePath>
             </File>
             <File>
-              <FileName>usart.h</FileName>
+              <FileName>uart.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\driver\usart.h</FilePath>
+              <FilePath>..\driver\uart.h</FilePath>
             </File>
             <File>
-              <FileName>usart.c</FileName>
+              <FileName>uart.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\driver\usart.c</FilePath>
+              <FilePath>..\driver\uart.c</FilePath>
             </File>
             <File>
               <FileName>esp.h</FileName>

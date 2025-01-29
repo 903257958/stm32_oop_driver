@@ -1,24 +1,23 @@
 #include "rtc.h"
 
 /* 函数声明 */
-static int __rtc_set_time(RTCDev_t *pDev, RTCTime_t *pTime);
-static int __rtc_set_date(RTCDev_t *pDev, RTCDate_t *pDate);
-static void __rtc_get_time(RTCDev_t *pDev, RTCTime_t *pTime);
-static void __rtc_get_date(RTCDev_t *pDev, RTCDate_t *pDate);
-static int __rtc_deinit(RTCDev_t *pDev);
+static int __rtc_set_time(RTCDev_t *dev, RTCTime_t *time);
+static int __rtc_set_date(RTCDev_t *dev, RTCDate_t *date);
+static void __rtc_get_time(RTCDev_t *dev, RTCTime_t *time);
+static void __rtc_get_date(RTCDev_t *dev, RTCDate_t *date);
+static int __rtc_deinit(RTCDev_t *dev);
 
 /******************************************************************************
  * @brief	初始化RTC
- * @param	pDev	:  RTCDev_t 结构体指针
+ * @param	dev	:  RTCDev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-int rtc_init(RTCDev_t *pDev)
+int rtc_init(RTCDev_t *dev)
 {
-	if (!pDev)
+	if (!dev)
 		return -1;
 
 	#if defined(STM32F40_41xxx) || defined(STM32F411xE)
-
 	/* 开启时钟 */
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE);
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_BKPSRAM, ENABLE);
@@ -44,8 +43,8 @@ int rtc_init(RTCDev_t *pDev)
  
 		RTCTime_t time = {23, 59, 56};
 		RTCDate_t date = {25, 1, 1};
-		__rtc_set_time(pDev, &time);	// 设置时间
-		__rtc_set_date(pDev, &date);	// 设置日期
+		__rtc_set_time(dev, &time);	// 设置时间
+		__rtc_set_date(dev, &date);	// 设置日期
 		
 		RTC_WriteBackupRegister(RTC_BKP_DR0, 0xA5A5);	// 在备份寄存器写入自己规定的标志位，用于判断RTC是不是第一次执行配置
 	}
@@ -53,36 +52,34 @@ int rtc_init(RTCDev_t *pDev)
 	#endif
 	
 	/* 函数指针赋值 */
-	pDev->set_time = __rtc_set_time;
-	pDev->set_date = __rtc_set_date;
-	pDev->get_time = __rtc_get_time;
-	pDev->get_date = __rtc_get_date;
-	pDev->deinit = __rtc_deinit;
+	dev->set_time = __rtc_set_time;
+	dev->set_date = __rtc_set_date;
+	dev->get_time = __rtc_get_time;
+	dev->get_date = __rtc_get_date;
+	dev->deinit = __rtc_deinit;
 	
-	pDev->initFlag = true;
+	dev->init_flag = true;
 	return 0;
 }
 
 /******************************************************************************
  * @brief	RTC根据日期计算星期
- * @param	pTime	:  RTCTime_t 结构体指针
+ * @param	time	:  RTCTime_t 结构体指针
  * @return	当前星期
  ******************************************************************************/
-static uint8_t __rtc_calc_week(RTCDate_t *pDate)
+static uint8_t __rtc_calc_week(RTCDate_t *date)
 {
-	uint16_t year = pDate->year + 2000;
-	uint8_t date = pDate->date;
-    uint8_t month = pDate->month;
+	uint16_t year = date->year + 2000;
 	uint8_t week;
 	
-    if (month < 3)
+    if (date->month < 3)
 	{
-        month += 12;
+        date->month += 12;
         year--;
     }
     
     /* Zeller 公式 */
-    week = (date + 13 * (month + 1) / 5 + (year % 100) + (year % 100) / 4 + (year / 100) / 4 + 5 * (year / 100)) % 7;
+    week = (date->date + 13 * (date->month + 1) / 5 + (year % 100) + (year % 100) / 4 + (year / 100) / 4 + 5 * (year / 100)) % 7;
 
     /* 映射到 1-7 为星期一~星期日 */
     week = (week + 5) % 7 + 1;
@@ -92,17 +89,17 @@ static uint8_t __rtc_calc_week(RTCDate_t *pDate)
 
 /******************************************************************************
  * @brief	RTC设置时间
- * @param	pDev	:  RTCDev_t 结构体指针
- * @param	pTime	:  RTCTime_t 结构体指针
+ * @param	dev	:  RTCDev_t 结构体指针
+ * @param	time	:  RTCTime_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __rtc_set_time(RTCDev_t *pDev, RTCTime_t *pTime)
+static int __rtc_set_time(RTCDev_t *dev, RTCTime_t *time)
 {
 	RTC_TimeTypeDef RTC_TimeTypeInitStructure;
 
-	RTC_TimeTypeInitStructure.RTC_Hours = pTime->hour;
-	RTC_TimeTypeInitStructure.RTC_Minutes = pTime->minute;
-	RTC_TimeTypeInitStructure.RTC_Seconds = pTime->second;
+	RTC_TimeTypeInitStructure.RTC_Hours = time->hour;
+	RTC_TimeTypeInitStructure.RTC_Minutes = time->minute;
+	RTC_TimeTypeInitStructure.RTC_Seconds = time->second;
 	RTC_TimeTypeInitStructure.RTC_H12 = RTC_H12_AM;	// 24小时制时此配置无意义
 	
 	return !RTC_SetTime(RTC_Format_BIN, &RTC_TimeTypeInitStructure);
@@ -110,66 +107,66 @@ static int __rtc_set_time(RTCDev_t *pDev, RTCTime_t *pTime)
 
 /******************************************************************************
  * @brief	RTC设置日期
- * @param	pDev	:  RTCDev_t 结构体指针
- * @param	pDate	:  RTCDate_t 结构体指针
+ * @param	dev	:  RTCDev_t 结构体指针
+ * @param	date	:  RTCDate_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __rtc_set_date(RTCDev_t *pDev, RTCDate_t *pDate)
+static int __rtc_set_date(RTCDev_t *dev, RTCDate_t *date)
 {
 	RTC_DateTypeDef RTC_DateTypeInitStructure;
 	
-	RTC_DateTypeInitStructure.RTC_Year = pDate->year;
-	RTC_DateTypeInitStructure.RTC_Month = pDate->month;
-	RTC_DateTypeInitStructure.RTC_Date = pDate->date;
-	RTC_DateTypeInitStructure.RTC_WeekDay = __rtc_calc_week(pDate);
+	RTC_DateTypeInitStructure.RTC_Year = date->year;
+	RTC_DateTypeInitStructure.RTC_Month = date->month;
+	RTC_DateTypeInitStructure.RTC_Date = date->date;
+	RTC_DateTypeInitStructure.RTC_WeekDay = __rtc_calc_week(date);
 
 	return !RTC_SetDate(RTC_Format_BIN, &RTC_DateTypeInitStructure);
 }
 
 /******************************************************************************
  * @brief	RTC读取时间
- * @param	pDev	:  RTCDev_t 结构体指针
- * @param	pTime	:  RTCTime_t 结构体指针
+ * @param	dev	:  RTCDev_t 结构体指针
+ * @param	time	:  RTCTime_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static void __rtc_get_time(RTCDev_t *pDev, RTCTime_t *pTime)
+static void __rtc_get_time(RTCDev_t *dev, RTCTime_t *time)
 {
 	RTC_TimeTypeDef RTC_TimeStruct;
 
 	RTC_GetTime(RTC_Format_BIN, &RTC_TimeStruct);
-	pTime->hour = RTC_TimeStruct.RTC_Hours;
-	pTime->minute = RTC_TimeStruct.RTC_Minutes;
-	pTime->second = RTC_TimeStruct.RTC_Seconds;
+	time->hour = RTC_TimeStruct.RTC_Hours;
+	time->minute = RTC_TimeStruct.RTC_Minutes;
+	time->second = RTC_TimeStruct.RTC_Seconds;
 }
 
 /******************************************************************************
  * @brief	RTC读取日期
- * @param	pDev	:  RTCDev_t 结构体指针
- * @param	pDate	:  RTCDate_t 结构体指针
+ * @param	dev	:  RTCDev_t 结构体指针
+ * @param	date	:  RTCDate_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static void __rtc_get_date(RTCDev_t *pDev, RTCDate_t *pDate)
+static void __rtc_get_date(RTCDev_t *dev, RTCDate_t *date)
 {
 	RTC_DateTypeDef RTC_DateStruct;
 
 	RTC_GetDate(RTC_Format_BIN, &RTC_DateStruct);
-	pDate->year = RTC_DateStruct.RTC_Year;
-	pDate->month = RTC_DateStruct.RTC_Month;
-	pDate->date = RTC_DateStruct.RTC_Date;
-	pDate->week = RTC_DateStruct.RTC_WeekDay;
+	date->year = RTC_DateStruct.RTC_Year;
+	date->month = RTC_DateStruct.RTC_Month;
+	date->date = RTC_DateStruct.RTC_Date;
+	date->week = RTC_DateStruct.RTC_WeekDay;
 }
 
 /******************************************************************************
  * @brief	去初始化RTC
- * @param	pDev	:  RTCDev_t 结构体指针
+ * @param	dev	:  RTCDev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __rtc_deinit(RTCDev_t *pDev)
+static int __rtc_deinit(RTCDev_t *dev)
 {
-	if (!pDev || !pDev->initFlag)
+	if (!dev || !dev->init_flag)
 		return -1;
 	
-	pDev->initFlag = false;	// 修改初始化标志
+	dev->init_flag = false;	// 修改初始化标志
 	
 	return 0;
 }

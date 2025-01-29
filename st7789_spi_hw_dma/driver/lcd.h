@@ -4,26 +4,22 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdlib.h>
+#include <math.h>
 #include "spi.h"
 
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
     #include "stm32f10x.h"
-	
-    typedef GPIO_TypeDef*       LCD_GPIO_Port;
-    typedef TIM_TypeDef*	    TIMx;
+    typedef GPIO_TypeDef*       LCDGPIOPort_t;
+    typedef TIM_TypeDef*	    TimerPER_t;
 	
 #elif defined(STM32F40_41xxx) || defined(STM32F411xE)
 	#include "stm32f4xx.h"
-
-	typedef GPIO_TypeDef*		LCD_GPIO_Port;
-    typedef TIM_TypeDef*	    TIMx;
+	typedef GPIO_TypeDef*		LCDGPIOPort_t;
+    typedef TIM_TypeDef*	    TimerPER_t;
 	
 #else
     #error lcd.h: No processor defined!
-#endif
-
-#ifndef FREERTOS
-	#define FREERTOS	1
 #endif
 
 #ifndef lcd_log
@@ -82,50 +78,50 @@ typedef enum {
 }LCDIsFilled_t;
 
 typedef struct {
-	SPIx spix;						// SPI外设
-	LCD_GPIO_Port SCKPort;			// SCK端口
-	uint32_t SCKPin;				// SCK引脚
-	LCD_GPIO_Port MOSIPort;			// MOSI端口
-	uint32_t MOSIPin;				// MOSI引脚
-	LCD_GPIO_Port RESPort;			// RES端口
-	uint32_t RESPin;				// RES引脚
-	LCD_GPIO_Port DCPort;			// DC端口
-	uint32_t DCPin;					// DC引脚
-	LCD_GPIO_Port CSPort;			// CS端口
-	uint32_t CSPin;					// CS引脚
-	LCD_GPIO_Port BLPort;			// BL端口
-	uint32_t BLPin;					// BL引脚
-	TIMx timx;						// 背光PWM定时器
-	uint8_t OCChannel;				// 背光PWM输出比较通道
+	SPIPER_t spix;					// SPI外设
+	LCDGPIOPort_t sck_port;			// SCK端口
+	uint32_t sck_pin;				// SCK引脚
+	LCDGPIOPort_t mosi_port;		// MOSI端口
+	uint32_t mosi_pin;				// MOSI引脚
+	LCDGPIOPort_t res_port;			// RES端口
+	uint32_t res_pin;				// RES引脚
+	LCDGPIOPort_t dc_port;			// DC端口
+	uint32_t dc_pin;				// DC引脚
+	LCDGPIOPort_t cs_port;			// CS端口
+	uint32_t cs_pin;				// CS引脚
+	LCDGPIOPort_t bl_port;			// BL端口
+	uint32_t bl_pin;				// BL引脚
+	TimerPER_t timx;				// 背光PWM定时器
+	uint8_t oc_channel;				// 背光PWM输出比较通道
 	uint8_t dir;					// 显示方向
 }LCDInfo_t;
 
 typedef struct LCDDev {
 	LCDInfo_t info;
-	bool initFlag;					// 初始化标志
-	void *pPrivData;				// 私有数据指针
+	bool init_flag;					// 初始化标志
+	void *priv_data;				// 私有数据指针
 	uint16_t width;
 	uint16_t height;
-	void (*backlight_ctrl)(struct LCDDev *pDev, uint16_t val);
-	void (*clear)(struct LCDDev *pDev, uint16_t color);
-	void (*fill)(struct LCDDev *pDev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color);
-	void (*color_fill)(struct LCDDev *pDev, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t *pColor);
-	void (*color_fill_dma)(struct LCDDev *pDev, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t size);
-	void (*show_char)(struct LCDDev *pDev, uint16_t x, uint16_t y, uint8_t chr, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
-	void (*show_string)(struct LCDDev *pDev, uint16_t x, uint16_t y, char *str, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
-	void (*show_num)(struct LCDDev *pDev, uint16_t x, uint16_t y, uint32_t num, uint8_t len, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
-	void (*show_hex_num)(struct LCDDev *pDev, uint16_t x, uint16_t y, uint32_t num, uint8_t len, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
-	void (*show_float_num)(struct LCDDev *pDev, uint16_t x, uint16_t y, float num, uint8_t intLen, uint8_t fraLen, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
-	void (*show_chinese)(struct LCDDev *pDev, uint16_t x, uint16_t y, char *Chinese, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
-	void (*show_image)(struct LCDDev *pDev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, const uint8_t pic[]);
-	void (*draw_point)(struct LCDDev *pDev, uint16_t x, uint16_t y, uint16_t color);
-	void (*draw_line)(struct LCDDev *pDev, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color);
-	void (*draw_rectangle)(struct LCDDev *pDev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color);
-	void (*draw_circle)(struct LCDDev *pDev, uint16_t x, uint16_t y, uint8_t radius, uint16_t color);
-	int (*deinit)(struct LCDDev *pDev);
+	void (*backlight_ctrl)(struct LCDDev *dev, uint16_t val);
+	void (*clear)(struct LCDDev *dev, uint16_t color);
+	void (*fill)(struct LCDDev *dev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color);
+	void (*color_fill)(struct LCDDev *dev, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t *pColor);
+	void (*color_fill_dma)(struct LCDDev *dev, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t size);
+	void (*show_char)(struct LCDDev *dev, uint16_t x, uint16_t y, uint8_t chr, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
+	void (*show_string)(struct LCDDev *dev, uint16_t x, uint16_t y, char *str, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
+	void (*show_num)(struct LCDDev *dev, uint16_t x, uint16_t y, uint32_t num, uint8_t len, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
+	void (*show_hex_num)(struct LCDDev *dev, uint16_t x, uint16_t y, uint32_t num, uint8_t len, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
+	void (*show_float_num)(struct LCDDev *dev, uint16_t x, uint16_t y, float num, uint8_t int_len, uint8_t fra_len, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
+	void (*show_chinese)(struct LCDDev *dev, uint16_t x, uint16_t y, char *Chinese, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
+	void (*show_image)(struct LCDDev *dev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, const uint8_t pic[]);
+	void (*draw_point)(struct LCDDev *dev, uint16_t x, uint16_t y, uint16_t color);
+	void (*draw_line)(struct LCDDev *dev, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color);
+	void (*draw_rectangle)(struct LCDDev *dev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color);
+	void (*draw_circle)(struct LCDDev *dev, uint16_t x, uint16_t y, uint8_t radius, uint16_t color);
+	int (*deinit)(struct LCDDev *dev);
 }LCDDev_t;
 
-int lcd_init(LCDDev_t *pDev);
-void lcd_dma_init(LCDDev_t *pDev, uint32_t memoryBaseAddr);
+int lcd_init(LCDDev_t *dev);
+void lcd_dma_init(LCDDev_t *dev, uint32_t mem_base_addr);
 
 #endif

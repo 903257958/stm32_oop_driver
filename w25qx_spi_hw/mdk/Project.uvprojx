@@ -410,29 +410,14 @@
               <FilePath>..\driver\delay.c</FilePath>
             </File>
             <File>
-              <FileName>lcd.h</FileName>
+              <FileName>uart.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\driver\lcd.h</FilePath>
+              <FilePath>..\driver\uart.h</FilePath>
             </File>
             <File>
-              <FileName>lcd.c</FileName>
+              <FileName>uart.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\driver\lcd.c</FilePath>
-            </File>
-            <File>
-              <FileName>lcd_data.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\driver\lcd_data.h</FilePath>
-            </File>
-            <File>
-              <FileName>lcd_data.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\driver\lcd_data.c</FilePath>
-            </File>
-            <File>
-              <FileName>spi.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\driver\spi.c</FilePath>
+              <FilePath>..\driver\uart.c</FilePath>
             </File>
             <File>
               <FileName>spi.h</FileName>
@@ -440,14 +425,19 @@
               <FilePath>..\driver\spi.h</FilePath>
             </File>
             <File>
-              <FileName>w25qx.c</FileName>
+              <FileName>spi.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\driver\w25qx.c</FilePath>
+              <FilePath>..\driver\spi.c</FilePath>
             </File>
             <File>
               <FileName>w25qx.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\driver\w25qx.h</FilePath>
+            </File>
+            <File>
+              <FileName>w25qx.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\driver\w25qx.c</FilePath>
             </File>
           </Files>
         </Group>

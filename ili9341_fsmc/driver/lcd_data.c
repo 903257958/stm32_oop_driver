@@ -518,28 +518,28 @@ const ChineseCell32_t LCD_CF32x32[] = {
 
 /******************************************************************************
  * @brief	返回汉字数目
- * @param	fontSize	:	指定字体大小
+ * @param	font_size	:	指定字体大小
 			范围		:	32	宽32像素，高32像素
 							24	宽24像素，高24像素
 							16	宽16像素，高16像素
 							12	宽12像素，高12像素
  * @return	汉字数目
  ******************************************************************************/
-int GetChineseNum(uint8_t fontSize)
+int get_Chinese_num(uint8_t font_size)
 {
-	if(fontSize == 12)
+	if(font_size == 12)
 	{
 		return sizeof(LCD_CF12x12) / sizeof(ChineseCell12_t);	//统计汉字数目
 	}
-	else if(fontSize == 16)
+	else if(font_size == 16)
 	{
 		return sizeof(LCD_CF16x16) / sizeof(ChineseCell16_t);	//统计汉字数目
 	}
-	else if(fontSize == 24)
+	else if(font_size == 24)
 	{
 		return sizeof(LCD_CF24x24) / sizeof(ChineseCell24_t);	//统计汉字数目
 	}
-	else if(fontSize == 32)
+	else if(font_size == 32)
 	{
 		return sizeof(LCD_CF32x32) / sizeof(ChineseCell32_t);	//统计汉字数目
 	}
@@ -556,7 +556,7 @@ int GetChineseNum(uint8_t fontSize)
 	高位在前
 	长宽均为4的倍数	*/
 
-const uint8_t imageTest[] = {
+const uint8_t image_test[] = {
 	0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,
 	0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,
 	0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,

@@ -8,23 +8,10 @@
 	
 #if defined(STM32F40_41xxx)
 	#include "stm32f4xx.h"
-	
-	typedef GPIO_TypeDef*	LCD_GPIO_Port;
+	typedef GPIO_TypeDef*	LCDGPIOPort_t;
 
 #else
     #error lcd.h: No processor defined!
-#endif
-
-#ifndef FREERTOS
-	#define FREERTOS	0
-#endif
-
-#if FREERTOS
-	#include "timer.h"
-	#include "FreeRTOS.h"
-	#include "task.h"
-
-	extern TimerDev_t timerDelay;
 #endif
 
 #ifndef lcd_log
@@ -73,28 +60,28 @@ typedef enum {
 
 /* LCD屏幕的引脚一般不会改变，直接在 lcd_init 函数中的私有数据初始化中定义引脚，不提供外部接口 */
 typedef struct LCDDev {
-	bool initFlag;							// 初始化标志
+	bool init_flag;							// 初始化标志
 	uint16_t width;							// 宽度
 	uint16_t height;						// 高度
-	void *pPrivData;						// 私有数据指针
-	void (*clear)(struct LCDDev *pDev, uint16_t color);
-	void (*fill)(struct LCDDev *pDev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color);
-	void (*color_fill)(struct LCDDev *pDev, uint16_t sx, uint16_t sy, uint16_t ex, uint16_t ey, uint16_t *color);
-	void (*show_char)(struct LCDDev *pDev, uint16_t x, uint16_t y, uint8_t chr, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
-	void (*show_string)(struct LCDDev *pDev, uint16_t x, uint16_t y, char *str, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
-	void (*show_num)(struct LCDDev *pDev, uint16_t x, uint16_t y, uint32_t num, uint8_t len, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
-	void (*show_hex_num)(struct LCDDev *pDev, uint16_t x, uint16_t y, uint32_t num, uint8_t len, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
-	void (*show_float_num)(struct LCDDev *pDev, uint16_t x, uint16_t y, float num, uint8_t len, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
-	void (*show_chinese)(struct LCDDev *pDev, uint16_t x, uint16_t y, char *Chinese, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
-	void (*show_image)(struct LCDDev *pDev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, const uint8_t pic[]);
-	void (*draw_point)(struct LCDDev *pDev, uint16_t x, uint16_t y, uint16_t color);
-	uint16_t (*read_point)(struct LCDDev *pDev, uint16_t x, uint16_t y);
-	void (*draw_line)(struct LCDDev *pDev, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color);
-	void (*draw_rectangle)(struct LCDDev *pDev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color);
-	void (*draw_circle)(struct LCDDev *pDev, uint16_t x, uint16_t y, uint16_t r, uint16_t color);
-	int (*deinit)(struct LCDDev *pDev);		// 去初始化
+	void *priv_data;						// 私有数据指针
+	void (*clear)(struct LCDDev *dev, uint16_t color);
+	void (*fill)(struct LCDDev *dev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color);
+	void (*color_fill)(struct LCDDev *dev, uint16_t sx, uint16_t sy, uint16_t ex, uint16_t ey, uint16_t *color);
+	void (*show_char)(struct LCDDev *dev, uint16_t x, uint16_t y, uint8_t chr, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
+	void (*show_string)(struct LCDDev *dev, uint16_t x, uint16_t y, char *str, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
+	void (*show_num)(struct LCDDev *dev, uint16_t x, uint16_t y, uint32_t num, uint8_t len, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
+	void (*show_hex_num)(struct LCDDev *dev, uint16_t x, uint16_t y, uint32_t num, uint8_t len, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
+	void (*show_float_num)(struct LCDDev *dev, uint16_t x, uint16_t y, float num, uint8_t len, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
+	void (*show_chinese)(struct LCDDev *dev, uint16_t x, uint16_t y, char *Chinese, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
+	void (*show_image)(struct LCDDev *dev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, const uint8_t pic[]);
+	void (*draw_point)(struct LCDDev *dev, uint16_t x, uint16_t y, uint16_t color);
+	uint16_t (*read_point)(struct LCDDev *dev, uint16_t x, uint16_t y);
+	void (*draw_line)(struct LCDDev *dev, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color);
+	void (*draw_rectangle)(struct LCDDev *dev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color);
+	void (*draw_circle)(struct LCDDev *dev, uint16_t x, uint16_t y, uint16_t r, uint16_t color);
+	int (*deinit)(struct LCDDev *dev);		// 去初始化
 }LCDDev_t;
 
-int lcd_init(LCDDev_t *pDev);
+int lcd_init(LCDDev_t *dev);
 
 #endif

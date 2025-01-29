@@ -9,20 +9,18 @@
 
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
     #include "stm32f10x.h"
+    typedef GPIO_TypeDef*	W25QXGPIOPort_t;
 	
-    typedef GPIO_TypeDef*	W25QX_GPIO_Port;
-	
-#elif defined(STM32F40_41xxx)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
 	#include "stm32f4xx.h"
-	
-	typedef GPIO_TypeDef*	W25QX_GPIO_Port;
+	typedef GPIO_TypeDef*	W25QXGPIOPort_t;
 	
 #else
     #error w25qx.h: No processor defined!
 #endif
 
-#ifndef W25QX_Log
-    #define W25QX_Log(x) 
+#ifndef w25qx_log
+    #define w25qx_log(x) 
 #endif
 
 #define W25QX_PAGE_SIZE				256
@@ -63,29 +61,29 @@
 #define W25QX_DUMMY_BYTE						0xFF
 
 typedef struct {
-	W25QX_GPIO_Port SCKPort;	// SCK端口
-	uint32_t SCKPin;			// SCK引脚
-	W25QX_GPIO_Port MOSIPort;	// MOSI端口
-	uint32_t MOSIPin;			// MOSI引脚
-	W25QX_GPIO_Port MISOPort;	// MISO端口
-	uint32_t MISOPin;			// MISO引脚
-	W25QX_GPIO_Port CSPort;		// CS端口
-	uint32_t CSPin;				// CS引脚
+	W25QXGPIOPort_t sck_port;		// SCK端口
+	uint32_t sck_pin;				// SCK引脚
+	W25QXGPIOPort_t miso_port;		// MISO端口
+	uint32_t miso_pin;				// MISO引脚
+	W25QXGPIOPort_t mosi_port;		// MOSI端口
+	uint32_t mosi_pin;				// MOSI引脚
+	W25QXGPIOPort_t cs_port;		// CS端口
+	uint32_t cs_pin;				// CS引脚
 }W25QXInfo_t;
 
 typedef struct W25QXDev {
 	W25QXInfo_t info;
-	bool initFlag;																						// 初始化标志
-	void *pPrivData;																					// 私有数据指针
-	void (*read_id)(struct W25QXDev *pDev, uint8_t *mid, uint16_t *did);								// W25QX读取ID号
-	void (*page_program)(struct W25QXDev *pDev, uint32_t address, uint8_t *dataArray, uint16_t count);	// W25QX页编程
-	void (*write_data)(struct W25QXDev *pDev, uint32_t address, uint8_t *dataArray, uint32_t count);	// W25QX写入不定量数据
-	void (*sector_erase)(struct W25QXDev *pDev, uint32_t address);										// W25QX扇区擦除（4KB）
-	void (*read_data)(struct W25QXDev *pDev, uint32_t address, uint8_t *dataArray, uint32_t count);		// W25QX读取数据
-	void (*wakeup)(struct W25QXDev *pDev);																// 唤醒W25QX
-	int (*deinit)(struct W25QXDev *pDev);																// 去初始化
+	bool init_flag;																					// 初始化标志
+	void *priv_data;																				// 私有数据指针
+	void (*read_id)(struct W25QXDev *dev, uint8_t *mid, uint16_t *did);								// W25QX读取ID号
+	void (*page_program)(struct W25QXDev *dev, uint32_t addr, uint8_t *data_array, uint16_t cnt);	// W25QX页编程
+	void (*write_data)(struct W25QXDev *dev, uint32_t addr, uint8_t *data_array, uint32_t cnt);		// W25QX写入不定量数据
+	void (*sector_erase)(struct W25QXDev *dev, uint32_t addr);										// W25QX扇区擦除（4KB）
+	void (*read_data)(struct W25QXDev *dev, uint32_t addr, uint8_t *data_array, uint32_t cnt);		// W25QX读取数据
+	void (*wakeup)(struct W25QXDev *dev);															// 唤醒W25QX
+	int (*deinit)(struct W25QXDev *dev);															// 去初始化
 }W25QXDev_t;
 
-int w25qx_init(W25QXDev_t *pDev);
+int w25qx_init(W25QXDev_t *dev);
 
 #endif

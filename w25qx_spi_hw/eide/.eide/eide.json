@@ -31,22 +31,16 @@
             "path": "../driver/delay.h"
           },
           {
-            "path": "../driver/lcd_data.c"
-          },
-          {
-            "path": "../driver/lcd_data.h"
-          },
-          {
-            "path": "../driver/lcd.c"
-          },
-          {
-            "path": "../driver/lcd.h"
-          },
-          {
             "path": "../driver/spi.c"
           },
           {
             "path": "../driver/spi.h"
+          },
+          {
+            "path": "../driver/uart.c"
+          },
+          {
+            "path": "../driver/uart.h"
           },
           {
             "path": "../driver/w25qx.c"

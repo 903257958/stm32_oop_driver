@@ -12,20 +12,18 @@
 
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
     #include "stm32f10x.h"
+    typedef GPIO_TypeDef*	OLEDGPIOPort_t;
 	
-    typedef GPIO_TypeDef*	OLED_GPIO_Port;
-	
-#elif defined(STM32F40_41xxx)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
 	#include "stm32f4xx.h"
-	
-	typedef GPIO_TypeDef*	OLED_GPIO_Port;
+	typedef GPIO_TypeDef*	OLEDGPIOPort_t;
 	
 #else
     #error oled.h: No processor defined!
 #endif
 
-#ifndef OLED_Log
-    #define OLED_Log(x) 
+#ifndef oled_log
+    #define oled_log(x) 
 #endif
 
 /* 屏幕方向选择，0为正向，1为反向 */
@@ -41,52 +39,52 @@
 #define OLED_FILLED				1
 
 typedef struct {
-	SPIx spix;						// SPI外设
-	OLED_GPIO_Port SCKPort;			// SCK端口
-	uint32_t SCKPin;				// SCK引脚
-	OLED_GPIO_Port MOSIPort;		// MOSI端口
-	uint32_t MOSIPin;				// MOSI引脚
-	OLED_GPIO_Port RESPort;			// RES端口
-	uint32_t RESPin;				// RES引脚
-	OLED_GPIO_Port DCPort;			// DC端口
-	uint32_t DCPin;					// DC引脚
-	OLED_GPIO_Port CSPort;			// CS端口
-	uint32_t CSPin;					// CS引脚
+	SPIPER_t spix;					// SPI外设
+	OLEDGPIOPort_t sck_port;		// SCK端口
+	uint32_t sck_pin;				// SCK引脚
+	OLEDGPIOPort_t mosi_port;		// MOSI端口
+	uint32_t mosi_pin;				// MOSI引脚
+	OLEDGPIOPort_t res_port;		// RES端口
+	uint32_t res_pin;				// RES引脚
+	OLEDGPIOPort_t dc_port;			// DC端口
+	uint32_t dc_pin;				// DC引脚
+	OLEDGPIOPort_t cs_port;			// CS端口
+	uint32_t cs_pin;				// CS引脚
 	uint16_t prescaler;				// 预分频系数
 	SPIMode_t mode;					// SPI模式
 }OLEDInfo_t;
 
 typedef struct OLEDDev {
 	OLEDInfo_t info;
-	bool initFlag;								// 初始化标志
-	void *pPrivData;							// 私有数据指针
-	int (*update)(struct OLEDDev *pDev);
-	int (*update_area)(struct OLEDDev *pDev, uint8_t x, uint8_t y, uint8_t width, uint8_t height);
-	int (*clear)(struct OLEDDev *pDev);
-	int (*clear_area)(struct OLEDDev *pDev, uint8_t x, uint8_t y, uint8_t width, uint8_t height);
-	int (*reverse)(struct OLEDDev *pDev);
-	int (*reverse_area)(struct OLEDDev *pDev, uint8_t x, uint8_t y, uint8_t width, uint8_t height);
-	int (*show_image)(struct OLEDDev *pDev, uint8_t x, uint8_t y, uint8_t width, uint8_t height, const uint8_t *image);
-	int (*show_char)(struct OLEDDev *pDev, uint8_t x, uint8_t y, char Char, uint8_t FontSize);
-	int (*show_string)(struct OLEDDev *pDev, uint8_t x, uint8_t y, char *string, uint8_t fontSize);
-	int (*show_num)(struct OLEDDev *pDev, uint8_t x, uint8_t y, uint32_t number, uint8_t length, uint8_t fontSize);
-	int (*show_signed_num)(struct OLEDDev *pDev, uint8_t x, uint8_t y, int32_t number, uint8_t length, uint8_t fontSize);
-	int (*show_hex_num)(struct OLEDDev *pDev, uint8_t x, uint8_t y, uint32_t number, uint8_t length, uint8_t fontSize);
-	int (*show_bin_num)(struct OLEDDev *pDev, uint8_t x, uint8_t y, uint32_t number, uint8_t length, uint8_t fontSize);
-	int (*show_float_num)(struct OLEDDev *pDev, uint8_t x, uint8_t y, double number, uint8_t intLength, uint8_t fraLength, uint8_t fontSize);
-	int (*show_chinese)(struct OLEDDev *pDev, uint8_t x, uint8_t y, char *Chinese);
-	int (*printf)(struct OLEDDev *pDev, uint8_t x, uint8_t y, uint8_t fontSize, char *format, ...);
-	int (*draw_point)(struct OLEDDev *pDev, uint8_t x, uint8_t y);
-	uint8_t (*get_point)(struct OLEDDev *pDev, uint8_t x, uint8_t y);
-	int (*draw_line)(struct OLEDDev *pDev, uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1);
-	int (*draw_rectangle)(struct OLEDDev *pDev, uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint8_t isFilled);
-	int (*draw_triangle)(struct OLEDDev *pDev, uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, uint8_t IsFilled);
-	int (*draw_circle)(struct OLEDDev *pDev, uint8_t x, uint8_t y, uint8_t radius, uint8_t IsFilled);
-	int (*draw_ellipse)(struct OLEDDev *pDev, uint8_t x, uint8_t y, uint8_t a, uint8_t b, uint8_t isFilled);
-	int (*draw_arc)(struct OLEDDev *pDev, uint8_t x, uint8_t y, uint8_t radius, int16_t startAngle, int16_t endAngle, uint8_t isFilled);
-	int (*deinit)(struct OLEDDev *pDev);
+	bool init_flag;								// 初始化标志
+	void *priv_data;							// 私有数据指针
+	int (*update)(struct OLEDDev *dev);
+	int (*update_area)(struct OLEDDev *dev, uint8_t x, uint8_t y, uint8_t width, uint8_t height);
+	int (*clear)(struct OLEDDev *dev);
+	int (*clear_area)(struct OLEDDev *dev, uint8_t x, uint8_t y, uint8_t width, uint8_t height);
+	int (*reverse)(struct OLEDDev *dev);
+	int (*reverse_area)(struct OLEDDev *dev, uint8_t x, uint8_t y, uint8_t width, uint8_t height);
+	int (*show_image)(struct OLEDDev *dev, uint8_t x, uint8_t y, uint8_t width, uint8_t height, const uint8_t *image);
+	int (*show_char)(struct OLEDDev *dev, uint8_t x, uint8_t y, char chr, uint8_t FontSize);
+	int (*show_string)(struct OLEDDev *dev, uint8_t x, uint8_t y, char *string, uint8_t size);
+	int (*show_num)(struct OLEDDev *dev, uint8_t x, uint8_t y, uint32_t num, uint8_t length, uint8_t size);
+	int (*show_signed_num)(struct OLEDDev *dev, uint8_t x, uint8_t y, int32_t num, uint8_t length, uint8_t size);
+	int (*show_hex_num)(struct OLEDDev *dev, uint8_t x, uint8_t y, uint32_t num, uint8_t length, uint8_t size);
+	int (*show_bin_num)(struct OLEDDev *dev, uint8_t x, uint8_t y, uint32_t num, uint8_t length, uint8_t size);
+	int (*show_float_num)(struct OLEDDev *dev, uint8_t x, uint8_t y, double num, uint8_t int_length, uint8_t fra_length, uint8_t size);
+	int (*show_chinese)(struct OLEDDev *dev, uint8_t x, uint8_t y, char *Chinese);
+	int (*printf)(struct OLEDDev *dev, uint8_t x, uint8_t y, uint8_t size, char *format, ...);
+	int (*draw_point)(struct OLEDDev *dev, uint8_t x, uint8_t y);
+	uint8_t (*get_point)(struct OLEDDev *dev, uint8_t x, uint8_t y);
+	int (*draw_line)(struct OLEDDev *dev, uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1);
+	int (*draw_rectangle)(struct OLEDDev *dev, uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint8_t is_filled);
+	int (*draw_triangle)(struct OLEDDev *dev, uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, uint8_t is_filled);
+	int (*draw_circle)(struct OLEDDev *dev, uint8_t x, uint8_t y, uint8_t radius, uint8_t is_filled);
+	int (*draw_ellipse)(struct OLEDDev *dev, uint8_t x, uint8_t y, uint8_t a, uint8_t b, uint8_t is_filled);
+	int (*draw_arc)(struct OLEDDev *dev, uint8_t x, uint8_t y, uint8_t radius, int16_t start_angle, int16_t end_angle, uint8_t is_filled);
+	int (*deinit)(struct OLEDDev *dev);
 }OLEDDev_t;
 
-int oled_init(OLEDDev_t *pDev);
+int oled_init(OLEDDev_t *dev);
 
 #endif

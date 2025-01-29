@@ -4,6 +4,7 @@ LCDDev_t lcd;
 
 int main(void)
 {
+	delay_init(168);
 	lcd_init(&lcd);
 
 	lcd.clear(&lcd, RED);
@@ -19,7 +20,7 @@ int main(void)
 	lcd.show_string(&lcd, 0, 12 + 16, "Hello,world!", GREEN, WHITE, LCD_12X24, 1);
 	lcd.show_string(&lcd, 0, 12 + 16 + 24, "Hello,world!", BROWN, RED, LCD_16X32, 0);
 	lcd.show_chinese(&lcd, 0, 12 + 16 + 24 + 32, "你好", GREEN, RED, LCD_32X32, 1);
-	lcd.show_image(&lcd, 0, 12 + 16 + 24 + 32 + 32, 128, 128, imageTest);
+	lcd.show_image(&lcd, 0, 12 + 16 + 24 + 32 + 32, 128, 128, image_test);
 
 	lcd.show_hex_num(&lcd, 80, 0, 255, 4, WHITE, BLACK, LCD_6X12, 0);
 

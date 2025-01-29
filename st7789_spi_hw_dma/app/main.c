@@ -14,6 +14,7 @@ LCDDev_t lcd = {.info = {
 
 int main(void)
 {
+	delay_init(168);
 	lcd_init(&lcd);
 	
 	lcd.clear(&lcd, BLACK);

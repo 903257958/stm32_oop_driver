@@ -13,6 +13,7 @@ OLEDDev_t oled = {.info = {
 
 int main(void)
 {
+	delay_init(168);
 	oled_init(&oled);
 	oled.show_string(&oled, 0, 0, "Hello,world!", OLED_8X16);
 	oled.show_string(&oled, 0, 16, "Hello,world!", OLED_8X16);

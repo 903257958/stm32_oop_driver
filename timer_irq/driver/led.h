@@ -9,12 +9,12 @@
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 	#include "stm32f10x.h"
 	
-	typedef GPIO_TypeDef*	LED_GPIO_Port;
+	typedef GPIO_TypeDef*	LEDGPIOPort_t;
 	
-#elif defined(STM32F40_41xxx)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
 	#include "stm32f4xx.h"
 	
-	typedef GPIO_TypeDef*	LED_GPIO_Port;
+	typedef GPIO_TypeDef*	LEDGPIOPort_t;
 
 #else
     #error led.h: No processor defined!
@@ -33,22 +33,22 @@
 #endif
 
 typedef struct {
-	LED_GPIO_Port port;						// 端口
+	LEDGPIOPort_t port;						// 端口
 	uint32_t pin;							// 引脚
-	bool offLevel;							// LED灭时IO口的电平
+	bool off_level;							// LED灭时IO口的电平
 }LEDInfo_t;
 
 typedef struct LEDDev {
 	LEDInfo_t info;
-	bool initFlag;							// 初始化标志
-	void *pPrivData;						// 私有数据指针
-	int (*on)(struct LEDDev *pDev);			// 打开
-	int (*off)(struct LEDDev *pDev);		// 关闭
-	int (*get_status)(struct LEDDev *pDev);	// 获取状态
-	int (*toggle)(struct LEDDev *pDev);		// 翻转
-	int (*deinit)(struct LEDDev *pDev);		// 去初始化
+	bool init_flag;							// 初始化标志
+	void *priv_data;						// 私有数据指针
+	int (*on)(struct LEDDev *dev);			// 打开
+	int (*off)(struct LEDDev *dev);			// 关闭
+	int (*get_status)(struct LEDDev *dev);	// 获取状态
+	int (*toggle)(struct LEDDev *dev);		// 翻转
+	int (*deinit)(struct LEDDev *dev);		// 去初始化
 }LEDDev_t;
 
-int led_init(LEDDev_t *pDev);
+int led_init(LEDDev_t *dev);
 
 #endif

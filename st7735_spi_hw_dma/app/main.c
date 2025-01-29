@@ -15,6 +15,7 @@ LCDDev_t lcd = {.info = {
 
 int main(void)
 {
+	delay_init(168);
 	lcd_init(&lcd);
 	
 	lcd.fill(&lcd, BLUE);
@@ -30,26 +31,26 @@ int main(void)
 	{
 		for(i = 0; i < 4; i++)
 		{
-			lcd.show_image(&lcd, 40 * i, 0, 40, 40, imageTest);
+			lcd.show_image(&lcd, 40 * i, 0, 40, 40, image_test);
 			lcd.update(&lcd);
 			delay_ms(100);
 			lcd.fill_area(&lcd, 40 * i, 0, 40, 40, BLUE);
 		}
 		
-		lcd.show_image(&lcd, 120, 44, 40, 40, imageTest);
+		lcd.show_image(&lcd, 120, 44, 40, 40, image_test);
 		lcd.update(&lcd);
 		delay_ms(100);
 		lcd.fill_area(&lcd, 120, 44, 40, 40, BLUE);
 		
 		for(i = 0; i < 4; i++)
 		{
-			lcd.show_image(&lcd, 120 - 40 * i, 88, 40, 40, imageTest);
+			lcd.show_image(&lcd, 120 - 40 * i, 88, 40, 40, image_test);
 			lcd.update(&lcd);
 			delay_ms(100);
 			lcd.fill_area(&lcd, 120 - 40 * i, 88, 40, 40, BLUE);
 		}
 		
-		lcd.show_image(&lcd, 0, 44, 40, 40, imageTest);
+		lcd.show_image(&lcd, 0, 44, 40, 40, image_test);
 		lcd.update(&lcd);
 		delay_ms(100);
 		lcd.fill_area(&lcd, 0, 44, 40, 40, BLUE);

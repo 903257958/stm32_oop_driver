@@ -9,25 +9,16 @@
 
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 	#include "stm32f10x.h"
-	
-	typedef TIM_TypeDef*	TIMx;
-	typedef GPIO_TypeDef*	PassiveBuzzer_GPIO_Port;
-#elif defined(STM32F40_41xxx)
+	typedef TIM_TypeDef*	TimerPER_t;
+	typedef GPIO_TypeDef*	PassiveBuzzerGPIOPort_t;
+
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
 	#include "stm32f4xx.h"
-	
-	typedef TIM_TypeDef*	TIMx;
-	typedef GPIO_TypeDef*	PassiveBuzzer_GPIO_Port;
+	typedef TIM_TypeDef*	TimerPER_t;
+	typedef GPIO_TypeDef*	PassiveBuzzerGPIOPort_t;
+
 #else
 	#error passive_buzzer.h: No processor defined!
-#endif
-
-#ifndef FREERTOS
-	#define FREERTOS	0
-#endif
-
-#if FREERTOS
-	#include "FreeRTOS.h"
-	#include "task.h"
 #endif
 
 #ifndef passive_buzzer_log
@@ -71,23 +62,23 @@ typedef struct {
 extern PassiveBuzzerNote_t music_test[42];
 
 typedef struct {
-	TIMx timx;						// 定时器外设
-	uint8_t OCChannel;				// 输出比较通道
-	PassiveBuzzer_GPIO_Port	port;	// 无源蜂鸣器端口
+	TimerPER_t timx;				// 定时器外设
+	uint8_t oc_channel;				// 输出比较通道
+	PassiveBuzzerGPIOPort_t	port;	// 无源蜂鸣器端口
 	uint32_t pin;					// 无源蜂鸣器引脚
 }PassiveBuzzerInfo_t;
 
 typedef struct PassiveBuzzerDev {
 	PassiveBuzzerInfo_t info;
-	bool initFlag;																// 初始化标志
-	void *pPrivData;															// 私有数据指针
-	void (*set_frequency)(struct PassiveBuzzerDev *pDev, uint16_t frequency);	// 设置无源蜂鸣器频率
-	void (*set_sound)(struct PassiveBuzzerDev *pDev, uint16_t compare);			// 设置无源蜂鸣器音量
-	void (*play_note)(struct PassiveBuzzerDev *pDev, NoteFrequency note, uint8_t beat, uint16_t sound);	// 无源蜂鸣器播放一个音符
-	void (*play_music)(struct PassiveBuzzerDev *pDev, PassiveBuzzerNote_t *music, uint16_t noteNum);	// 无源蜂鸣器播放一段音乐
-	int (*deinit)(struct PassiveBuzzerDev *pDev);								// 去初始化
+	bool init_flag;																// 初始化标志
+	void *priv_data;															// 私有数据指针
+	void (*set_frequency)(struct PassiveBuzzerDev *dev, uint16_t frequency);	// 设置无源蜂鸣器频率
+	void (*set_sound)(struct PassiveBuzzerDev *dev, uint16_t compare);			// 设置无源蜂鸣器音量
+	void (*play_note)(struct PassiveBuzzerDev *dev, NoteFrequency note, uint8_t beat, uint16_t sound);	// 无源蜂鸣器播放一个音符
+	void (*play_music)(struct PassiveBuzzerDev *dev, PassiveBuzzerNote_t *music, uint16_t note_num);	// 无源蜂鸣器播放一段音乐
+	int (*deinit)(struct PassiveBuzzerDev *dev);								// 去初始化
 }PassiveBuzzerDev_t;
 
-int passive_buzzer_init(PassiveBuzzerDev_t *pDev);
+int passive_buzzer_init(PassiveBuzzerDev_t *dev);
 
 #endif

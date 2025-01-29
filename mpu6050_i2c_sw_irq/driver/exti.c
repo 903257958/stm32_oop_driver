@@ -1,43 +1,42 @@
-#include <stdlib.h>
 #include "exti.h"
 
 #define MAX_IRQ_HANDLER_NUM	16
 
-IRQHandler_t gIRQHandlers[MAX_IRQ_HANDLER_NUM];
+IRQHandler_t g_irq_handlers[MAX_IRQ_HANDLER_NUM];
 
-uint8_t gIRQHandlerCount = 0;
+uint8_t g_irq_handler_cnt = 0;
 
 /******************************************************************************
  * @brief	中断处理结构体注册函数
- * @param	EXTILine		:  中断通道
+ * @param	exti_line		:  中断通道
  * @param	irq_callback	:  中断回调函数
  * @return	无
  ******************************************************************************/
-void irq_handler_register(uint32_t EXTILine, void(*irq_callback)(void))
+void irq_handler_register(uint32_t exti_line, void(*irq_callback)(void))
 {
-    if (gIRQHandlerCount < MAX_IRQ_HANDLER_NUM)
+    if (g_irq_handler_cnt < MAX_IRQ_HANDLER_NUM)
     {
-        gIRQHandlers[gIRQHandlerCount].EXTILine = EXTILine;
-        gIRQHandlers[gIRQHandlerCount].irq_callback = irq_callback;
-        gIRQHandlerCount++;
+        g_irq_handlers[g_irq_handler_cnt].exti_line = exti_line;
+        g_irq_handlers[g_irq_handler_cnt].irq_callback = irq_callback;
+        g_irq_handler_cnt++;
     }
 }
 
 /******************************************************************************
  * @brief	通用中断处理函数
- * @param	EXTILine	:  中断通道
+ * @param	exti_line	:  中断通道
  * @return	无
  ******************************************************************************/
-static void __exti_irq_handler(uint32_t EXTILine)
+static void __exti_irq_handler(uint32_t exti_line)
 {
-	for (uint8_t i = 0; i < gIRQHandlerCount; i++)		// 遍历所有已注册的中断处理结构体
+	for (uint8_t i = 0; i < g_irq_handler_cnt; i++)		// 遍历所有已注册的中断处理结构体
 	{
-		if (gIRQHandlers[i].EXTILine == EXTILine && EXTI_GetITStatus(EXTILine) != RESET)
+		if (g_irq_handlers[i].exti_line == exti_line && EXTI_GetITStatus(exti_line) != RESET)
 		{
-			EXTI_ClearITPendingBit(EXTILine);			// 清除中断标志位
-			if (gIRQHandlers[i].irq_callback != NULL)
+			EXTI_ClearITPendingBit(exti_line);			// 清除中断标志位
+			if (g_irq_handlers[i].irq_callback != NULL)
 			{
-				gIRQHandlers[i].irq_callback();			// 执行中断回调函数
+				g_irq_handlers[i].irq_callback();			// 执行中断回调函数
 			}
 		}
 	}
