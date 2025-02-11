@@ -12,7 +12,7 @@
 	#include "stm32f10x.h"
 	typedef GPIO_TypeDef*	CST816TGPIOPort_t;
 	
-#elif defined(STM32F40_41xxx)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
 	#include "stm32f4xx.h"
 	typedef GPIO_TypeDef*	CST816TGPIOPort_t;
 	

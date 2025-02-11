@@ -142,6 +142,72 @@
 											uartx == USART6 ? DMA_FLAG_TCIF1 : \
 											(int)0)
 
+#elif defined(STM32F411xE)
+											
+#define __uart_get_irqn(uartx)	(	uartx == USART1 ? USART1_IRQn : \
+									uartx == USART2 ? USART2_IRQn : \
+                                    uartx == USART6 ? USART6_IRQn : \
+									(int)0	)
+											
+#define __uart_get_index(uartx)	(	uartx == USART1 ? 0 : \
+									uartx == USART2 ? 1 : \
+                                    uartx == USART6 ? 5 : \
+									(int)-1	)
+										
+#define	__uart_config_clock_enable(uartx)	{	if (uartx == USART1)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);} \
+												else if (uartx == USART2)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);} \
+                                                else if (uartx == USART6)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART6, ENABLE);} \
+												else						{uart_log("uart clock no enable\r\n");} \
+											}
+
+#define	__uart_config_gpio_clock_enable(port)	{	if (port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);} \
+													else if (port == GPIOB)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);} \
+													else if (port == GPIOC)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);} \
+													else if (port == GPIOD)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);} \
+													else if (port == GPIOE)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);} \
+													else if (port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);} \
+													else if (port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);} \
+													else					{uart_log("uart gpio clock no enable\r\n");} \
+												}
+
+#define	__uart_config_dma_clock_enable(uartx)	{	if (uartx == USART1)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);} \
+													else if (uartx == USART2)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);} \
+                                                    else if (uartx == USART6)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);} \
+													else						{uart_log("uart clock no enable\r\n");} \
+												}
+
+#define	__uart_config_io_af_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
+												GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF; \
+												GPIO_InitStructure.GPIO_OType = GPIO_OType_PP; \
+												GPIO_InitStructure.GPIO_Pin = pin; \
+												GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP; \
+												GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; \
+												GPIO_Init(port, &GPIO_InitStructure); \
+											}
+
+#define	__uart_config_io_in_pu(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
+												GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN; \
+												GPIO_InitStructure.GPIO_Pin = pin; \
+												GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP; \
+												GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; \
+												GPIO_Init(port, &GPIO_InitStructure); \
+											}
+
+#define __uart_get_dma_stream(uartx)	(	uartx == USART1 ? DMA2_Stream5 : \
+											uartx == USART2 ? DMA1_Stream5 : \
+                                            uartx == USART6 ? DMA2_Stream1 : \
+											(int)0)
+
+#define	__uart_get_dma_channel(uartx)		(	uartx == USART1 ? DMA_Channel_4 : \
+												uartx == USART2 ? DMA_Channel_4 : \
+                                                uartx == USART6 ? DMA_Channel_5 : \
+												(int)0)
+												
+#define	__uart_get_dma_flag(uartx)		(	uartx == USART1 ? DMA_FLAG_TCIF5 : \
+											uartx == USART2 ? DMA_FLAG_TCIF5 : \
+                                            uartx == USART6 ? DMA_FLAG_TCIF1 : \
+											(int)0)
+
 #endif
 
 #define MAX_USART_NUM			6									// 串口外设最大数量
@@ -193,7 +259,7 @@ int uart_init(UARTDev_t *dev)
 	__uart_config_io_af_pp(dev->info.tx_port, dev->info.tx_pin);
 	__uart_config_io_af_pp(dev->info.rx_port, dev->info.rx_pin);
 	
-	#if defined(STM32F40_41xxx)
+	#if defined(STM32F40_41xxx) || defined(STM32F411xE)
 	if (dev->info.uartx == USART1)
 	{
 		GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_USART1);
@@ -313,7 +379,7 @@ int uart_dma_init(UARTDev_t *dev)
 	/* 启用UART的DMA请求 */
 	USART_DMACmd(dev->info.uartx, USART_DMAReq_Rx, ENABLE);
 
-	#elif defined(STM32F40_41xxx)
+	#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
 	
 	/* 配置DMA */
 	__uart_config_dma_clock_enable(dev->info.uartx);									// 开启DMA时钟
@@ -379,7 +445,7 @@ static int __uart_dma_recv_enable(UARTDev_t *dev)
 	/* 重新打开DMA */
 	DMA_Cmd(priv_data->DMAChannel, ENABLE);
 	
-	#elif defined(STM32F40_41xxx)
+	#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
 	
 	/* 将接收的内存部分数据清0 */
 	memset(g_rx_str[priv_data->index], 0, sizeof(g_rx_str[priv_data->index]));
@@ -647,7 +713,7 @@ void USART1_IRQHandler(void)
 			/* 空闲中断产生，关闭DMA，等待数据处理，在调用 dma_recv_enable 函数后DMA才被重新开启 */
 			#if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 			DMA_Cmd(DMA1_Channel5, DISABLE);
-			#elif defined(STM32F40_41xxx)
+			#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
 			DMA_Cmd(DMA2_Stream5, DISABLE);
 			#endif
 	}
@@ -678,7 +744,7 @@ void USART2_IRQHandler(void)
 			/* 空闲中断产生，关闭DMA，等待数据处理，在调用 dma_recv_enable 函数后DMA才被重新开启 */
 			#if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 			DMA_Cmd(DMA1_Channel6, DISABLE);
-			#elif defined(STM32F40_41xxx)
+			#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
 			DMA_Cmd(DMA1_Stream5, DISABLE);
 			#endif
 	}
@@ -789,7 +855,7 @@ void UART5_IRQHandler(void)
  ******************************************************************************/
 void USART6_IRQHandler(void)
 {
-	#if defined(STM32F40_41xxx)
+	#if defined(STM32F40_41xxx) || defined(STM32F411xE)
 	volatile uint8_t clear;
 
 	if (USART_GetITStatus(USART6, USART_IT_IDLE) != RESET)   // 空闲中断

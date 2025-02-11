@@ -13,7 +13,7 @@
 	typedef USART_TypeDef*			UARTPER_t;
 	typedef GPIO_TypeDef*			UARTGPIOPort_t;
 	
-#elif defined(STM32F40_41xxx)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
 	#include "stm32f4xx.h"
 	typedef USART_TypeDef*			UARTPER_t;
 	typedef GPIO_TypeDef*			UARTGPIOPort_t;
