@@ -52,6 +52,7 @@
 #define Y_POS_L         	0x06    // y低八位
 #define CHIP_ID         	0xA7    // 芯片型号
 #define FW_VER				0xA9    // 固件版本
+#define SLEEP_MODE     		0xE5    // 睡眠模式
 #define MOTION_MASK     	0xEC    // 触发动作
 #define AUTO_SLEEP_TIME 	0xF9    // 自动休眠
 #define IRQ_CRL         	0xFA    // 中断控制
@@ -77,15 +78,15 @@ typedef struct {
 
 typedef struct CST816TDev {
 	CST816TInfo_t info;
-	bool init_flag;          // 初始化标志
-    void *priv_data;        // 私有数据指针
+	bool init_flag;		// 初始化标志
+    void *priv_data;	// 私有数据指针
 	uint16_t x;
     uint16_t y;
     uint8_t gesture;
-	void (*get_id)(struct CST816TDev *dev, uint8_t *id);
-	void (*get_firmware_ver)(struct CST816TDev *dev, uint8_t *fw_ver);
-	uint8_t (*get_finger_num)(struct CST816TDev *dev);
-    void (*get_action)(struct CST816TDev *dev);
+	int (*get_id)(struct CST816TDev *dev, uint8_t *id);
+	int (*get_firmware_ver)(struct CST816TDev *dev, uint8_t *fw_ver);
+	int (*get_finger_num)(struct CST816TDev *dev);
+    int (*get_action)(struct CST816TDev *dev);
 	int (*deinit)(struct CST816TDev *dev); // 去初始化
 }CST816TDev_t;
 
