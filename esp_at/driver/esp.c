@@ -85,15 +85,14 @@ static int __esp_send_cmd(ESPDev_t *dev, const char *cmd, const char *ack, char 
 				val = AT_RX_ERROR;		// 失败
 				break;
 			}
-			
-			/* 累加已等待的时间 */
-			delay_ms(1);
-			time++;
-			if (time >= timeout)
-			{
-				val = AT_RX_TIMEOUT;	// 超时
-				break;
-			}
+		}
+		/* 累加已等待的时间 */
+		delay_ms(1);
+		time++;
+		if (time >= timeout)
+		{
+			val = AT_RX_TIMEOUT;	// 超时
+			break;
 		}
 	}
 
