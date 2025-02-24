@@ -61,8 +61,8 @@ int passive_buzzer_init(PassiveBuzzerDev_t *dev)
 	dev->play_music = __passive_buzzer_play_music;
 	dev->deinit = __passive_buzzer_deinit;
 	
-    __passive_buzzer_set_sound(dev, 0);
 	dev->init_flag = true;
+    __passive_buzzer_set_sound(dev, 0);
 	return 0;
 }
 
