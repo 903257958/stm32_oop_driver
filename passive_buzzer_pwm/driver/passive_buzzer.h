@@ -72,10 +72,10 @@ typedef struct PassiveBuzzerDev {
 	PassiveBuzzerInfo_t info;
 	bool init_flag;																// 初始化标志
 	void *priv_data;															// 私有数据指针
-	void (*set_frequency)(struct PassiveBuzzerDev *dev, uint16_t frequency);	// 设置无源蜂鸣器频率
-	void (*set_sound)(struct PassiveBuzzerDev *dev, uint16_t compare);			// 设置无源蜂鸣器音量
-	void (*play_note)(struct PassiveBuzzerDev *dev, NoteFrequency note, uint8_t beat, uint16_t sound);	// 无源蜂鸣器播放一个音符
-	void (*play_music)(struct PassiveBuzzerDev *dev, PassiveBuzzerNote_t *music, uint16_t note_num);	// 无源蜂鸣器播放一段音乐
+	int (*set_frequency)(struct PassiveBuzzerDev *dev, uint16_t frequency);	// 设置无源蜂鸣器频率
+	int (*set_sound)(struct PassiveBuzzerDev *dev, uint16_t compare);			// 设置无源蜂鸣器音量
+	int (*play_note)(struct PassiveBuzzerDev *dev, NoteFrequency note, uint8_t beat, uint16_t sound);	// 无源蜂鸣器播放一个音符
+	int (*play_music)(struct PassiveBuzzerDev *dev, PassiveBuzzerNote_t *music, uint16_t note_num);	// 无源蜂鸣器播放一段音乐
 	int (*deinit)(struct PassiveBuzzerDev *dev);								// 去初始化
 }PassiveBuzzerDev_t;
 

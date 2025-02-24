@@ -18,10 +18,10 @@ typedef struct {
 }PassiveBuzzerPrivData_t;
 
 /* 函数声明 */
-static void __passive_buzzer_set_frequency(PassiveBuzzerDev_t *dev, uint16_t frequency);
-static void __passive_buzzer_set_sound(PassiveBuzzerDev_t *dev, uint16_t compare);
-static void __passive_buzzer_play_note(PassiveBuzzerDev_t *dev, NoteFrequency note, uint8_t beat, uint16_t sound);
-static void __passive_buzzer_play_music(PassiveBuzzerDev_t *dev, PassiveBuzzerNote_t *music, uint16_t note_num);
+static int __passive_buzzer_set_frequency(PassiveBuzzerDev_t *dev, uint16_t frequency);
+static int __passive_buzzer_set_sound(PassiveBuzzerDev_t *dev, uint16_t compare);
+static int __passive_buzzer_play_note(PassiveBuzzerDev_t *dev, NoteFrequency note, uint8_t beat, uint16_t sound);
+static int __passive_buzzer_play_music(PassiveBuzzerDev_t *dev, PassiveBuzzerNote_t *music, uint16_t note_num);
 static int __passive_buzzer_deinit(PassiveBuzzerDev_t *dev);
 
 /******************************************************************************
@@ -61,6 +61,7 @@ int passive_buzzer_init(PassiveBuzzerDev_t *dev)
 	dev->play_music = __passive_buzzer_play_music;
 	dev->deinit = __passive_buzzer_deinit;
 	
+    __passive_buzzer_set_sound(dev, 0);
 	dev->init_flag = true;
 	return 0;
 }
@@ -71,11 +72,16 @@ int passive_buzzer_init(PassiveBuzzerDev_t *dev)
  * @param	frequency	：	要设置的频率，范围：262~1976
  * @return	无
  ******************************************************************************/
-static void __passive_buzzer_set_frequency(PassiveBuzzerDev_t *dev, uint16_t frequency)
+static int __passive_buzzer_set_frequency(PassiveBuzzerDev_t *dev, uint16_t frequency)
 {
+    if (!dev || !dev->init_flag)
+		return -1;
+    
 	PassiveBuzzerPrivData_t *priv_data = (PassiveBuzzerPrivData_t *)dev->priv_data;
 	
 	priv_data->pwm.set_arr(&priv_data->pwm, 1000000 / frequency);
+    
+    return 0;
 }
 
 /******************************************************************************
@@ -84,11 +90,16 @@ static void __passive_buzzer_set_frequency(PassiveBuzzerDev_t *dev, uint16_t fre
  * @param	compare	：	要设置的占空比
  * @return	无
  ******************************************************************************/
-static void __passive_buzzer_set_sound(PassiveBuzzerDev_t *dev, uint16_t compare)
+static int __passive_buzzer_set_sound(PassiveBuzzerDev_t *dev, uint16_t compare)
 {
+    if (!dev || !dev->init_flag)
+		return -1;
+    
 	PassiveBuzzerPrivData_t *priv_data = (PassiveBuzzerPrivData_t *)dev->priv_data;
 	
 	priv_data->pwm.set_compare(&priv_data->pwm, compare);
+    
+    return 0;
 }
 
 /******************************************************************************
@@ -99,8 +110,11 @@ static void __passive_buzzer_set_sound(PassiveBuzzerDev_t *dev, uint16_t compare
  * @param	sound	：	音量
  * @return	无
  ******************************************************************************/
-static void __passive_buzzer_play_note(PassiveBuzzerDev_t *dev, NoteFrequency note, uint8_t beat, uint16_t sound)
+static int __passive_buzzer_play_note(PassiveBuzzerDev_t *dev, NoteFrequency note, uint8_t beat, uint16_t sound)
 {
+    if (!dev || !dev->init_flag)
+		return -1;
+    
 	__passive_buzzer_set_sound(dev, sound);
 	__passive_buzzer_set_frequency(dev, note);
 	while(beat--)
@@ -108,6 +122,8 @@ static void __passive_buzzer_play_note(PassiveBuzzerDev_t *dev, NoteFrequency no
 		delay_ms(200);
 	}
 	__passive_buzzer_set_sound(dev, 0);
+    
+    return 0;
 }
 
 /******************************************************************************
@@ -117,12 +133,17 @@ static void __passive_buzzer_play_note(PassiveBuzzerDev_t *dev, NoteFrequency no
  * @param	note_num	：	要播放的音乐的音符数
  * @return	无
  ******************************************************************************/
-static void __passive_buzzer_play_music(PassiveBuzzerDev_t *dev, PassiveBuzzerNote_t *music, uint16_t note_num)
+static int __passive_buzzer_play_music(PassiveBuzzerDev_t *dev, PassiveBuzzerNote_t *music, uint16_t note_num)
 {
+    if (!dev || !dev->init_flag)
+		return -1;
+    
 	for(uint16_t i = 0; i < note_num; i++)
 	{
 		__passive_buzzer_play_note(dev, music[i].note, music[i].beat, music[i].sound);
 	}
+    
+    return 0;
 }
 
 /******************************************************************************

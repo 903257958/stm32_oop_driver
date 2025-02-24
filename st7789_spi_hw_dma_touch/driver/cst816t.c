@@ -53,7 +53,7 @@ typedef struct {
 }CST816TPrivData_t;
 
 /* 函数声明 */
-// static void __cst816t_write_reg(CST816TDev_t *dev, uint8_t addr, uint8_t data);
+// static int __cst816t_write_reg(CST816TDev_t *dev, uint8_t addr, uint8_t data);
 static int __cst816t_read_reg(CST816TDev_t *dev, uint8_t addr, uint8_t *data);
 static int __cst816t_read_regs(CST816TDev_t *dev, uint8_t addr, uint8_t num, uint8_t data[]);
 static int __cst816t_get_id(CST816TDev_t *dev, uint8_t *id);
@@ -287,7 +287,7 @@ static int __cst816t_get_action(CST816TDev_t *dev)
 		if ((dev->info.dir == VERTICAL_FORWARD) && (x <= LCD_W && y <= LCD_H))
 		{
 			dev->x = x;
-			dev->y = y - 5;
+			dev->y = y - 8;
 
             switch(gesture)
 			{
@@ -363,6 +363,10 @@ static int __cst816t_deinit(CST816TDev_t *dev)
     if (!dev || !dev->init_flag)
         return -1;
 	
+	/* 释放私有数据内存 */
+	free(dev->priv_data);
+    dev->priv_data = NULL;
+
 	dev->init_flag = false;	// 修改初始化标志
     
     return 0;
