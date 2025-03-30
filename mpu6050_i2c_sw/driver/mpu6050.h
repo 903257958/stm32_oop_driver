@@ -23,7 +23,7 @@
 	#define mpu6050_log(x) 
 #endif
 
-#define MPU6050_ADDRESS			0xD0	//MPU6050的I2C从机地址
+#define MPU6050_ADDRESS			0x68	// MPU6050的I2C从机地址
 
 #define	MPU6050_SMPLRT_DIV		0x19
 #define	MPU6050_CONFIG			0x1A
@@ -72,7 +72,7 @@ typedef struct MPU6050Dev {
 	bool init_flag;														// 初始化标志
 	void *priv_data;													// 私有数据指针
 	uint8_t (*get_id)(struct MPU6050Dev *dev);							// MPU6050获取ID号
-	void (*get_data)(struct MPU6050Dev *dev, MPU6050Data_t *data);		// MPU6050获取数据
+	int (*get_data)(struct MPU6050Dev *dev, MPU6050Data_t *data);		// MPU6050获取数据
 	int (*deinit)(struct MPU6050Dev *dev);								// 去初始化
 }MPU6050Dev_t;
 

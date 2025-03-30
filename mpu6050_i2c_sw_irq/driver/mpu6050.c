@@ -176,13 +176,9 @@ typedef struct {
 /* 配置中断 */
 static void __mpu6050_irq_init(MPU6050Dev_t *dev);
 
-/* 通信协议 */
-static void __mpu6050_write_reg(MPU6050Dev_t *dev, uint8_t reg_addr, uint8_t data);
-static uint8_t __mpu6050_read_reg(MPU6050Dev_t *dev, uint8_t reg_addr);
-
 /* 功能函数 */
 static uint8_t __mpu6050_get_id(MPU6050Dev_t *dev);
-static void __mpu6050_get_data(MPU6050Dev_t *dev, MPU6050Data_t *data);
+static int __mpu6050_get_data(MPU6050Dev_t *dev, MPU6050Data_t *data);
 static int __mpu6050_deinit(MPU6050Dev_t *dev);
 
 /******************************************************************************
@@ -221,12 +217,12 @@ int mpu6050_init(MPU6050Dev_t *dev)
 	dev->init_flag = true;
 	
 	/* MPU6050寄存器初始化，需要对照MPU6050手册的寄存器描述配置，此处仅配置了部分重要的寄存器 */
-	__mpu6050_write_reg(dev, MPU6050_PWR_MGMT_1, 0x01);		// 电源管理寄存器1，取消睡眠模式，选择时钟源为X轴陀螺仪
-	__mpu6050_write_reg(dev, MPU6050_PWR_MGMT_2, 0x00);		// 电源管理寄存器2，保持默认值0，所有轴均不待机
-	__mpu6050_write_reg(dev, MPU6050_SMPLRT_DIV, 0x09);		// 采样率分频寄存器，配置采样率
-	__mpu6050_write_reg(dev, MPU6050_CONFIG, 0x06);			// 配置寄存器，配置DLPF
-	__mpu6050_write_reg(dev, MPU6050_GYRO_CONFIG, 0x18);		// 陀螺仪配置寄存器，选择满量程为±2000°/s
-	__mpu6050_write_reg(dev, MPU6050_ACCEL_CONFIG, 0x18);		// 加速度计配置寄存器，选择满量程为±16g
+	priv_data->i2c.write_reg(&priv_data->i2c, MPU6050_ADDRESS, MPU6050_PWR_MGMT_1, 0x01);		// 电源管理寄存器1，取消睡眠模式，选择时钟源为X轴陀螺仪
+	priv_data->i2c.write_reg(&priv_data->i2c, MPU6050_ADDRESS, MPU6050_PWR_MGMT_2, 0x00);		// 电源管理寄存器2，保持默认值0，所有轴均不待机
+	priv_data->i2c.write_reg(&priv_data->i2c, MPU6050_ADDRESS, MPU6050_SMPLRT_DIV, 0x09);		// 采样率分频寄存器，配置采样率
+	priv_data->i2c.write_reg(&priv_data->i2c, MPU6050_ADDRESS, MPU6050_CONFIG, 0x06);			// 配置寄存器，配置DLPF
+	priv_data->i2c.write_reg(&priv_data->i2c, MPU6050_ADDRESS, MPU6050_GYRO_CONFIG, 0x18);		// 陀螺仪配置寄存器，选择满量程为±2000°/s
+	priv_data->i2c.write_reg(&priv_data->i2c, MPU6050_ADDRESS, MPU6050_ACCEL_CONFIG, 0x18);		// 加速度计配置寄存器，选择满量程为±16g
 	
 	return 0;
 }
@@ -238,6 +234,8 @@ int mpu6050_init(MPU6050Dev_t *dev)
  ******************************************************************************/
 static void __mpu6050_irq_init(MPU6050Dev_t *dev)
 {
+	MPU6050PrivData_t *priv_data = (MPU6050PrivData_t *)dev->priv_data;
+
 	#if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 	
 	/* 配置时钟与GPIO */
@@ -283,58 +281,9 @@ static void __mpu6050_irq_init(MPU6050Dev_t *dev)
 	/* 注册外部中断回调函数 */
 	irq_handler_register(	__mpu6050_get_exti_line(dev->info.int_pin), 
 							dev->info.irq_callback	);
-	
-	__mpu6050_write_reg(dev, MPU6050_INT_PIN_CFG, 0x00);	// 配置中断引脚
-	__mpu6050_write_reg(dev, MPU6050_INT_ENABLE, 0xFF);		// 使能所有中断
-}
 
-/******************************************************************************
- * @brief	MPU6050写寄存器
- * @param	dev			:	MPU6050Dev_t 结构体指针
- * @param	reg_addr	:	寄存器地址，范围：参考MPU6050手册的寄存器描述
- * @param	data		:	要写入寄存器的数据，范围：0x00~0xFF
- * @return	无
- ******************************************************************************/
-static void __mpu6050_write_reg(MPU6050Dev_t *dev, uint8_t reg_addr, uint8_t data)
-{
-	MPU6050PrivData_t *priv_data = (MPU6050PrivData_t *)dev->priv_data;
-	
-	priv_data->i2c.start(&priv_data->i2c);						// I2C起始
-	priv_data->i2c.send_byte(&priv_data->i2c, MPU6050_ADDRESS);	// 发送从机地址，读写位为0，表示即将写入
-	priv_data->i2c.recv_ack(&priv_data->i2c);					// 接收应答
-	priv_data->i2c.send_byte(&priv_data->i2c, reg_addr);		// 发送寄存器地址
-	priv_data->i2c.recv_ack(&priv_data->i2c);					// 接收应答
-	priv_data->i2c.send_byte(&priv_data->i2c, data);			// 发送要写入寄存器的数据
-	priv_data->i2c.recv_ack(&priv_data->i2c);					// 接收应答
-	priv_data->i2c.stop(&priv_data->i2c);						// I2C终止					
-}
-
-/******************************************************************************
- * @brief	MPU6050读寄存器
- * @param	dev		:	MPU6050Dev_t 结构体指针
- * @param	reg_addr		:	寄存器地址，范围：参考MPU6050手册的寄存器描述
- * @return	读取寄存器的数据，范围：0x00~0xFF
- ******************************************************************************/
-static uint8_t __mpu6050_read_reg(MPU6050Dev_t *dev, uint8_t reg_addr)
-{
-	MPU6050PrivData_t *priv_data = (MPU6050PrivData_t *)dev->priv_data;
-	
-	uint8_t data;
-	
-	priv_data->i2c.start(&priv_data->i2c);								// I2C起始
-	priv_data->i2c.send_byte(&priv_data->i2c, MPU6050_ADDRESS);			// 发送从机地址，读写位为0，表示即将写入
-	priv_data->i2c.recv_ack(&priv_data->i2c);							// 接收应答
-	priv_data->i2c.send_byte(&priv_data->i2c, reg_addr);				// 发送寄存器地址
-	priv_data->i2c.recv_ack(&priv_data->i2c);							// 接收应答
-	
-	priv_data->i2c.start(&priv_data->i2c);								// I2C重复起始
-	priv_data->i2c.send_byte(&priv_data->i2c, MPU6050_ADDRESS | 0x01);	// 发送从机地址，读写位为1，表示即将读取
-	priv_data->i2c.recv_ack(&priv_data->i2c);							// 接收应答
-	data = priv_data->i2c.recv_byte(&priv_data->i2c);					// 接收指定寄存器的数据
-	priv_data->i2c.send_ack(&priv_data->i2c, 1);						// 发送应答，给从机非应答，终止从机的数据输出
-	priv_data->i2c.stop(&priv_data->i2c);								// I2C终止					
-	
-	return data;
+	priv_data->i2c.write_reg(&priv_data->i2c, MPU6050_ADDRESS, MPU6050_INT_PIN_CFG, 0x00);	// 配置中断引脚
+	priv_data->i2c.write_reg(&priv_data->i2c, MPU6050_ADDRESS, MPU6050_INT_ENABLE, 0xFF);	// 使能所有中断
 }
 
 /******************************************************************************
@@ -344,48 +293,60 @@ static uint8_t __mpu6050_read_reg(MPU6050Dev_t *dev, uint8_t reg_addr)
  ******************************************************************************/
 static uint8_t __mpu6050_get_id(MPU6050Dev_t *dev)
 {
-	return __mpu6050_read_reg(dev, MPU6050_WHO_AM_I);		// 返回WHO_AM_I寄存器的值
+	MPU6050PrivData_t *priv_data = (MPU6050PrivData_t *)dev->priv_data;
+	uint8_t id;
+
+	priv_data->i2c.read_reg(&priv_data->i2c, MPU6050_ADDRESS, MPU6050_WHO_AM_I, &id);
+
+	return id;
 }
 
 /******************************************************************************
  * @brief	MPU6050获取数据
  * @param	dev		:	MPU6050Dev_t 结构体指针
- * @param	data	:	MPU6050Data_t 结构体指针
- * @return	无
+ * @param	data		:	MPU6050Data_t 结构体指针
+ * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static void __mpu6050_get_data(MPU6050Dev_t *dev, MPU6050Data_t *data)
+static int __mpu6050_get_data(MPU6050Dev_t *dev, MPU6050Data_t *data)
 {
+	if (!dev || !dev->init_flag)
+		return -1;
+
+	MPU6050PrivData_t *priv_data = (MPU6050PrivData_t *)dev->priv_data;
+
 	int16_t temp_val;
 	uint8_t data_h, data_l;									// 定义数据高8位和低8位的变量
 	
-	data_h = __mpu6050_read_reg(dev, MPU6050_ACCEL_XOUT_H);	// 读取加速度计X轴的高8位数据
-	data_l = __mpu6050_read_reg(dev, MPU6050_ACCEL_XOUT_L);	// 读取加速度计X轴的低8位数据
+	priv_data->i2c.read_reg(&priv_data->i2c, MPU6050_ADDRESS, MPU6050_ACCEL_XOUT_H, &data_h);	// 读取加速度计X轴的高8位数据
+	priv_data->i2c.read_reg(&priv_data->i2c, MPU6050_ADDRESS, MPU6050_ACCEL_XOUT_L, &data_l);	// 读取加速度计X轴的低8位数据
 	data->accx = (data_h << 8) | data_l;					// 数据拼接
 	
-	data_h = __mpu6050_read_reg(dev, MPU6050_ACCEL_YOUT_H);	// 读取加速度计Y轴的高8位数据
-	data_l = __mpu6050_read_reg(dev, MPU6050_ACCEL_YOUT_L);	// 读取加速度计Y轴的低8位数据
+	priv_data->i2c.read_reg(&priv_data->i2c, MPU6050_ADDRESS, MPU6050_ACCEL_YOUT_H, &data_h);	// 读取加速度计Y轴的高8位数据
+	priv_data->i2c.read_reg(&priv_data->i2c, MPU6050_ADDRESS, MPU6050_ACCEL_YOUT_L, &data_l);	// 读取加速度计Y轴的低8位数据
 	data->accy = (data_h << 8) | data_l;					// 数据拼接
 	
-	data_h = __mpu6050_read_reg(dev, MPU6050_ACCEL_ZOUT_H);	// 读取加速度计Z轴的高8位数据
-	data_l = __mpu6050_read_reg(dev, MPU6050_ACCEL_ZOUT_L);	// 读取加速度计Z轴的低8位数据
+	priv_data->i2c.read_reg(&priv_data->i2c, MPU6050_ADDRESS, MPU6050_ACCEL_ZOUT_H, &data_h);	// 读取加速度计Z轴的高8位数据
+	priv_data->i2c.read_reg(&priv_data->i2c, MPU6050_ADDRESS, MPU6050_ACCEL_ZOUT_L, &data_l);	// 读取加速度计Z轴的低8位数据
 	data->accz = (data_h << 8) | data_l;					// 数据拼接
 	
-	data_h = __mpu6050_read_reg(dev, MPU6050_GYRO_XOUT_H);	// 读取陀螺仪X轴的高8位数据
-	data_l = __mpu6050_read_reg(dev, MPU6050_GYRO_XOUT_L);	// 读取陀螺仪X轴的低8位数据
+	priv_data->i2c.read_reg(&priv_data->i2c, MPU6050_ADDRESS, MPU6050_GYRO_XOUT_H, &data_h);	// 读取陀螺仪X轴的高8位数据
+	priv_data->i2c.read_reg(&priv_data->i2c, MPU6050_ADDRESS, MPU6050_GYRO_XOUT_L, &data_l);	// 读取陀螺仪X轴的低8位数据
 	data->gyrox = (data_h << 8) | data_l;					// 数据拼接
 	
-	data_h = __mpu6050_read_reg(dev, MPU6050_GYRO_YOUT_H);	// 读取陀螺仪Y轴的高8位数据
-	data_l = __mpu6050_read_reg(dev, MPU6050_GYRO_YOUT_L);	// 读取陀螺仪Y轴的低8位数据
+	priv_data->i2c.read_reg(&priv_data->i2c, MPU6050_ADDRESS, MPU6050_GYRO_YOUT_H, &data_h);	// 读取陀螺仪Y轴的高8位数据
+	priv_data->i2c.read_reg(&priv_data->i2c, MPU6050_ADDRESS, MPU6050_GYRO_YOUT_L, &data_l);	// 读取陀螺仪Y轴的低8位数据
 	data->gyroy = (data_h << 8) | data_l;					// 数据拼接
 	
-	data_h = __mpu6050_read_reg(dev, MPU6050_GYRO_ZOUT_H);	// 读取陀螺仪Z轴的高8位数据
-	data_l = __mpu6050_read_reg(dev, MPU6050_GYRO_ZOUT_L);	// 读取陀螺仪Z轴的低8位数据
+	priv_data->i2c.read_reg(&priv_data->i2c, MPU6050_ADDRESS, MPU6050_GYRO_ZOUT_H, &data_h);	// 读取陀螺仪Z轴的高8位数据
+	priv_data->i2c.read_reg(&priv_data->i2c, MPU6050_ADDRESS, MPU6050_GYRO_ZOUT_L, &data_l);	// 读取陀螺仪Z轴的低8位数据
 	data->gyroz = (data_h << 8) | data_l;					// 数据拼接
 	
-	data_h = __mpu6050_read_reg(dev, MPU6050_TEMP_OUT_H);	// 读取温度值的高8位数据
-	data_l = __mpu6050_read_reg(dev, MPU6050_TEMP_OUT_L);	// 读取温度值的低8位数据
+	priv_data->i2c.read_reg(&priv_data->i2c, MPU6050_ADDRESS, MPU6050_TEMP_OUT_H, &data_h);		// 读取温度值的高8位数据
+	priv_data->i2c.read_reg(&priv_data->i2c, MPU6050_ADDRESS, MPU6050_TEMP_OUT_L, &data_l);		// 读取温度值的低8位数据
 	temp_val = ((data_h << 8) | data_l);					// 数据拼接
 	data->temp = (float)(temp_val)/340.0f + 36.53f;			// 计算温度值
+
+	return 0;
 }
 
 /******************************************************************************

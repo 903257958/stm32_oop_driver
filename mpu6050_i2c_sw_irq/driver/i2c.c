@@ -61,6 +61,10 @@ static int __i2c_send_byte(I2CDev_t *dev, uint8_t byte);
 static uint8_t __i2c_recv_byte(I2CDev_t *dev);
 static int __i2c_send_ack(I2CDev_t *dev, uint8_t ack);
 static uint8_t __i2c_recv_ack(I2CDev_t *dev);
+static int __i2c_write_reg(I2CDev_t *dev, uint8_t dev_addr, uint8_t reg_addr, uint8_t data);
+static int __i2c_write_regs(I2CDev_t *dev, uint8_t dev_addr, uint8_t reg_addr, uint8_t num, uint8_t data[]);
+static int __i2c_read_reg(I2CDev_t *dev, uint8_t dev_addr, uint8_t reg_addr, uint8_t *data);
+static int __i2c_read_regs(I2CDev_t *dev, uint8_t dev_addr, uint8_t reg_addr, uint8_t num, uint8_t data[]);
 static int __i2c_deinit(I2CDev_t *dev);
 	
 /******************************************************************************
@@ -88,6 +92,10 @@ int i2c_init(I2CDev_t *dev)
 	dev->send_ack = __i2c_send_ack;
 	dev->recv_ack = __i2c_recv_ack;
 	dev->deinit = __i2c_deinit;
+	dev->read_reg = __i2c_read_reg;
+	dev->read_regs = __i2c_read_regs;
+	dev->write_reg = __i2c_write_reg;
+	dev->write_regs = __i2c_write_regs;
 	
 	/* 起始SCL与SDA均置高电平 */
 	__i2c_scl_write(dev, 1);
@@ -255,6 +263,131 @@ static uint8_t __i2c_recv_ack(I2CDev_t *dev)
 	__i2c_scl_write(dev, 0);		// 主机读取完毕，SCL置低电平，完成接收
 	
 	return ack;
+}
+
+/******************************************************************************
+ * @brief	软件I2C读寄存器
+ * @param	dev			:   I2CDev_t 结构体指针
+ * @param	dev_addr    :   I2C设备从机地址
+ * @param	reg_addr    :   要读的寄存器地址
+ * @param	data    	:   要读的寄存器数据
+ * @return	0, 表示成功, 其他值表示失败
+ ******************************************************************************/
+static int __i2c_read_reg(I2CDev_t *dev, uint8_t dev_addr, uint8_t reg_addr, uint8_t *data)
+{
+	if (!dev || !dev->init_flag)
+		return -1;
+	
+	__i2c_start(dev);								// I2C起始
+	__i2c_send_byte(dev, dev_addr << 1);			// 发送从机地址，读写位为0，表示即将写入
+	__i2c_recv_ack(dev);							// 接收应答
+	__i2c_send_byte(dev, reg_addr);					// 发送寄存器地址
+	__i2c_recv_ack(dev);							// 接收应答
+	
+	__i2c_start(dev);								// I2C重复起始
+	__i2c_send_byte(dev, (dev_addr << 1) | 0x01);	// 发送从机地址，读写位为1，表示即将读取
+	__i2c_recv_ack(dev);							// 接收应答
+	*data = __i2c_recv_byte(dev);					// 接收指定寄存器的数据
+	__i2c_send_ack(dev, 1);							// 发送应答，给从机非应答，终止从机的数据输出
+	__i2c_stop(dev);								// I2C终止		
+	
+	return 0;
+}
+
+/******************************************************************************
+ * @brief	软件I2C读多个寄存器
+ * @param	dev    		:   I2CDev_t 结构体指针
+ * @param	dev_addr    :   I2C设备从机地址
+ * @param	reg_addr    :   要读的寄存器首地址
+ * @param	num			:   要读的寄存器个数
+ * @param	data    	:   要读的寄存器数据
+ * @return	0, 表示成功, 其他值表示失败
+ ******************************************************************************/
+static int __i2c_read_regs(I2CDev_t *dev, uint8_t dev_addr, uint8_t reg_addr, uint8_t num, uint8_t data[])
+{
+	if (!dev || !dev->init_flag)
+		return -1;
+	
+	uint8_t i;
+	
+	__i2c_start(dev);								// I2C起始
+	__i2c_send_byte(dev, (dev_addr << 1) | 0x00);	// 发送从机地址，读写位为0，表示即将写
+	__i2c_recv_ack(dev);							// 接收应答
+
+	__i2c_send_byte(dev, reg_addr); 				// 发送寄存器地址
+	__i2c_recv_ack(dev);
+
+	__i2c_start(dev); 								// 重复起始条件
+    __i2c_send_byte(dev, (dev_addr << 1) | 0x01); 	// 读模式
+	__i2c_recv_ack(dev);
+
+	for (i = 0; i < num; i++)
+    {
+        data[i] = __i2c_recv_byte(dev);				// 接收数据
+        __i2c_send_ack(dev, (i == num - 1) ? 1 : 0);	
+    }
+
+	__i2c_stop(dev);								// I2C终止
+	
+	return 0;
+}
+
+/******************************************************************************
+ * @brief	软件I2C写寄存器
+ * @param	dev			:	I2CDev_t 结构体指针
+ * @param	dev_addr    :  	I2C设备从机地址
+ * @param	reg_addr    :  	要写入的寄存器地址
+ * @param	data		:	要写入寄存器的数据，范围：0x00~0xFF
+ * @return	0, 表示成功, 其他值表示失败
+ ******************************************************************************/
+static int __i2c_write_reg(I2CDev_t *dev, uint8_t dev_addr, uint8_t reg_addr, uint8_t data)
+{
+	if (!dev || !dev->init_flag)
+		return -1;
+
+	__i2c_start(dev);						// I2C起始							
+	__i2c_send_byte(dev, dev_addr << 1);	// 发送从机地址，读写位为0，表示即将写入
+	__i2c_recv_ack(dev);					// 接收应答
+	__i2c_send_byte(dev, reg_addr);			// 发送寄存器地址
+	__i2c_recv_ack(dev);					// 接收应答
+	__i2c_send_byte(dev, data);				// 发送要写入寄存器的数据
+	__i2c_recv_ack(dev);					// 接收应答
+	__i2c_stop(dev);						// I2C终止	
+	
+	return 0;
+}
+
+/******************************************************************************
+ * @brief	软件I2C写多个寄存器
+ * @param	dev			:  I2CDev_t 结构体指针
+ * @param	dev_addr    :  I2C设备从机地址
+ * @param	reg_addr    :  要写入的寄存器首地址
+ * @param	num			:  要写入的寄存器个数
+ * @param	data		:  要写入的寄存器数据
+ * @return	0, 表示成功, 其他值表示失败
+ ******************************************************************************/
+static int __i2c_write_regs(I2CDev_t *dev, uint8_t dev_addr, uint8_t reg_addr, uint8_t num, uint8_t data[])
+{
+	if (!dev || !dev->init_flag)
+		return -1;
+
+	uint8_t i;
+
+    __i2c_start(dev);								// I2C起始
+	__i2c_send_byte(dev, dev_addr << 1);			// 发送从机地址，读写位为0，表示即将写入
+	__i2c_recv_ack(dev);							// 接收应答
+	__i2c_send_byte(dev, reg_addr);	        		// 发送寄存器地址
+	__i2c_recv_ack(dev);							// 接收应答
+
+	for (i = 0; i < num; i++)
+	{
+		__i2c_send_byte(dev, data[i]);				// 发送要写入寄存器的数据
+		__i2c_recv_ack(dev);						// 接收应答
+	}
+	
+	__i2c_stop(dev);								// I2C终止
+
+	return 0;
 }
 
 /******************************************************************************

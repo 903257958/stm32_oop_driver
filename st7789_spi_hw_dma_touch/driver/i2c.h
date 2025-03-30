@@ -30,14 +30,18 @@ typedef struct {
 
 typedef struct I2CDev {
 	I2CInfo_t info;
-	bool init_flag;												// 初始化标志
-	int (*start)(struct I2CDev *dev);							// 软件I2C起始
-	int (*stop)(struct I2CDev *dev);							// 软件I2C停止
-	int (*send_byte)(struct I2CDev *dev, uint8_t byte);			// 软件I2C发送一个字节
-	uint8_t (*recv_byte)(struct I2CDev *dev);					// 软件I2C接收一个字节
-	int (*send_ack)(struct I2CDev *dev, uint8_t ack);			// 软件I2C发送应答位
-	uint8_t (*recv_ack)(struct I2CDev *dev);					// 软件I2C接收应答位
-	int (*deinit)(struct I2CDev *dev);							// 去初始化
+	bool init_flag;											// 初始化标志
+	int (*start)(struct I2CDev *dev);						// 软件I2C起始
+	int (*stop)(struct I2CDev *dev);						// 软件I2C停止
+	int (*send_byte)(struct I2CDev *dev, uint8_t byte);		// 软件I2C发送一个字节
+	uint8_t (*recv_byte)(struct I2CDev *dev);				// 软件I2C接收一个字节
+	int (*send_ack)(struct I2CDev *dev, uint8_t ack);		// 软件I2C发送应答位
+	uint8_t (*recv_ack)(struct I2CDev *dev);				// 软件I2C接收应答位
+	int (*read_reg)(struct I2CDev *dev, uint8_t dev_addr, uint8_t reg_addr, uint8_t *data);					// 软件I2C读寄存器
+	int (*read_regs)(struct I2CDev *dev, uint8_t dev_addr, uint8_t reg_addr, uint8_t num, uint8_t data[]);	// 软件I2C读多个寄存器
+	int (*write_reg)(struct I2CDev *dev, uint8_t dev_addr, uint8_t reg_addr, uint8_t data);					// 软件I2C写寄存器
+	int (*write_regs)(struct I2CDev *dev, uint8_t dev_addr, uint8_t reg_addr, uint8_t num, uint8_t data[]);	// 软件I2C写多个寄存器
+	int (*deinit)(struct I2CDev *dev);						// 去初始化
 }I2CDev_t;
 
 int i2c_init(I2CDev_t *dev);
