@@ -1,0 +1,413 @@
+{
+  "name": "Project",
+  "type": "ARM",
+  "dependenceList": [],
+  "srcDirs": [
+    ".eide/deps"
+  ],
+  "virtualFolder": {
+    "name": "<virtual_root>",
+    "files": [],
+    "folders": [
+      {
+        "name": "app",
+        "files": [
+          {
+            "path": "../app/main.c"
+          },
+          {
+            "path": "../app/main.h"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "name": "driver",
+        "files": [
+          {
+            "path": "../driver/delay.c"
+          },
+          {
+            "path": "../driver/delay.h"
+          },
+          {
+            "path": "../driver/i2c.c"
+          },
+          {
+            "path": "../driver/i2c.h"
+          },
+          {
+            "path": "../driver/lcd_data.c"
+          },
+          {
+            "path": "../driver/lcd_data.h"
+          },
+          {
+            "path": "../driver/lcd.c"
+          },
+          {
+            "path": "../driver/lcd.h"
+          },
+          {
+            "path": "../driver/max30102.c"
+          },
+          {
+            "path": "../driver/max30102.h"
+          },
+          {
+            "path": "../driver/pwm.c"
+          },
+          {
+            "path": "../driver/pwm.h"
+          },
+          {
+            "path": "../driver/spi.c"
+          },
+          {
+            "path": "../driver/spi.h"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "name": "fireware",
+        "files": [
+          {
+            "path": "../fireware/cmsis/core/core_cm4.h"
+          },
+          {
+            "path": "../fireware/cmsis/core/core_cmFunc.h"
+          },
+          {
+            "path": "../fireware/cmsis/core/core_cmInstr.h"
+          },
+          {
+            "path": "../fireware/cmsis/core/core_cmSimd.h"
+          },
+          {
+            "path": "../fireware/cmsis/device/startup_stm32f40_41xxx.s"
+          },
+          {
+            "path": "../fireware/cmsis/device/stm32f4xx_conf.h"
+          },
+          {
+            "path": "../fireware/cmsis/device/stm32f4xx_it.c"
+          },
+          {
+            "path": "../fireware/cmsis/device/stm32f4xx_it.h"
+          },
+          {
+            "path": "../fireware/cmsis/device/stm32f4xx.h"
+          },
+          {
+            "path": "../fireware/cmsis/device/system_stm32f4xx.c"
+          },
+          {
+            "path": "../fireware/cmsis/device/system_stm32f4xx.h"
+          },
+          {
+            "path": "../fireware/driver/src/misc.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_adc.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_can.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_cec.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_crc.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_cryp_aes.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_cryp_des.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_cryp_tdes.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_cryp.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_dac.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_dbgmcu.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_dcmi.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_dfsdm.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_dma.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_dma2d.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_dsi.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_exti.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_flash_ramfunc.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_flash.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_fmpi2c.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_fsmc.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_gpio.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_hash_md5.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_hash_sha1.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_hash.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_i2c.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_iwdg.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_lptim.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_ltdc.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_pwr.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_qspi.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_rcc.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_rng.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_rtc.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_sai.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_sdio.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_spdifrx.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_spi.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_syscfg.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_tim.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_usart.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_wwdg.c"
+          }
+        ],
+        "folders": []
+      }
+    ]
+  },
+  "outDir": "build",
+  "deviceName": null,
+  "packDir": null,
+  "miscInfo": {
+    "uid": "37ecc3d9fa9ecd1b0897fb3ba4a8bef1"
+  },
+  "targets": {
+    "Target 1": {
+      "excludeList": [],
+      "toolchain": "AC5",
+      "compileConfig": {
+        "cpuType": "Cortex-M4",
+        "floatingPointHardware": "single",
+        "scatterFilePath": "",
+        "useCustomScatterFile": false,
+        "storageLayout": {
+          "RAM": [
+            {
+              "tag": "RAM",
+              "id": 1,
+              "mem": {
+                "startAddr": "0x0",
+                "size": "0x0"
+              },
+              "isChecked": false,
+              "noInit": false
+            },
+            {
+              "tag": "RAM",
+              "id": 2,
+              "mem": {
+                "startAddr": "0x0",
+                "size": "0x0"
+              },
+              "isChecked": false,
+              "noInit": false
+            },
+            {
+              "tag": "RAM",
+              "id": 3,
+              "mem": {
+                "startAddr": "0x0",
+                "size": "0x0"
+              },
+              "isChecked": false,
+              "noInit": false
+            },
+            {
+              "tag": "IRAM",
+              "id": 1,
+              "mem": {
+                "startAddr": "0x20000000",
+                "size": "0x20000"
+              },
+              "isChecked": true,
+              "noInit": false
+            },
+            {
+              "tag": "IRAM",
+              "id": 2,
+              "mem": {
+                "startAddr": "0x10000000",
+                "size": "0x10000"
+              },
+              "isChecked": false,
+              "noInit": false
+            }
+          ],
+          "ROM": [
+            {
+              "tag": "ROM",
+              "id": 1,
+              "mem": {
+                "startAddr": "0x0",
+                "size": "0x0"
+              },
+              "isChecked": false,
+              "isStartup": false
+            },
+            {
+              "tag": "ROM",
+              "id": 2,
+              "mem": {
+                "startAddr": "0x0",
+                "size": "0x0"
+              },
+              "isChecked": false,
+              "isStartup": false
+            },
+            {
+              "tag": "ROM",
+              "id": 3,
+              "mem": {
+                "startAddr": "0x0",
+                "size": "0x0"
+              },
+              "isChecked": false,
+              "isStartup": false
+            },
+            {
+              "tag": "IROM",
+              "id": 1,
+              "mem": {
+                "startAddr": "0x8000000",
+                "size": "0x100000"
+              },
+              "isChecked": true,
+              "isStartup": true
+            },
+            {
+              "tag": "IROM",
+              "id": 2,
+              "mem": {
+                "startAddr": "0x0",
+                "size": "0x0"
+              },
+              "isChecked": false,
+              "isStartup": false
+            }
+          ]
+        },
+        "options": "null"
+      },
+      "uploader": "OpenOCD",
+      "uploadConfig": {
+        "bin": "",
+        "target": "stm32f4x",
+        "interface": "stlink",
+        "baseAddr": "0x08000000"
+      },
+      "uploadConfigMap": {
+        "JLink": {
+          "bin": "",
+          "baseAddr": "",
+          "cpuInfo": {
+            "vendor": "null",
+            "cpuName": "null"
+          },
+          "proType": 1,
+          "speed": 8000,
+          "otherCmds": ""
+        },
+        "pyOCD": {
+          "bin": "",
+          "targetName": "cortex_m",
+          "baseAddr": "0x08000000",
+          "speed": "4M",
+          "config": ".eide/target 1.pyocd.yaml"
+        }
+      },
+      "custom_dep": {
+        "name": "default",
+        "incList": [
+          "../app",
+          "../driver",
+          "../fireware/cmsis/core",
+          "../fireware/cmsis/device",
+          "../fireware/driver/inc",
+          "../third_lib/freertos/include",
+          "../third_lib/freertos/portable/RVDS/ARM_CM4F",
+          ".cmsis/include",
+          "../mdk/RTE/_Target 1",
+          ".eide/deps"
+        ],
+        "libList": [],
+        "sourceDirList": [],
+        "defineList": [
+          "STM32F40_41xxx",
+          "USE_STDPERIPH_DRIVER"
+        ]
+      }
+    }
+  },
+  "version": "3.3"
+}

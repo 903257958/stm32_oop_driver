@@ -31,6 +31,7 @@
 - **rtc**: RTC实时时钟
 - **mpu6050_i2c_sw**: 软件I2C + MPU6050
 - **mpu6050_i2c_sw_irq**: 软件I2C + MPU6050 + 中断引脚
-- **aht21**: 软件I2C + AHT21获取温湿度
+- **aht21_i2c_sw**: 软件I2C + AHT21获取温湿度
+- **max30102_i2c_sw**: 软件I2C + MAX30102获取心率血氧
 
 
