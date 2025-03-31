@@ -61,10 +61,10 @@ static int __i2c_send_byte(I2CDev_t *dev, uint8_t byte);
 static uint8_t __i2c_recv_byte(I2CDev_t *dev);
 static int __i2c_send_ack(I2CDev_t *dev, uint8_t ack);
 static uint8_t __i2c_recv_ack(I2CDev_t *dev);
-static int __i2c_write_reg(I2CDev_t *dev, uint8_t dev_addr, uint8_t reg_addr, uint8_t data);
-static int __i2c_write_regs(I2CDev_t *dev, uint8_t dev_addr, uint8_t reg_addr, uint8_t num, uint8_t data[]);
 static int __i2c_read_reg(I2CDev_t *dev, uint8_t dev_addr, uint8_t reg_addr, uint8_t *data);
 static int __i2c_read_regs(I2CDev_t *dev, uint8_t dev_addr, uint8_t reg_addr, uint8_t num, uint8_t data[]);
+static int __i2c_write_reg(I2CDev_t *dev, uint8_t dev_addr, uint8_t reg_addr, uint8_t data);
+static int __i2c_write_regs(I2CDev_t *dev, uint8_t dev_addr, uint8_t reg_addr, uint8_t num, uint8_t data[]);
 static int __i2c_deinit(I2CDev_t *dev);
 	
 /******************************************************************************
@@ -311,7 +311,7 @@ static int __i2c_read_regs(I2CDev_t *dev, uint8_t dev_addr, uint8_t reg_addr, ui
 	uint8_t i;
 	
 	__i2c_start(dev);								// I2C起始
-	__i2c_send_byte(dev, (dev_addr << 1) | 0x00);	// 发送从机地址，读写位为0，表示即将写
+	__i2c_send_byte(dev, dev_addr << 1);			// 发送从机地址，读写位为0，表示即将写
 	__i2c_recv_ack(dev);							// 接收应答
 
 	__i2c_send_byte(dev, reg_addr); 				// 发送寄存器地址
