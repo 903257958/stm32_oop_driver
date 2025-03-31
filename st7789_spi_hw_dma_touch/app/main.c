@@ -30,7 +30,7 @@ CST816TDev_t touch = {.info = {
 	VERTICAL_REVERSE
 }};
 
-uint8_t id, fw_ver;
+uint8_t id, fw_ver, finger_num;
 
 int main(void)
 {
@@ -55,10 +55,11 @@ int main(void)
 	while (1)
 	{
 		touch.get_action(&touch);
+		touch.get_finger_num(&touch, &finger_num);
+
 		lcd.show_hex_num(&lcd, 68, 80, touch.gesture, 2, WHITE, BLACK, LCD_12X24, 0);
 		lcd.show_num(&lcd, 44, 110, touch.x, 3, WHITE, BLACK, LCD_12X24, 0);
 		lcd.show_num(&lcd, 44, 140, touch.y, 3, WHITE, BLACK, LCD_12X24, 0);
-
-		lcd.show_num(&lcd, 44, 170, touch.get_finger_num(&touch), 3, WHITE, BLACK, LCD_12X24, 0);
+		lcd.show_num(&lcd, 44, 170, finger_num, 3, WHITE, BLACK, LCD_12X24, 0);
 	}
 }

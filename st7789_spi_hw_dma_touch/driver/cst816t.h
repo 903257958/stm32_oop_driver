@@ -32,16 +32,18 @@
 	#define cst816t_log(x)
 #endif
 
-/* LCD屏幕方向选择 */
+/* LCD屏幕尺寸 */
 #define LCD_H				280		// 屏幕高度
 #define LCD_W				240		// 屏幕宽度
+
+/* LCD屏幕方向选择 */
 #define VERTICAL_FORWARD	0		// 竖屏正向
 #define VERTICAL_REVERSE	1		// 竖屏反向
 #define HORIZONTAL_FORWARD	2		// 横屏正向
 #define HORIZONTAL_REVERSE	3		// 横屏反向
 
 /* CST816T的I2C从机地址 */
-#define CST816T_ADDRESS	0x2A
+#define CST816T_ADDRESS		0x15
 
 /* CST816T寄存器 */
 #define GESTURE_ID      	0x01    // 手势寄存器
@@ -85,7 +87,7 @@ typedef struct CST816TDev {
     uint8_t gesture;
 	int (*get_id)(struct CST816TDev *dev, uint8_t *id);
 	int (*get_firmware_ver)(struct CST816TDev *dev, uint8_t *fw_ver);
-	int (*get_finger_num)(struct CST816TDev *dev);
+	int (*get_finger_num)(struct CST816TDev *dev, uint8_t *num);
     int (*get_action)(struct CST816TDev *dev);
 	int (*deinit)(struct CST816TDev *dev); // 去初始化
 }CST816TDev_t;
