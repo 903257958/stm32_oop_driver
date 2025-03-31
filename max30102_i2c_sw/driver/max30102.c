@@ -215,6 +215,9 @@ static int __max30102_read_fifo(MAX30102Dev_t *dev, uint32_t *red_led_data, uint
  ******************************************************************************/
 static int __max30102_get_data(MAX30102Dev_t *dev)
 {
+    if (!dev || !dev->init_flag)
+ 		return -1;
+    
 	int32_t n_brightness;
 	float f_temp;
 	uint16_t i;
