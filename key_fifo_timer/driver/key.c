@@ -30,13 +30,16 @@
 
 #define __key_io_read(port, pin)	GPIO_ReadInputDataBit(port, pin)
 
-#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 
 	#if defined(STM32F40_41xxx)
 	#define TIMER_FREQ	84000000
 
 	#elif defined(STM32F411xE)
 	#define TIMER_FREQ	100000000
+
+	#elif defined(STM32F429_439xx)
+	#define TIMER_FREQ	90000000
 	
 	#endif
 
@@ -72,7 +75,7 @@
 
 /* 环形缓冲区 */
 #define BUF_LEN 10
-#define NEXT_POS(x) ((x+1) % BUF_LEN)
+#define NEXT_POS(x) ((x + 1) % BUF_LEN)
 
 typedef struct {
 	int val[BUF_LEN];
@@ -148,52 +151,40 @@ static int __key_buf_read(KeyBuf_t *buf)
 }
 
 /******************************************************************************
- * @brief	获取按键状态
- * @param	无
- * @return	若有按键被按下，则返回此按键的按键值，否则返回-1
- ******************************************************************************/
-static int __key_get_state(void)
-{
-	uint8_t i;
-
-	/* 遍历所有按键设备，找出第一个已按下的按键 */
-	for (i = 0; i < g_key_dev_num; i++)
-	{
-		if (__key_io_read(g_key_dev[i]->info.port, g_key_dev[i]->info.pin) == g_key_dev[i]->info.press_level)
-		{
-			return g_key_dev[i]->info.val;
-		}
-	}
-
-	return -1;
-}
-
-/******************************************************************************
  * @brief	按键定时器中断回调函数，扫描已注册的按键，若有按键按下，放入环形缓冲区
  * @param	无
  * @return	无
  ******************************************************************************/
-static void __key_tick(void)
-{
-	static uint8_t cnt;
-	static int8_t curr_state, prev_state;
-	uint8_t key_val;
+static void __key_tick(void) 
+{ 
+    static uint8_t cnt = 0; 
+    static int8_t prev_state[MAX_KEY_NUM] = {0};
+    static int8_t curr_state[MAX_KEY_NUM] = {0};
+    uint8_t i; 
 
-	/* 定时中断为1ms，每20ms检测一次按键状态，同时可以软件消抖 */
-	if (++cnt >= 20)
-	{
-		cnt = 0;
-		
-		prev_state = curr_state;			// 上次按键状态
-		curr_state = __key_get_state();		// 本次按键状态
-		
-		/* 若本次查询无按键按下，上次有按键按下，则说明此按键已松开，记录按键值 */
-		if (curr_state == -1 && prev_state != -1)
-		{
-			key_val = prev_state;
-			__key_buf_write(&g_key_buf, key_val);	// 写入环形缓冲区
-		}
-	}
+    /* 定时中断为1ms，每20ms检测一次按键状态，同时可以软件消抖 */ 
+    if (++cnt < 20) 
+    { 
+        return; 
+    } 
+    cnt = 0;
+
+    /* 遍历所有按键设备，获取当前状态，falae 表示未按下 */
+    for (i = 0; i < g_key_dev_num; i++) 
+    { 
+        curr_state[i] = ((__key_io_read(g_key_dev[i]->info.port, g_key_dev[i]->info.pin) == g_key_dev[i]->info.press_level) ? true : false);
+    }
+
+    /* 处理按键状态变化 */
+    for (i = 0; i < g_key_dev_num; i++) 
+    { 
+        /* 如果按键释放（前一次是按下状态，当前是释放状态） */ 
+        if (prev_state[i] == true && curr_state[i] == false) 
+        { 
+			__key_buf_write(&g_key_buf, g_key_dev[i]->info.val); // 记录按键值
+        }
+        prev_state[i] = curr_state[i]; // 更新状态
+    } 
 }
 
 /******************************************************************************

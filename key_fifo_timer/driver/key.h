@@ -11,7 +11,7 @@
 	typedef GPIO_TypeDef*	KeyGPIOPort_t;
 	typedef TIM_TypeDef* 	TimerPER_t;
 	
-#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	#include "stm32f4xx.h"
 	typedef GPIO_TypeDef*	KeyGPIOPort_t;
 	typedef TIM_TypeDef* 	TimerPER_t;
