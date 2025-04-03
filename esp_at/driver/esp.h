@@ -23,7 +23,7 @@
 #define AT_RX_TIMEOUT	-2
 
 extern UARTDev_t esp_debug;	// ESP8266调试串口
-extern UARTDev_t esp_usart;	// ESP8266通信串口，需配置为DMA+空闲中断
+extern UARTDev_t esp_uart;	// ESP8266通信串口，需配置为DMA+空闲中断
 
 typedef struct ESPDev {
 	bool init_flag;							// 初始化标志

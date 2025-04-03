@@ -6,7 +6,7 @@ UARTDev_t esp_debug = {.config = {	// esp32调试串口
 	GPIOA, GPIO_Pin_10
 }};
 
-UARTDev_t esp_usart = {.config = {	// esp32通信串口
+UARTDev_t esp_uart = {.config = {	// esp32通信串口
 	USART2, 115200,
 	GPIOA, GPIO_Pin_2,
 	GPIOA, GPIO_Pin_3
@@ -22,7 +22,7 @@ int main(void)
 	
     delay_init(168);
 	uart_init(&esp_debug);
-	uart_dma_init(&esp_usart);
+	uart_dma_init(&esp_uart);
 	esp_init(&esp32);
 
 	/* 设置客户端模式 */

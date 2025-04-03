@@ -55,7 +55,7 @@ static int __esp_send_cmd(ESPDev_t *dev, const char *cmd, const char *ack, char 
 
 	/* 发送AT指令 */
 	sprintf(send_str, "%s\r\n", cmd);
-	esp_usart.send_string(&esp_usart, send_str);
+	esp_uart.send_string(&esp_uart, send_str);
 
 	/* 不需要判断应答 */
 	if (ack == NULL)
@@ -67,10 +67,10 @@ static int __esp_send_cmd(ESPDev_t *dev, const char *cmd, const char *ack, char 
 	/* 开始计时并接收数据 */
 	while (time < timeout)
 	{
-		if (esp_usart.recv_string_flag(&esp_usart))
+		if (esp_uart.recv_string_flag(&esp_uart))
 		{
-			strcpy(recv_str, esp_usart.recv_string(&esp_usart));
-			esp_usart.dma_recv_enable(&esp_usart);	// 处理完数据再次开启DMA接收
+			strcpy(recv_str, esp_uart.recv_string(&esp_uart));
+			esp_uart.dma_recv_enable(&esp_uart);	// 处理完数据再次开启DMA接收
 
 			/* 判断是否收到ACK应答 */
 			if (ack && strstr(recv_str, ack))
