@@ -2,7 +2,7 @@
 
 LCDDev_t lcd;
 
-BMP280Dev_t bmp280 = {.info = {
+BMP280Dev_t bmp280 = {.config = {
     GPIOB, GPIO_Pin_6,
     GPIOB, GPIO_Pin_7,
 }};

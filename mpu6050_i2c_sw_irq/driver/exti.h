@@ -9,7 +9,7 @@
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 	#include "stm32f10x.h"
 	
-#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	#include "stm32f4xx.h"
 
 #else

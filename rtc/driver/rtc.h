@@ -5,14 +5,10 @@
 #include <stdio.h>
 #include <stdbool.h>
 	
-#if defined(STM32F40_41xxx) || defined(STM32F411xE)
+#if defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	#include "stm32f4xx.h"
 #else
     #error rtc.h: No processor defined!
-#endif
-
-#ifndef rtc_log
-    #define rtc_log(x) 
 #endif
 
 typedef struct {

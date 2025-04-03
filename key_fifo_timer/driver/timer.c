@@ -28,7 +28,6 @@
 												else if(TIMx == TIM5)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5, ENABLE);} \
 												else if(TIMx == TIM6)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6, ENABLE);} \
 												else if(TIMx == TIM7)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM7, ENABLE);} \
-												else					{timer_log("timer clock no enable\r\n");} \
 											}
 
 #elif defined(STM32F40_41xxx)
@@ -59,34 +58,68 @@
 												else if(TIMx == TIM5)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5, ENABLE);} \
 												else if(TIMx == TIM6)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6, ENABLE);} \
 												else if(TIMx == TIM7)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM7, ENABLE);} \
-												else					{timer_log("timer clock no enable\r\n");} \
 											}
 
-#elif defined(STM32F411xE)
+#elif defined(STM32F429_439xx)
 
-#define MAX_TIMER_NUM	4
+#define MAX_TIMER_NUM	6
 
-#define TIMER_FREQ	100000000
+#define TIMER_FREQ	90000000
 
 #define __timer_get_irqn_channel(TIMx)	(	TIMx == TIM2 ? TIM2_IRQn : \
 											TIMx == TIM3 ? TIM3_IRQn : \
 											TIMx == TIM4 ? TIM4_IRQn : \
 											TIMx == TIM5 ? TIM5_IRQn : \
+                                            TIMx == TIM6 ? TIM6_DAC_IRQn : \
+											TIMx == TIM7 ? TIM7_IRQn : \
 											(int)0	)
 										
 #define __timer_get_index(TIMx)	(	TIMx == TIM2 ? 0 : \
 									TIMx == TIM3 ? 1 : \
 									TIMx == TIM4 ? 2 : \
 									TIMx == TIM5 ? 3 : \
+                                    TIMx == TIM6 ? 4 : \
+									TIMx == TIM7 ? 5 : \
 									(int)-1	)
 										
 #define	__timer_config_clock_enable(TIMx)	{	if(TIMx == TIM2)		{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);} \
 												else if(TIMx == TIM3)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);} \
 												else if(TIMx == TIM4)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);} \
 												else if(TIMx == TIM5)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5, ENABLE);} \
-												else					{timer_log("timer clock no enable\r\n");} \
+                                                else if(TIMx == TIM6)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6, ENABLE);} \
+												else if(TIMx == TIM7)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM7, ENABLE);} \
 											}
 
+#elif defined(STM32F40_41xxx)
+
+#define MAX_TIMER_NUM	6
+
+#define TIMER_FREQ	84000000
+
+#define __timer_get_irqn_channel(TIMx)	(	TIMx == TIM2 ? TIM2_IRQn : \
+											TIMx == TIM3 ? TIM3_IRQn : \
+											TIMx == TIM4 ? TIM4_IRQn : \
+											TIMx == TIM5 ? TIM5_IRQn : \
+											TIMx == TIM6 ? TIM6_DAC_IRQn : \
+											TIMx == TIM7 ? TIM7_IRQn : \
+											(int)0	)
+										
+#define __timer_get_index(TIMx)	(	TIMx == TIM2 ? 0 : \
+									TIMx == TIM3 ? 1 : \
+									TIMx == TIM4 ? 2 : \
+									TIMx == TIM5 ? 3 : \
+									TIMx == TIM6 ? 4 : \
+									TIMx == TIM7 ? 5 : \
+									(int)-1	)
+										
+#define	__timer_config_clock_enable(TIMx)	{	if(TIMx == TIM2)		{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);} \
+												else if(TIMx == TIM3)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);} \
+												else if(TIMx == TIM4)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);} \
+												else if(TIMx == TIM5)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5, ENABLE);} \
+												else if(TIMx == TIM6)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6, ENABLE);} \
+												else if(TIMx == TIM7)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM7, ENABLE);} \
+											}
+                                            
 #endif
 
 /* 定时器私有数据结构体 */
@@ -123,27 +156,27 @@ int timer_init(TimerDev_t *dev)
 	
 	TimerPrivData_t *priv_data = (TimerPrivData_t *)dev->priv_data;
 	
-	priv_data->irqn = __timer_get_irqn_channel(dev->info.timx);
-	priv_data->index =__timer_get_index(dev->info.timx);
+	priv_data->irqn = __timer_get_irqn_channel(dev->config.timx);
+	priv_data->index =__timer_get_index(dev->config.timx);
 	
 	/* 配置时钟 */
-	__timer_config_clock_enable(dev->info.timx);
+	__timer_config_clock_enable(dev->config.timx);
 	
 	/* 配置时钟源 */
-	TIM_InternalClockConfig(dev->info.timx);
+	TIM_InternalClockConfig(dev->config.timx);
 	
 	/* 时基单元初始化 */
 	TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure;
 	TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;				// 时钟分频参数，不分频
 	TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up;			// 计数器模式：向上计数
-	TIM_TimeBaseInitStructure.TIM_Prescaler = dev->info.psc;				// PSC预分频器的值，范围0~65535
-	TIM_TimeBaseInitStructure.TIM_Period = dev->info.arr;					// ARR自动重装器的值，范围0~65535
+	TIM_TimeBaseInitStructure.TIM_Prescaler = dev->config.psc;				// PSC预分频器的值，范围0~65535
+	TIM_TimeBaseInitStructure.TIM_Period = dev->config.arr;					// ARR自动重装器的值，范围0~65535
 	TIM_TimeBaseInitStructure.TIM_RepetitionCounter = 0;					// 重复计数器的值（高级定时器用）
-	TIM_TimeBaseInit(dev->info.timx, &TIM_TimeBaseInitStructure);
+	TIM_TimeBaseInit(dev->config.timx, &TIM_TimeBaseInitStructure);
 	
 	/* 配置中断 */
-	TIM_ClearFlag(dev->info.timx, TIM_FLAG_Update);		// 清除定时器更新标志位
-	TIM_ITConfig(dev->info.timx, TIM_IT_Update, ENABLE);	// 更新中断
+	TIM_ClearFlag(dev->config.timx, TIM_FLAG_Update);		// 清除定时器更新标志位
+	TIM_ITConfig(dev->config.timx, TIM_IT_Update, ENABLE);	// 更新中断
 		
 	NVIC_InitTypeDef NVIC_InitStructure;
 	NVIC_InitStructure.NVIC_IRQChannel = priv_data->irqn;			// 中断通道
@@ -153,10 +186,10 @@ int timer_init(TimerDev_t *dev)
 	NVIC_Init(&NVIC_InitStructure);
 	
 	/* 启用定时器 */
-	TIM_Cmd(dev->info.timx, ENABLE);
+	TIM_Cmd(dev->config.timx, ENABLE);
 	
 	/* 注册回调函数 */
-	g_irq_callback[priv_data->index] = dev->info.irq_callback;
+	g_irq_callback[priv_data->index] = dev->config.irq_callback;
 	
 	/* 函数指针赋值 */
 	dev->delay_us = __timer_delay_us;
@@ -175,12 +208,12 @@ int timer_init(TimerDev_t *dev)
  ******************************************************************************/
 static int __timer_delay_us(TimerDev_t *dev, uint32_t us)
 {
-	if (TIM_GetPrescaler(dev->info.timx) != TIMER_FREQ / 1000000 - 1)	// 判断PSC配置
+	if (TIM_GetPrescaler(dev->config.timx) != TIMER_FREQ / 1000000 - 1)	// 判断PSC配置
 		return -1;
 	
-    uint32_t start = TIM_GetCounter(dev->info.timx);					// 记录当前计数值
+    uint32_t start = TIM_GetCounter(dev->config.timx);					// 记录当前计数值
     
-    while ((TIM_GetCounter(dev->info.timx) - start) < us);				// 等待指定的微秒数
+    while ((TIM_GetCounter(dev->config.timx) - start) < us);				// 等待指定的微秒数
 
 	return us;
 }
@@ -193,7 +226,7 @@ static int __timer_delay_us(TimerDev_t *dev, uint32_t us)
  ******************************************************************************/
 static int __timer_delay_ms(TimerDev_t *dev, uint32_t ms)
 {
-	if (TIM_GetPrescaler(dev->info.timx) != TIMER_FREQ / 1000000 - 1)	// 判断PSC配置
+	if (TIM_GetPrescaler(dev->config.timx) != TIMER_FREQ / 1000000 - 1)	// 判断PSC配置
 		return -1;
 	
 	while (ms--)
@@ -313,7 +346,7 @@ void TIM6_IRQHandler(void)
 		}
 	}
 }
-#elif defined(STM32F40_41xxx)
+#elif defined(STM32F40_41xxx) || defined(STM32F429_439xx)
 void TIM6_DAC_IRQHandler(void)
 {
     if(TIM_GetITStatus(TIM6, TIM_IT_Update) == SET)	// 检查中断标志位
@@ -328,7 +361,7 @@ void TIM6_DAC_IRQHandler(void)
 }
 #endif
 
-#if defined(STM32F10X_HD) || defined(STM32F40_41xxx)
+#if defined(STM32F10X_HD) || defined(STM32F40_41xxx) || defined(STM32F429_439xx)
 /******************************************************************************
  * @brief	TIM7中断函数
  * @param	无

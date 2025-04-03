@@ -17,7 +17,7 @@ int rtc_init(RTCDev_t *dev)
 	if (!dev)
 		return -1;
 
-	#if defined(STM32F40_41xxx) || defined(STM32F411xE)
+	#if defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	/* 开启时钟 */
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE);
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_BKPSRAM, ENABLE);

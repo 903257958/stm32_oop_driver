@@ -12,17 +12,13 @@
 	typedef TIM_TypeDef*	TimerPER_t;
 	typedef GPIO_TypeDef*	PassiveBuzzerGPIOPort_t;
 
-#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	#include "stm32f4xx.h"
 	typedef TIM_TypeDef*	TimerPER_t;
 	typedef GPIO_TypeDef*	PassiveBuzzerGPIOPort_t;
 
 #else
 	#error passive_buzzer.h: No processor defined!
-#endif
-
-#ifndef passive_buzzer_log
-	#define passive_buzzer_log(x) 
 #endif
 
 /* 音符与频率对应关系 */
@@ -66,10 +62,10 @@ typedef struct {
 	uint8_t oc_channel;				// 输出比较通道
 	PassiveBuzzerGPIOPort_t	port;	// 无源蜂鸣器端口
 	uint32_t pin;					// 无源蜂鸣器引脚
-}PassiveBuzzerInfo_t;
+}PassiveBuzzerConfig_t;
 
 typedef struct PassiveBuzzerDev {
-	PassiveBuzzerInfo_t info;
+	PassiveBuzzerConfig_t config;
 	bool init_flag;																// 初始化标志
 	void *priv_data;															// 私有数据指针
 	int (*set_frequency)(struct PassiveBuzzerDev *dev, uint16_t frequency);	// 设置无源蜂鸣器频率

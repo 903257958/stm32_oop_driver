@@ -1,12 +1,12 @@
 #include "main.h"
 
 /* 定义2个LED设备 */
-LEDDev_t led1 = {.info = {GPIOB, GPIO_Pin_2, GPIO_LEVEL_LOW}};
-LEDDev_t led2 = {.info = {GPIOB, GPIO_Pin_1, GPIO_LEVEL_LOW}};
+LEDDev_t led1 = {.config = {GPIOB, GPIO_Pin_2, GPIO_LEVEL_LOW}};
+LEDDev_t led2 = {.config = {GPIOB, GPIO_Pin_1, GPIO_LEVEL_LOW}};
 
 /* 定义2个按键设备 */
-KeyDev_t key1 = {.info = {TIM2, GPIOA, GPIO_Pin_0, GPIO_LEVEL_HIGH, 1}};
-KeyDev_t key2 = {.info = {TIM2, GPIOA, GPIO_Pin_1, GPIO_LEVEL_LOW, 2}};
+KeyDev_t key1 = {.config = {TIM2, GPIOA, GPIO_Pin_0, GPIO_LEVEL_HIGH, 1}};
+KeyDev_t key2 = {.config = {TIM2, GPIOA, GPIO_Pin_1, GPIO_LEVEL_LOW, 2}};
 
 int main(void)
 {

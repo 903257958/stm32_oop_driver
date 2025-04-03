@@ -1,6 +1,6 @@
 #include "main.h"
 
-PassiveBuzzerDev_t passive_buzzer = {.info = {TIM4, 4, GPIOB, GPIO_Pin_9}};
+PassiveBuzzerDev_t passive_buzzer = {.config = {TIM4, 4, GPIOB, GPIO_Pin_9}};
 
 int main(void)
 {

@@ -9,16 +9,12 @@
 	#include "stm32f10x.h"
 	typedef GPIO_TypeDef*	SPIGPIOPort_t;
 	
-#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	#include "stm32f4xx.h"
 	typedef GPIO_TypeDef*	SPIGPIOPort_t;
 	
 #else
 	#error spi.h: No processor defined!
-#endif
-
-#ifndef spi_log
-	#define spi_log(x) 
 #endif
 
 typedef enum {
@@ -38,10 +34,10 @@ typedef struct {
 	SPIGPIOPort_t cs_port;		// CS端口
 	uint32_t cs_pin;			// CS引脚
 	SPIMode_t mode;				// SPI模式
-}SPIInfo_t;
+}SPIConfig_t;
 
 typedef struct SPIDev_t {
-	SPIInfo_t info;
+	SPIConfig_t config;
 	bool init_flag;													// 初始化标志
 	void (*sck_write)(struct SPIDev_t *dev, uint8_t bit_val);		// 软件SPI写SCK引脚电平
 	void (*mosi_write)(struct SPIDev_t *dev, uint8_t bit_val);		// 软件SPI写MOSI引脚电平

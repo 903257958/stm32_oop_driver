@@ -14,16 +14,12 @@
     #include "stm32f10x.h"
     typedef GPIO_TypeDef*	OLEDGPIOPort_t;
 	
-#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	#include "stm32f4xx.h"
 	typedef GPIO_TypeDef*	OLEDGPIOPort_t;
 	
 #else
     #error oled.h: No processor defined!
-#endif
-
-#ifndef oled_log
-    #define oled_log(x) 
 #endif
 
 /* 屏幕方向选择，0为正向，1为反向 */
@@ -52,10 +48,10 @@ typedef struct {
 	uint32_t cs_pin;				// CS引脚
 	uint16_t prescaler;				// 预分频系数
 	SPIMode_t mode;					// SPI模式
-}OLEDInfo_t;
+}OLEDConfig_t;
 
 typedef struct OLEDDev {
-	OLEDInfo_t info;
+	OLEDConfig_t config;
 	bool init_flag;								// 初始化标志
 	void *priv_data;							// 私有数据指针
 	int (*update)(struct OLEDDev *dev);

@@ -9,7 +9,7 @@
 	#include "stm32f10x.h"
 	typedef GPIO_TypeDef*	I2CGPIOPort_t;
 	
-#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	#include "stm32f4xx.h"
 	typedef GPIO_TypeDef*	I2CGPIOPort_t;
 	
@@ -17,19 +17,15 @@
 	#error i2c.h: No processor defined!
 #endif
 
-#ifndef i2c_log
-	#define i2c_log(x) 
-#endif
-
 typedef struct {
 	I2CGPIOPort_t scl_port;			// SCL端口
 	uint32_t scl_pin;				// SCL引脚
 	I2CGPIOPort_t sda_port;			// SDA端口
 	uint32_t sda_pin;				// SDA引脚
-}I2CInfo_t;
+}I2CConfig_t;
 
 typedef struct I2CDev {
-	I2CInfo_t info;
+	I2CConfig_t config;
 	bool init_flag;											// 初始化标志
 	int (*start)(struct I2CDev *dev);						// 软件I2C起始
 	int (*stop)(struct I2CDev *dev);						// 软件I2C停止

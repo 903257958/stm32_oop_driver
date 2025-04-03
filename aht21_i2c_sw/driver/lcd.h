@@ -13,17 +13,13 @@
     typedef GPIO_TypeDef*       LCDGPIOPort_t;
     typedef TIM_TypeDef*	    TimerPER_t;
 	
-#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	#include "stm32f4xx.h"
 	typedef GPIO_TypeDef*		LCDGPIOPort_t;
     typedef TIM_TypeDef*	    TimerPER_t;
 	
 #else
     #error lcd.h: No processor defined!
-#endif
-
-#ifndef lcd_log
-    #define lcd_log(x) 
 #endif
 
 /* LCD屏幕方向选择 */
@@ -94,10 +90,10 @@ typedef struct {
 	TimerPER_t timx;				// 背光PWM定时器
 	uint8_t oc_channel;				// 背光PWM输出比较通道
 	uint8_t dir;					// 显示方向
-}LCDInfo_t;
+}LCDConfig_t;
 
 typedef struct LCDDev {
-	LCDInfo_t info;
+	LCDConfig_t config;
 	bool init_flag;					// 初始化标志
 	void *priv_data;				// 私有数据指针
 	uint16_t width;

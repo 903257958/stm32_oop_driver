@@ -31,17 +31,17 @@ int w25qx_init(W25QXDev_t *dev)
 	
 	W25QXPrivData_t *priv_data = (W25QXPrivData_t *)dev->priv_data;
 	
-	priv_data->spi.info.spix = dev->info.spix;
-	priv_data->spi.info.sck_port = dev->info.sck_port;
-	priv_data->spi.info.sck_pin = dev->info.sck_pin;
-	priv_data->spi.info.miso_port = dev->info.miso_port;
-	priv_data->spi.info.miso_pin = dev->info.miso_pin;
-	priv_data->spi.info.mosi_port = dev->info.mosi_port;
-	priv_data->spi.info.mosi_pin = dev->info.mosi_pin;
-	priv_data->spi.info.cs_port = dev->info.cs_port;
-	priv_data->spi.info.cs_pin = dev->info.cs_pin;
-	priv_data->spi.info.prescaler = 128;
-	priv_data->spi.info.mode = SPI_MODE_0;
+	priv_data->spi.config.spix = dev->config.spix;
+	priv_data->spi.config.sck_port = dev->config.sck_port;
+	priv_data->spi.config.sck_pin = dev->config.sck_pin;
+	priv_data->spi.config.miso_port = dev->config.miso_port;
+	priv_data->spi.config.miso_pin = dev->config.miso_pin;
+	priv_data->spi.config.mosi_port = dev->config.mosi_port;
+	priv_data->spi.config.mosi_pin = dev->config.mosi_pin;
+	priv_data->spi.config.cs_port = dev->config.cs_port;
+	priv_data->spi.config.cs_pin = dev->config.cs_pin;
+	priv_data->spi.config.prescaler = 128;
+	priv_data->spi.config.mode = SPI_MODE_0;
 	
 	/* 配置硬件SPI */
 	spi_init(&priv_data->spi);

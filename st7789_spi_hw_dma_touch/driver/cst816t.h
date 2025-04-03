@@ -12,7 +12,7 @@
 	#include "stm32f10x.h"
 	typedef GPIO_TypeDef*	CST816TGPIOPort_t;
 	
-#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	#include "stm32f4xx.h"
 	typedef GPIO_TypeDef*	CST816TGPIOPort_t;
 	
@@ -26,10 +26,6 @@
 
 #ifndef GPIO_LEVEL_LOW
     #define GPIO_LEVEL_LOW 0
-#endif
-
-#ifndef cst816t_log
-	#define cst816t_log(x)
 #endif
 
 /* LCD屏幕尺寸 */
@@ -79,7 +75,7 @@ typedef struct {
 }CST816TInfo_t;
 
 typedef struct CST816TDev {
-	CST816TInfo_t info;
+	CST816TInfo_t config;
 	bool init_flag;		// 初始化标志
     void *priv_data;	// 私有数据指针
 	uint16_t x;

@@ -6,7 +6,6 @@
 													else if(TIMx == TIM3)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);} \
 													else if(TIMx == TIM4)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);} \
 													else if(TIMx == TIM5)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5, ENABLE);} \
-													else					{pwm_log("pwm timer clock no enable\r\n");} \
 												}
 
 #define	__pwm_config_gpio_clock_enable(port)	{	if(port == GPIOA)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);} \
@@ -16,7 +15,6 @@
 													else if(port == GPIOE)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);} \
 													else if(port == GPIOF)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE);} \
 													else if(port == GPIOG)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, ENABLE);} \
-													else					{pwm_log("pwm gpio clock no enable\r\n");} \
 												}
 
 #define	__pwm_config_io_af_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -26,13 +24,12 @@
 												GPIO_Init(port, &GPIO_InitStructure); \
 											}
 
-#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 
 #define	__pwm_config_timer_clock_enable(TIMx)	{	if(TIMx == TIM2)		{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);} \
 													else if(TIMx == TIM3)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);} \
 													else if(TIMx == TIM4)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);} \
 													else if(TIMx == TIM5)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5, ENABLE);} \
-													else					{pwm_log("pwm timer clock no enable\r\n");} \
 												}
 
 #define	__pwm_config_gpio_clock_enable(port)	{	if (port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);} \
@@ -42,7 +39,6 @@
 													else if (port == GPIOE)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);} \
 													else if (port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);} \
 													else if (port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);} \
-													else					{pwm_log("pwm gpio clock no enable\r\n");} \
 												}
 
 #define	__pwm_config_io_af_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -100,26 +96,26 @@ int pwm_init(PWMDev_t *dev)
 		return -1;
 	
 	/* 配置时钟与GPIO */
-	__pwm_config_timer_clock_enable(dev->info.timx);
-	__pwm_config_gpio_clock_enable(dev->info.port);
+	__pwm_config_timer_clock_enable(dev->config.timx);
+	__pwm_config_gpio_clock_enable(dev->config.port);
 	
-	__pwm_config_io_af_pp(dev->info.port, dev->info.pin);					// 复用推挽输出
+	__pwm_config_io_af_pp(dev->config.port, dev->config.pin);					// 复用推挽输出
 
-	#if defined(STM32F40_41xxx) || defined(STM32F411xE)
-	GPIO_PinAFConfig(dev->info.port, __pwm_get_gpio_pin_source(dev->info.pin), __pwm_get_gpio_af(dev->info.timx));
+	#if defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
+	GPIO_PinAFConfig(dev->config.port, __pwm_get_gpio_pin_source(dev->config.pin), __pwm_get_gpio_af(dev->config.timx));
 	#endif
 	
 	/* 配置时钟源 */
-	TIM_InternalClockConfig(dev->info.timx);
+	TIM_InternalClockConfig(dev->config.timx);
 	
 	/* 时基单元初始化 */
 	TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure;
 	TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;				// 时钟分频参数，不分频
 	TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up;			// 计数器模式：向上计数
-	TIM_TimeBaseInitStructure.TIM_Prescaler = dev->info.psc;				// PSC预分频器的值，范围0~65535
-	TIM_TimeBaseInitStructure.TIM_Period = dev->info.arr;					// ARR自动重装器的值，范围0~65535
+	TIM_TimeBaseInitStructure.TIM_Prescaler = dev->config.psc;				// PSC预分频器的值，范围0~65535
+	TIM_TimeBaseInitStructure.TIM_Period = dev->config.arr;					// ARR自动重装器的值，范围0~65535
 	TIM_TimeBaseInitStructure.TIM_RepetitionCounter = 0;					// 重复计数器的值（高级定时器用）
-	TIM_TimeBaseInit(dev->info.timx, &TIM_TimeBaseInitStructure);
+	TIM_TimeBaseInit(dev->config.timx, &TIM_TimeBaseInitStructure);
 	
 	/* 输出比较配置 */
 	TIM_OCInitTypeDef TIM_OCInitStructure;
@@ -128,25 +124,25 @@ int pwm_init(PWMDev_t *dev)
 	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;				// 设置输出比较极性：高极性（REF极性不反转）
 	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;			// 设置输出使能
 	TIM_OCInitStructure.TIM_Pulse = 1;		// 设置CCR	Freq=CK_PSC/(PSC+1)/(ARR+1)	Duty=CCR/(ARR+1)	Reso=1/(ARR+1)
-	if (dev->info.oc_channel == 1)
+	if (dev->config.oc_channel == 1)
 	{
-		TIM_OC1Init(dev->info.timx, &TIM_OCInitStructure);
+		TIM_OC1Init(dev->config.timx, &TIM_OCInitStructure);
 	}
-	else if (dev->info.oc_channel == 2)
+	else if (dev->config.oc_channel == 2)
 	{
-		TIM_OC2Init(dev->info.timx, &TIM_OCInitStructure);
+		TIM_OC2Init(dev->config.timx, &TIM_OCInitStructure);
 	}
-	else if (dev->info.oc_channel == 3)
+	else if (dev->config.oc_channel == 3)
 	{
-		TIM_OC3Init(dev->info.timx, &TIM_OCInitStructure);
+		TIM_OC3Init(dev->config.timx, &TIM_OCInitStructure);
 	}
-	else if (dev->info.oc_channel == 4)
+	else if (dev->config.oc_channel == 4)
 	{
-		TIM_OC4Init(dev->info.timx, &TIM_OCInitStructure);
+		TIM_OC4Init(dev->config.timx, &TIM_OCInitStructure);
 	}
 	
 	/* 启用定时器 */
-	TIM_Cmd(dev->info.timx, ENABLE);
+	TIM_Cmd(dev->config.timx, ENABLE);
 	
 	/* 函数指针赋值 */
 	dev->set_psc = __pwm_set_psc;
@@ -166,10 +162,10 @@ int pwm_init(PWMDev_t *dev)
  ******************************************************************************/
 static void __pwm_set_psc(PWMDev_t *dev, uint16_t psc)
 {
-    TIM_Cmd(dev->info.timx, DISABLE);
-    dev->info.timx->PSC = psc;
-    dev->info.timx->EGR = TIM_PSCReloadMode_Update;	 // 重新加载预分频器值
-    TIM_Cmd(dev->info.timx, ENABLE);
+    TIM_Cmd(dev->config.timx, DISABLE);
+    dev->config.timx->PSC = psc;
+    dev->config.timx->EGR = TIM_PSCReloadMode_Update;	 // 重新加载预分频器值
+    TIM_Cmd(dev->config.timx, ENABLE);
 }
 
 /******************************************************************************
@@ -180,10 +176,10 @@ static void __pwm_set_psc(PWMDev_t *dev, uint16_t psc)
  ******************************************************************************/
 static void __pwm_set_arr(PWMDev_t *dev, uint16_t arr)
 {
-    TIM_Cmd(dev->info.timx, DISABLE);
-	dev->info.timx->ARR = arr;
-    dev->info.timx->EGR = TIM_PSCReloadMode_Update;	 // 重新加载预分频器值
-    TIM_Cmd(dev->info.timx, ENABLE);
+    TIM_Cmd(dev->config.timx, DISABLE);
+	dev->config.timx->ARR = arr;
+    dev->config.timx->EGR = TIM_PSCReloadMode_Update;	 // 重新加载预分频器值
+    TIM_Cmd(dev->config.timx, ENABLE);
 }
 
 /******************************************************************************
@@ -194,21 +190,21 @@ static void __pwm_set_arr(PWMDev_t *dev, uint16_t arr)
  ******************************************************************************/
 static void __pwm_set_compare(PWMDev_t *dev, uint16_t compare)
 {
-	if(dev->info.oc_channel == 1)
+	if(dev->config.oc_channel == 1)
 	{
-		TIM_SetCompare1(dev->info.timx, compare);
+		TIM_SetCompare1(dev->config.timx, compare);
 	}
-	else if(dev->info.oc_channel == 2)
+	else if(dev->config.oc_channel == 2)
 	{
-		TIM_SetCompare2(dev->info.timx, compare);
+		TIM_SetCompare2(dev->config.timx, compare);
 	}
-	else if(dev->info.oc_channel == 3)
+	else if(dev->config.oc_channel == 3)
 	{
-		TIM_SetCompare3(dev->info.timx, compare);
+		TIM_SetCompare3(dev->config.timx, compare);
 	}
-	else if(dev->info.oc_channel == 4)
+	else if(dev->config.oc_channel == 4)
 	{
-		TIM_SetCompare4(dev->info.timx, compare);
+		TIM_SetCompare4(dev->config.timx, compare);
 	}
 }
 

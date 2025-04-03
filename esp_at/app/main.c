@@ -1,12 +1,12 @@
 #include "main.h"
 
-UARTDev_t esp_debug = {.info = {	// esp32调试串口
+UARTDev_t esp_debug = {.config = {	// esp32调试串口
 	USART1, 115200,
 	GPIOA, GPIO_Pin_9,
 	GPIOA, GPIO_Pin_10
 }};
 
-UARTDev_t esp_usart = {.info = {	// esp32通信串口
+UARTDev_t esp_usart = {.config = {	// esp32通信串口
 	USART2, 115200,
 	GPIOA, GPIO_Pin_2,
 	GPIOA, GPIO_Pin_3

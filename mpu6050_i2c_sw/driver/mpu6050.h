@@ -11,16 +11,12 @@
 	#include "stm32f10x.h"
 	typedef GPIO_TypeDef*	MPU6050GPIOPort_t;
 	
-#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	#include "stm32f4xx.h"
 	typedef GPIO_TypeDef*	MPU6050GPIOPort_t;
 	
 #else
 	#error mpu6050.h: No processor defined!
-#endif
-
-#ifndef mpu6050_log
-	#define mpu6050_log(x) 
 #endif
 
 #define MPU6050_ADDRESS			0x68	// MPU6050的I2C从机地址
@@ -54,7 +50,7 @@ typedef struct {
 	uint32_t scl_pin;					// SCL引脚
 	MPU6050GPIOPort_t sda_port;			// SDA端口
 	uint32_t sda_pin;					// SDA引脚
-}MPU6050Info_t;
+}MPU6050Config_t;
 
 typedef struct {
 	int16_t accx;						// 加速度计X轴的数据，范围：-32768~32767
@@ -67,7 +63,7 @@ typedef struct {
 }MPU6050Data_t;
 
 typedef struct MPU6050Dev {
-	MPU6050Info_t info;
+	MPU6050Config_t config;
 	MPU6050Data_t data;
 	bool init_flag;														// 初始化标志
 	void *priv_data;													// 私有数据指针

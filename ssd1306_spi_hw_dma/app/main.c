@@ -1,6 +1,6 @@
 #include "main.h"
 
-OLEDDev_t oled = {.info = {
+OLEDDev_t oled = {.config = {
 	SPI1,
 	GPIOA, GPIO_Pin_5,
 	GPIOA, GPIO_Pin_7,

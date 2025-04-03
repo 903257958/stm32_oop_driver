@@ -9,7 +9,7 @@
 	#include "stm32f10x.h"
 	typedef GPIO_TypeDef*	StepperMotorGPIOPort_t;
 	
-#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	#include "stm32f4xx.h"
 	typedef GPIO_TypeDef*	StepperMotorGPIOPort_t;
 
@@ -25,10 +25,6 @@
     #define GPIO_LEVEL_LOW 0
 #endif
 
-#ifndef stepper_motor_log
-    #define stepper_motor_log(x) 
-#endif
-
 typedef struct {
 	StepperMotorGPIOPort_t in1_port;			// IN1端口
 	uint32_t in1_pin;							// IN1引脚
@@ -38,10 +34,10 @@ typedef struct {
 	uint32_t in3_pin;							// IN3引脚
 	StepperMotorGPIOPort_t in4_port;			// IN4端口
 	uint32_t in4_pin;							// IN4引脚
-}StepperMotorInfo_t;
+}StepperMotorConfig_t;
 
 typedef struct StepperMotorDev {
-	StepperMotorInfo_t info;
+	StepperMotorConfig_t config;
 	bool init_flag;														// 初始化标志
 	void (*control)(struct StepperMotorDev *dev, int cnt, int time_ms);	// 控制
 	void (*disable)(struct StepperMotorDev *dev);						// 关闭

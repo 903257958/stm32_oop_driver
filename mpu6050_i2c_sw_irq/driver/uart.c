@@ -21,7 +21,6 @@
 												else if (uartx == USART3)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);} \
 												else if (uartx == UART4)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART4, ENABLE);} \
 												else if (uartx == UART5)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART5, ENABLE);} \
-												else						{uart_log("uart clock no enable\r\n");} \
 											}
 
 #define	__uart_config_gpio_clock_enable(port)	{	if (port == GPIOA)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);} \
@@ -31,14 +30,12 @@
 													else if (port == GPIOE)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);} \
 													else if (port == GPIOF)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE);} \
 													else if (port == GPIOG)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, ENABLE);} \
-													else					{uart_log("uart gpio clock no enable\r\n");} \
 												}
 
 #define	__uart_config_dma_clock_enable(uartx)	{	if (uartx == USART1)		{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);} \
 													else if (uartx == USART2)	{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);} \
 													else if (uartx == USART3)	{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);} \
 													else if (uartx == UART4)	{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA2, ENABLE);} \
-													else						{uart_log("uart clock no enable\r\n");} \
 												}
 
 #define	__uart_config_io_af_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -55,7 +52,7 @@
 												GPIO_Init(port, &GPIO_InitStructure); \
 											}
 
-#elif defined(STM32F40_41xxx)
+#elif defined(STM32F40_41xxx) || defined(STM32F429_439xx)
 											
 #define __uart_get_irqn(uartx)	(	uartx == USART1 ? USART1_IRQn : \
 									uartx == USART2 ? USART2_IRQn : \
@@ -79,7 +76,6 @@
 												else if (uartx == UART4)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART4, ENABLE);} \
 												else if (uartx == UART5)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART5, ENABLE);} \
 												else if (uartx == USART6)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART6, ENABLE);} \
-												else						{uart_log("uart clock no enable\r\n");} \
 											}
 
 #define	__uart_config_gpio_clock_enable(port)	{	if (port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);} \
@@ -89,7 +85,6 @@
 													else if (port == GPIOE)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);} \
 													else if (port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);} \
 													else if (port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);} \
-													else					{uart_log("uart gpio clock no enable\r\n");} \
 												}
 
 #define	__uart_config_dma_clock_enable(uartx)	{	if (uartx == USART1)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);} \
@@ -98,7 +93,6 @@
 													else if (uartx == UART4)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);} \
 													else if (uartx == UART5)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);} \
 													else if (uartx == USART6)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);} \
-													else						{uart_log("uart clock no enable\r\n");} \
 												}
 
 #define	__uart_config_io_af_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -157,7 +151,6 @@
 #define	__uart_config_clock_enable(uartx)	{	if (uartx == USART1)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);} \
 												else if (uartx == USART2)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);} \
                                                 else if (uartx == USART6)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART6, ENABLE);} \
-												else						{uart_log("uart clock no enable\r\n");} \
 											}
 
 #define	__uart_config_gpio_clock_enable(port)	{	if (port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);} \
@@ -167,13 +160,11 @@
 													else if (port == GPIOE)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);} \
 													else if (port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);} \
 													else if (port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);} \
-													else					{uart_log("uart gpio clock no enable\r\n");} \
 												}
 
 #define	__uart_config_dma_clock_enable(uartx)	{	if (uartx == USART1)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);} \
 													else if (uartx == USART2)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);} \
                                                     else if (uartx == USART6)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);} \
-													else						{uart_log("uart clock no enable\r\n");} \
 												}
 
 #define	__uart_config_io_af_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -250,42 +241,42 @@ int uart_init(UARTDev_t *dev)
 	
 	UARTPrivData_t *priv_data = (UARTPrivData_t *)dev->priv_data;
 
-	priv_data->index = __uart_get_index(dev->info.uartx);
+	priv_data->index = __uart_get_index(dev->config.uartx);
 
 	/* 配置时钟与GPIO */
-	__uart_config_clock_enable(dev->info.uartx);
-	__uart_config_gpio_clock_enable(dev->info.tx_port);
-	__uart_config_gpio_clock_enable(dev->info.rx_port);
-	__uart_config_io_af_pp(dev->info.tx_port, dev->info.tx_pin);
-	__uart_config_io_af_pp(dev->info.rx_port, dev->info.rx_pin);
+	__uart_config_clock_enable(dev->config.uartx);
+	__uart_config_gpio_clock_enable(dev->config.tx_port);
+	__uart_config_gpio_clock_enable(dev->config.rx_port);
+	__uart_config_io_af_pp(dev->config.tx_port, dev->config.tx_pin);
+	__uart_config_io_af_pp(dev->config.rx_port, dev->config.rx_pin);
 	
-	#if defined(STM32F40_41xxx) || defined(STM32F411xE)
-	if (dev->info.uartx == USART1)
+	#if defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
+	if (dev->config.uartx == USART1)
 	{
 		GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_USART1);
 		GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_USART1);
 	}
-	else if (dev->info.uartx == USART2)
+	else if (dev->config.uartx == USART2)
 	{
 		GPIO_PinAFConfig(GPIOA, GPIO_PinSource2, GPIO_AF_USART2);
 		GPIO_PinAFConfig(GPIOA, GPIO_PinSource3, GPIO_AF_USART2);
 	}
-	else if (dev->info.uartx == USART2)
+	else if (dev->config.uartx == USART2)
 	{
 		GPIO_PinAFConfig(GPIOB, GPIO_PinSource10, GPIO_AF_USART3);
 		GPIO_PinAFConfig(GPIOB, GPIO_PinSource11, GPIO_AF_USART3);
 	}
-	else if (dev->info.uartx == UART4)
+	else if (dev->config.uartx == UART4)
 	{
 		GPIO_PinAFConfig(GPIOC, GPIO_PinSource10, GPIO_AF_UART4);
 		GPIO_PinAFConfig(GPIOC, GPIO_PinSource11, GPIO_AF_UART4);
 	}
-	else if (dev->info.uartx == UART5)
+	else if (dev->config.uartx == UART5)
 	{
 		GPIO_PinAFConfig(GPIOC, GPIO_PinSource12, GPIO_AF_UART5);
 		GPIO_PinAFConfig(GPIOD, GPIO_PinSource2, GPIO_AF_UART5);
 	}
-	else if (dev->info.uartx == USART6)
+	else if (dev->config.uartx == USART6)
 	{
 		GPIO_PinAFConfig(GPIOC, GPIO_PinSource6, GPIO_AF_USART6);
 		GPIO_PinAFConfig(GPIOC, GPIO_PinSource7, GPIO_AF_USART6);
@@ -294,26 +285,26 @@ int uart_init(UARTDev_t *dev)
 	
 	/* 配置USART */
 	USART_InitTypeDef USART_InitStructure;
-	USART_InitStructure.USART_BaudRate = dev->info.baud;
+	USART_InitStructure.USART_BaudRate = dev->config.baud;
 	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
 	USART_InitStructure.USART_Mode = USART_Mode_Tx | USART_Mode_Rx;
 	USART_InitStructure.USART_Parity = USART_Parity_No;
 	USART_InitStructure.USART_StopBits = USART_StopBits_1;
 	USART_InitStructure.USART_WordLength = USART_WordLength_8b;
-	USART_Init(dev->info.uartx, &USART_InitStructure);
+	USART_Init(dev->config.uartx, &USART_InitStructure);
 	
 	/* 配置中断 */
-	USART_ITConfig(dev->info.uartx, USART_IT_RXNE, ENABLE);
+	USART_ITConfig(dev->config.uartx, USART_IT_RXNE, ENABLE);
 	
 	NVIC_InitTypeDef NVIC_InitStructure;
-	NVIC_InitStructure.NVIC_IRQChannel = __uart_get_irqn(dev->info.uartx);
+	NVIC_InitStructure.NVIC_IRQChannel = __uart_get_irqn(dev->config.uartx);
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
 	NVIC_Init(&NVIC_InitStructure);
 	
 	/* 开启USART */
-	USART_Cmd(dev->info.uartx, ENABLE);
+	USART_Cmd(dev->config.uartx, ENABLE);
 	
 	/* 函数指针赋值 */
 	dev->send_byte = __uart_send_byte;
@@ -346,17 +337,17 @@ int uart_dma_init(UARTDev_t *dev)
 	
 	#if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 	
-	if (dev->info.uartx == USART1)			{	priv_data->DMAChannel = DMA1_Channel5;	}
-	else if (dev->info.uartx == USART2)	{	priv_data->DMAChannel = DMA1_Channel6;	}
-	else if (dev->info.uartx == USART3)	{	priv_data->DMAChannel = DMA1_Channel3;	}
-	else if (dev->info.uartx == UART4)		{	priv_data->DMAChannel = DMA2_Channel3;	}
+	if (dev->config.uartx == USART1)			{	priv_data->DMAChannel = DMA1_Channel5;	}
+	else if (dev->config.uartx == USART2)	{	priv_data->DMAChannel = DMA1_Channel6;	}
+	else if (dev->config.uartx == USART3)	{	priv_data->DMAChannel = DMA1_Channel3;	}
+	else if (dev->config.uartx == UART4)		{	priv_data->DMAChannel = DMA2_Channel3;	}
 	else	{return -1;}
 
 	/* 配置DMA */
-	__uart_config_dma_clock_enable(dev->info.uartx);
+	__uart_config_dma_clock_enable(dev->config.uartx);
 	DMA_InitTypeDef DMA_InitStructure;
 	DMA_DeInit(priv_data->DMAChannel);													// 将DMA的通道寄存器重设为缺省值
-	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&dev->info.uartx->DR;		// DMA外设基地址
+	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&dev->config.uartx->DR;		// DMA外设基地址
 	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)(g_rx_str[priv_data->index]);		// DMA内存基地址
 	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;									// 数据传输方向，从外设读取发送到内存
 	DMA_InitStructure.DMA_BufferSize = sizeof(g_rx_str[priv_data->index]);				// DMA通道的DMA缓存的大小
@@ -370,23 +361,23 @@ int uart_dma_init(UARTDev_t *dev)
 	DMA_Init(priv_data->DMAChannel, &DMA_InitStructure);
 
 	/* 中断使能 */
-	USART_ITConfig(dev->info.uartx, USART_IT_RXNE, DISABLE);							// 关闭串口接受中断
-	USART_ITConfig(dev->info.uartx, USART_IT_IDLE, ENABLE);								// 使能UART空闲中断
+	USART_ITConfig(dev->config.uartx, USART_IT_RXNE, DISABLE);							// 关闭串口接受中断
+	USART_ITConfig(dev->config.uartx, USART_IT_IDLE, ENABLE);								// 使能UART空闲中断
 
 	/* 开启DMA */
 	DMA_Cmd(priv_data->DMAChannel, ENABLE);
 
 	/* 启用UART的DMA请求 */
-	USART_DMACmd(dev->info.uartx, USART_DMAReq_Rx, ENABLE);
+	USART_DMACmd(dev->config.uartx, USART_DMAReq_Rx, ENABLE);
 
-	#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
+	#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	
 	/* 配置DMA */
-	__uart_config_dma_clock_enable(dev->info.uartx);									// 开启DMA时钟
-	DMA_DeInit(__uart_get_dma_stream(dev->info.uartx));
+	__uart_config_dma_clock_enable(dev->config.uartx);									// 开启DMA时钟
+	DMA_DeInit(__uart_get_dma_stream(dev->config.uartx));
 	DMA_InitTypeDef DMA_InitStructure;
-    DMA_InitStructure.DMA_Channel = __uart_get_dma_channel(dev->info.uartx);			// 选择DMA通道
-    DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&dev->info.uartx->DR;			// DMA外设基地址
+    DMA_InitStructure.DMA_Channel = __uart_get_dma_channel(dev->config.uartx);			// 选择DMA通道
+    DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&dev->config.uartx->DR;			// DMA外设基地址
     DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)(g_rx_str[priv_data->index]);		// DMA内存基地址
     DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;								// 从外设读取发送到内存
     DMA_InitStructure.DMA_BufferSize = sizeof(g_rx_str[priv_data->index]);				// DMA通道的DMA缓存的大小
@@ -400,17 +391,17 @@ int uart_dma_init(UARTDev_t *dev)
     DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_Full;						// FIFO阈值为满
     DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;							// 内存突发传输为单次
     DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;					// 外设突发传输为单次
-    DMA_Init(__uart_get_dma_stream(dev->info.uartx), &DMA_InitStructure);
+    DMA_Init(__uart_get_dma_stream(dev->config.uartx), &DMA_InitStructure);
 					
 	/* 中断使能 */
-	USART_ITConfig(dev->info.uartx, USART_IT_RXNE, DISABLE);							// 关闭串口接受中断
-	USART_ITConfig(dev->info.uartx, USART_IT_IDLE, ENABLE);								// 使能UART空闲中断
+	USART_ITConfig(dev->config.uartx, USART_IT_RXNE, DISABLE);							// 关闭串口接受中断
+	USART_ITConfig(dev->config.uartx, USART_IT_IDLE, ENABLE);								// 使能UART空闲中断
 
 	/* 开启DMA */
-    DMA_Cmd(__uart_get_dma_stream(dev->info.uartx), ENABLE);
+    DMA_Cmd(__uart_get_dma_stream(dev->config.uartx), ENABLE);
 
 	/* 启用UART的DMA请求 */
-	USART_DMACmd(dev->info.uartx, USART_DMAReq_Rx, ENABLE);
+	USART_DMACmd(dev->config.uartx, USART_DMAReq_Rx, ENABLE);
 	
 	#endif
 	
@@ -445,20 +436,20 @@ static int __uart_dma_recv_enable(UARTDev_t *dev)
 	/* 重新打开DMA */
 	DMA_Cmd(priv_data->DMAChannel, ENABLE);
 	
-	#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
+	#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	
 	/* 将接收的内存部分数据清0 */
 	memset(g_rx_str[priv_data->index], 0, sizeof(g_rx_str[priv_data->index]));
 
 	/* 清除标志位 */
-	DMA_ClearFlag(__uart_get_dma_stream(dev->info.uartx), __uart_get_dma_flag(dev->info.uartx));
-	USART_ClearFlag(dev->info.uartx, USART_FLAG_IDLE);
+	DMA_ClearFlag(__uart_get_dma_stream(dev->config.uartx), __uart_get_dma_flag(dev->config.uartx));
+	USART_ClearFlag(dev->config.uartx, USART_FLAG_IDLE);
 
 	/* 重新设置传输数据长度 */
-	DMA_SetCurrDataCounter(__uart_get_dma_stream(dev->info.uartx), sizeof(g_rx_str[priv_data->index]));
+	DMA_SetCurrDataCounter(__uart_get_dma_stream(dev->config.uartx), sizeof(g_rx_str[priv_data->index]));
 
 	/* 重新打开DMA */
-	DMA_Cmd(__uart_get_dma_stream(dev->info.uartx), ENABLE);
+	DMA_Cmd(__uart_get_dma_stream(dev->config.uartx), ENABLE);
 	
 	#endif
 
@@ -476,8 +467,8 @@ static int __uart_send_byte(UARTDev_t *dev, uint8_t byte)
 	if (!dev || !dev->init_flag)
 		return -1;
 	
-	USART_SendData(dev->info.uartx, byte);	// 写DR寄存器
-	while (RESET == USART_GetFlagStatus(dev->info.uartx, USART_FLAG_TXE));	// 等待TXE置1，不需要手动清除标志位
+	USART_SendData(dev->config.uartx, byte);	// 写DR寄存器
+	while (RESET == USART_GetFlagStatus(dev->config.uartx, USART_FLAG_TXE));	// 等待TXE置1，不需要手动清除标志位
 	
 	return 0;
 }
@@ -713,7 +704,7 @@ void USART1_IRQHandler(void)
 			/* 空闲中断产生，关闭DMA，等待数据处理，在调用 dma_recv_enable 函数后DMA才被重新开启 */
 			#if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 			DMA_Cmd(DMA1_Channel5, DISABLE);
-			#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
+			#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 			DMA_Cmd(DMA2_Stream5, DISABLE);
 			#endif
 	}
@@ -744,7 +735,7 @@ void USART2_IRQHandler(void)
 			/* 空闲中断产生，关闭DMA，等待数据处理，在调用 dma_recv_enable 函数后DMA才被重新开启 */
 			#if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 			DMA_Cmd(DMA1_Channel6, DISABLE);
-			#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
+			#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 			DMA_Cmd(DMA1_Stream5, DISABLE);
 			#endif
 	}
@@ -775,7 +766,7 @@ void USART3_IRQHandler(void)
 			/* 空闲中断产生，关闭DMA，等待数据处理，在调用 dma_recv_enable 函数后DMA才被重新开启 */
 			#if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 			DMA_Cmd(DMA1_Channel3, DISABLE);
-			#elif defined(STM32F40_41xxx)
+			#elif defined(STM32F40_41xxx) || defined(STM32F429_439xx)
 			DMA_Cmd(DMA1_Stream1, DISABLE);
 			#endif
 	}
@@ -806,7 +797,7 @@ void UART4_IRQHandler(void)
 			/* 空闲中断产生，关闭DMA，等待数据处理，在调用 dma_recv_enable 函数后DMA才被重新开启 */
 			#if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 			DMA_Cmd(DMA2_Channel3, DISABLE);
-			#elif defined(STM32F40_41xxx)
+			#elif defined(STM32F40_41xxx) || defined(STM32F429_439xx)
 			DMA_Cmd(DMA1_Stream2, DISABLE);
 			#endif
 	}
@@ -826,7 +817,7 @@ void UART4_IRQHandler(void)
  ******************************************************************************/
 void UART5_IRQHandler(void)
 {
-	#if defined(STM32F40_41xxx)
+	#if defined(STM32F40_41xxx) || defined(STM32F429_439xx)
 	volatile uint8_t clear;
 
 	if (USART_GetITStatus(UART5, USART_IT_IDLE) != RESET)   // 空闲中断
@@ -855,7 +846,7 @@ void UART5_IRQHandler(void)
  ******************************************************************************/
 void USART6_IRQHandler(void)
 {
-	#if defined(STM32F40_41xxx) || defined(STM32F411xE)
+	#if defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	volatile uint8_t clear;
 
 	if (USART_GetITStatus(USART6, USART_IT_IDLE) != RESET)   // 空闲中断

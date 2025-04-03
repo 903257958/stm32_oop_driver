@@ -1,6 +1,6 @@
 #include "main.h"
 
-//LCDDev_t lcd = {.info = {
+//LCDDev_t lcd = {.config = {
 //	SPI1,
 //	GPIOA, GPIO_Pin_5,
 //	GPIOA, GPIO_Pin_7,
@@ -11,7 +11,7 @@
 //	TIM3, 2,
 //	VERTICAL_REVERSE
 //}};
-LCDDev_t lcd = {.info = {
+LCDDev_t lcd = {.config = {
 	SPI1,
 	GPIOA, GPIO_Pin_5,
 	GPIOA, GPIO_Pin_7,
@@ -23,7 +23,7 @@ LCDDev_t lcd = {.info = {
 	VERTICAL_REVERSE
 }};
 
-CST816TDev_t touch = {.info = {
+CST816TDev_t touch = {.config = {
 	GPIOB, GPIO_Pin_6,
 	GPIOB, GPIO_Pin_7,
 	GPIOD, GPIO_Pin_1,

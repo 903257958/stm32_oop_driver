@@ -410,16 +410,6 @@
               <FilePath>..\driver\delay.c</FilePath>
             </File>
             <File>
-              <FileName>spi.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\driver\spi.h</FilePath>
-            </File>
-            <File>
-              <FileName>spi.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\driver\spi.c</FilePath>
-            </File>
-            <File>
               <FileName>lcd.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\driver\lcd.h</FilePath>
@@ -438,16 +428,6 @@
               <FileName>lcd_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\driver\lcd_data.c</FilePath>
-            </File>
-            <File>
-              <FileName>pwm.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\driver\pwm.h</FilePath>
-            </File>
-            <File>
-              <FileName>pwm.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\driver\pwm.c</FilePath>
             </File>
             <File>
               <FileName>i2c.h</FileName>

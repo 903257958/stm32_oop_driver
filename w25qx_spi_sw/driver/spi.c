@@ -9,7 +9,6 @@
 													else if(port == GPIOE)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);} \
 													else if(port == GPIOF)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE);} \
 													else if(port == GPIOG)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, ENABLE);} \
-													else					{spi_log("spi gpio clock no enable\r\n");} \
 												}
 													
 #define	__spi_config_io_out_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -30,7 +29,7 @@
 											
 #define __spi_io_read(port, pin)	GPIO_ReadInputDataBit(port, pin)
 			
-#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 
 #define	__spi_config_gpio_clock_enable(port)	{	if(port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);} \
 													else if(port == GPIOB)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);} \
@@ -39,7 +38,6 @@
 													else if(port == GPIOE)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);} \
 													else if(port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);} \
 													else if(port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);} \
-													else					{spi_log("spi gpio clock no enable\r\n");} \
 												}
 													
 #define	__spi_config_io_out_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -88,15 +86,15 @@ int spi_init(SPIDev_t *dev)
 		return -1;
 	
 	/* 配置时钟与GPIO */
-	__spi_config_gpio_clock_enable(dev->info.sck_port);
-	__spi_config_gpio_clock_enable(dev->info.miso_port);
-	__spi_config_gpio_clock_enable(dev->info.mosi_port);
-	__spi_config_gpio_clock_enable(dev->info.cs_port);
+	__spi_config_gpio_clock_enable(dev->config.sck_port);
+	__spi_config_gpio_clock_enable(dev->config.miso_port);
+	__spi_config_gpio_clock_enable(dev->config.mosi_port);
+	__spi_config_gpio_clock_enable(dev->config.cs_port);
 	
-	__spi_config_io_out_pp(dev->info.sck_port, dev->info.sck_pin);
-	__spi_config_io_in_pu(dev->info.miso_port, dev->info.miso_pin);
-	__spi_config_io_out_pp(dev->info.mosi_port, dev->info.mosi_pin);
-	__spi_config_io_out_pp(dev->info.cs_port, dev->info.cs_pin);
+	__spi_config_io_out_pp(dev->config.sck_port, dev->config.sck_pin);
+	__spi_config_io_in_pu(dev->config.miso_port, dev->config.miso_pin);
+	__spi_config_io_out_pp(dev->config.mosi_port, dev->config.mosi_pin);
+	__spi_config_io_out_pp(dev->config.cs_port, dev->config.cs_pin);
 	
 	/* 函数指针赋值 */
 	dev->sck_write = __spi_sck_write;
@@ -124,7 +122,7 @@ int spi_init(SPIDev_t *dev)
  ******************************************************************************/
 static void __spi_sck_write(SPIDev_t *dev, uint8_t bit_val)
 {
-	__spi_io_write(dev->info.sck_port, dev->info.sck_pin, bit_val);
+	__spi_io_write(dev->config.sck_port, dev->config.sck_pin, bit_val);
 }
 
 /******************************************************************************
@@ -135,7 +133,7 @@ static void __spi_sck_write(SPIDev_t *dev, uint8_t bit_val)
  ******************************************************************************/
 static void __spi_mosi_write(SPIDev_t *dev, uint8_t bit_val)
 {
-	__spi_io_write(dev->info.mosi_port, dev->info.mosi_pin, bit_val);
+	__spi_io_write(dev->config.mosi_port, dev->config.mosi_pin, bit_val);
 }
 
 /******************************************************************************
@@ -145,7 +143,7 @@ static void __spi_mosi_write(SPIDev_t *dev, uint8_t bit_val)
  ******************************************************************************/
 static uint8_t __spi_miso_read(SPIDev_t *dev)
 {
-	return __spi_io_read(dev->info.miso_port, dev->info.miso_pin);
+	return __spi_io_read(dev->config.miso_port, dev->config.miso_pin);
 }
 
 /******************************************************************************
@@ -156,7 +154,7 @@ static uint8_t __spi_miso_read(SPIDev_t *dev)
  ******************************************************************************/
 static void __spi_cs_write(SPIDev_t *dev, uint8_t bit_val)
 {
-	__spi_io_write(dev->info.cs_port, dev->info.cs_pin, bit_val);
+	__spi_io_write(dev->config.cs_port, dev->config.cs_pin, bit_val);
 }
 
 /******************************************************************************
@@ -189,7 +187,7 @@ static uint8_t __spi_swap_byte(SPIDev_t *dev, uint8_t send_byte)
 {
 	uint8_t recvByte = 0x00;
 	
-	if(dev->info.mode == SPI_MODE_0)		// 模式0
+	if(dev->config.mode == SPI_MODE_0)		// 模式0
 	{
 		for(uint8_t i = 0;i < 8;i++)
 		{
@@ -199,7 +197,7 @@ static uint8_t __spi_swap_byte(SPIDev_t *dev, uint8_t send_byte)
 			__spi_sck_write(dev, 0);
 		}
 	}
-	else if(dev->info.mode == SPI_MODE_1)	// 模式1
+	else if(dev->config.mode == SPI_MODE_1)	// 模式1
 	{
 		for(uint8_t i = 0;i < 8;i++)
 		{
@@ -209,7 +207,7 @@ static uint8_t __spi_swap_byte(SPIDev_t *dev, uint8_t send_byte)
 			recvByte |= (__spi_miso_read(dev) << (7 - i));
 		}
 	}
-	if(dev->info.mode == SPI_MODE_2)		// 模式2
+	if(dev->config.mode == SPI_MODE_2)		// 模式2
 	{
 		for(uint8_t i = 0;i < 8;i++)
 		{
@@ -219,7 +217,7 @@ static uint8_t __spi_swap_byte(SPIDev_t *dev, uint8_t send_byte)
 			__spi_sck_write(dev, 1);
 		}
 	}
-	else if(dev->info.mode == SPI_MODE_3)	// 模式3
+	else if(dev->config.mode == SPI_MODE_3)	// 模式3
 	{
 		for(uint8_t i = 0;i < 8;i++)
 		{

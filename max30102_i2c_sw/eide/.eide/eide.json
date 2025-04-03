@@ -53,18 +53,6 @@
           },
           {
             "path": "../driver/max30102.h"
-          },
-          {
-            "path": "../driver/pwm.c"
-          },
-          {
-            "path": "../driver/pwm.h"
-          },
-          {
-            "path": "../driver/spi.c"
-          },
-          {
-            "path": "../driver/spi.h"
           }
         ],
         "folders": []

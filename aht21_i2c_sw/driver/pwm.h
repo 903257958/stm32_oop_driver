@@ -10,17 +10,13 @@
 	typedef TIM_TypeDef*	TimerPER_t;
 	typedef GPIO_TypeDef*	PWMGPIOPort_t;
 	
-#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	#include "stm32f4xx.h"
 	typedef TIM_TypeDef*	TimerPER_t;
 	typedef GPIO_TypeDef*	PWMGPIOPort_t;
 
 #else
 	#error pwm.h: No processor defined!
-#endif
-
-#ifndef pwm_log
-	#define pwm_log(x) 
 #endif
 
 typedef struct {
@@ -30,10 +26,10 @@ typedef struct {
 	uint16_t arr;					// ARR自动重装器的值
 	PWMGPIOPort_t port;				// PWM端口
 	uint32_t pin;					// PWM引脚
-}PWMInfo_t;
+}PWMConfig_t;
 
 typedef struct PWMDev {
-	PWMInfo_t info;
+	PWMConfig_t config;
 	bool init_flag;												// 初始化标志
 	void (*set_psc)(struct PWMDev *dev, uint16_t psc);			// PWM设置PSC的值
 	void (*set_arr)(struct PWMDev *dev, uint16_t arr);			// PWM设置ARR的值

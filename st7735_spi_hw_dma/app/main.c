@@ -1,6 +1,6 @@
 #include "main.h"
 
-LCDDev_t lcd = {.info = {
+LCDDev_t lcd = {.config = {
 	SPI1,
 	GPIOA, GPIO_Pin_5,
 	GPIOA, GPIO_Pin_7,

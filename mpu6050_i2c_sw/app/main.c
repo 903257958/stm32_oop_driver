@@ -1,11 +1,11 @@
 #include "main.h"
 
-UARTDev_t debug = {.info = {
+UARTDev_t debug = {.config = {
 	USART1, 115200,
 	GPIOA, GPIO_Pin_9,
 	GPIOA, GPIO_Pin_10
 }};
-MPU6050Dev_t mpu6050 = {.info = {
+MPU6050Dev_t mpu6050 = {.config = {
 	GPIOB, GPIO_Pin_6, 
 	GPIOB, GPIO_Pin_7, 
 }};

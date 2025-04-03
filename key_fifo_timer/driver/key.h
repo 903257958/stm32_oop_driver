@@ -28,20 +28,16 @@
 	#define GPIO_LEVEL_LOW 0
 #endif
 
-#ifndef key_log
-	#define key_log(x) 
-#endif
-
 typedef struct {
 	TimerPER_t timx;			// 用于提供tick，若有多个按键设备传入了不同的定时器外设，则以最后一次初始化的定时器外设为准
 	KeyGPIOPort_t port;			// 端口
 	uint32_t pin;				// 引脚
 	bool press_level;			// 按键按下的时候IO口的电平
 	int val;					// 按键值
-}KeyInfo_t;
+}KeyConfig_t;
 
 typedef struct KeyDev {
-	KeyInfo_t info;
+	KeyConfig_t config;
 	bool init_flag;							// 初始化标志
 	int (*deinit)(struct KeyDev *dev);		// 去初始化
 }KeyDev_t;

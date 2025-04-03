@@ -12,16 +12,12 @@
     #include "stm32f10x.h"
     typedef GPIO_TypeDef*		LCDGPIOPort_t;
 	
-#elif defined(STM32F40_41xxx)
+#elif defined(STM32F40_41xxx) || defined(STM32F429_439xx)
 	#include "stm32f4xx.h"
 	typedef GPIO_TypeDef*		LCDGPIOPort_t;
 	
 #else
     #error lcd.h: No processor defined!
-#endif
-
-#ifndef lcd_log
-    #define lcd_log(x) 
 #endif
 
 /* LCD屏幕方向选择：0为竖屏正向，1为竖屏反向，2为横屏正向，3为横屏反向 */
@@ -103,10 +99,10 @@ typedef struct {
 	uint16_t prescaler;				// 预分频系数
 	SPIMode_t mode;					// SPI模式
 	LCDUseDMA_t use_dma;			// 是否使用DMA
-}LCDInfo_t;
+}LCDConfig_t;
 
 typedef struct LCDDev {
-	LCDInfo_t info;
+	LCDConfig_t config;
 	bool init_flag;													// 初始化标志
 	void *priv_data;												// 私有数据指针
 	void (*update)(struct LCDDev *dev);							// DMA传输更新显存函数

@@ -10,7 +10,6 @@
 												    	else if(port == GPIOE)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);} \
 												    	else if(port == GPIOF)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE);} \
 												    	else if(port == GPIOG)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, ENABLE);} \
-												    	else					{cst816t_log("cst816t gpio clock no enable\r\n");} \
 												    }
 
 #define	__cst816t_config_io_out_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -22,7 +21,7 @@
 											
 #define	__cst816t_io_write(port, pin, value)	GPIO_WriteBit(port, pin, (BitAction)value)
 
-#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 
 #define	__cst816t_config_gpio_clock_enable(port)	{	if(port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);} \
 												    	else if(port == GPIOB)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);} \
@@ -31,7 +30,6 @@
 												    	else if(port == GPIOE)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);} \
 												    	else if(port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);} \
 												    	else if(port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);} \
-												    	else					{cst816t_log("cst816t gpio clock no enable\r\n");} \
 												    }
 
 #define	__cst816t_config_io_out_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -76,23 +74,23 @@ int cst816t_init(CST816TDev_t *dev)
 	
 	CST816TPrivData_t *priv_data = (CST816TPrivData_t *)dev->priv_data;
 	
-	priv_data->i2c.info.scl_port = dev->info.scl_port;
-	priv_data->i2c.info.scl_pin = dev->info.scl_pin;
-	priv_data->i2c.info.sda_port = dev->info.sda_port;
-	priv_data->i2c.info.sda_pin = dev->info.sda_pin;
+	priv_data->i2c.config.scl_port = dev->config.scl_port;
+	priv_data->i2c.config.scl_pin = dev->config.scl_pin;
+	priv_data->i2c.config.sda_port = dev->config.sda_port;
+	priv_data->i2c.config.sda_pin = dev->config.sda_pin;
 	
 	/* 配置软件I2C */
 	i2c_init(&priv_data->i2c);
 	
 	/* 配置时钟与GPIO */
-	__cst816t_config_gpio_clock_enable(dev->info.rst_port);
-	__cst816t_config_io_out_pp(dev->info.rst_port, dev->info.rst_pin);
-    __cst816t_io_write(dev->info.rst_port, dev->info.rst_pin, GPIO_LEVEL_HIGH);
+	__cst816t_config_gpio_clock_enable(dev->config.rst_port);
+	__cst816t_config_io_out_pp(dev->config.rst_port, dev->config.rst_pin);
+    __cst816t_io_write(dev->config.rst_port, dev->config.rst_pin, GPIO_LEVEL_HIGH);
 
 	/* 复位 */
-    __cst816t_io_write(dev->info.rst_port, dev->info.rst_pin, GPIO_LEVEL_LOW);
+    __cst816t_io_write(dev->config.rst_port, dev->config.rst_pin, GPIO_LEVEL_LOW);
     delay_ms(10);
-    __cst816t_io_write(dev->info.rst_port, dev->info.rst_pin, GPIO_LEVEL_HIGH);
+    __cst816t_io_write(dev->config.rst_port, dev->config.rst_pin, GPIO_LEVEL_HIGH);
     delay_ms(50);
 
     /* 函数指针赋值 */
@@ -187,7 +185,7 @@ static int __cst816t_get_action(CST816TDev_t *dev)
 		y = ((data[4] & 0x0F) << 8) | data[5];
 
 		/* 检查坐标范围并根据方向调整坐标与状态码 */
-		if ((dev->info.dir == VERTICAL_FORWARD) && (x <= LCD_W && y <= LCD_H))
+		if ((dev->config.dir == VERTICAL_FORWARD) && (x <= LCD_W && y <= LCD_H))
 		{
 			dev->x = x;
 			dev->y = y - 8;
@@ -201,7 +199,7 @@ static int __cst816t_get_action(CST816TDev_t *dev)
 			}
 			return -2;
         }
-		else if ((dev->info.dir == VERTICAL_REVERSE) && (x <= LCD_W && y <= LCD_H))
+		else if ((dev->config.dir == VERTICAL_REVERSE) && (x <= LCD_W && y <= LCD_H))
 		{
 			dev->x = LCD_W - x;
 			dev->y = LCD_H - y;
@@ -215,7 +213,7 @@ static int __cst816t_get_action(CST816TDev_t *dev)
 			}
 			return -3;
         }
-		else if ((dev->info.dir == HORIZONTAL_FORWARD) && (x <= LCD_H && y <= LCD_W))
+		else if ((dev->config.dir == HORIZONTAL_FORWARD) && (x <= LCD_H && y <= LCD_W))
 		{
 			dev->x = y;
 			dev->y = LCD_W - x;
@@ -229,7 +227,7 @@ static int __cst816t_get_action(CST816TDev_t *dev)
 			}
 			return -4;
 		}
-		else if ((dev->info.dir == HORIZONTAL_REVERSE) && (x <= LCD_H && y <= LCD_W))
+		else if ((dev->config.dir == HORIZONTAL_REVERSE) && (x <= LCD_H && y <= LCD_W))
 		{
 			dev->x = LCD_H - y;
 			dev->y = x;
@@ -245,9 +243,9 @@ static int __cst816t_get_action(CST816TDev_t *dev)
         }
 
         /* 如果坐标超出范围，重置设备并重试 */
-        __cst816t_io_write(dev->info.rst_port, dev->info.rst_pin, GPIO_LEVEL_LOW);
+        __cst816t_io_write(dev->config.rst_port, dev->config.rst_pin, GPIO_LEVEL_LOW);
         delay_ms(10);
-        __cst816t_io_write(dev->info.rst_port, dev->info.rst_pin, GPIO_LEVEL_HIGH);
+        __cst816t_io_write(dev->config.rst_port, dev->config.rst_pin, GPIO_LEVEL_HIGH);
         delay_ms(10);
 
 		retry_cnt++;

@@ -11,24 +11,12 @@
 	#include "stm32f10x.h"
 	typedef GPIO_TypeDef*	AHT21GPIOPort_t;
 	
-#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	#include "stm32f4xx.h"
 	typedef GPIO_TypeDef*	AHT21GPIOPort_t;
 	
 #else
 	#error aht21.h: No processor defined!
-#endif
-
-#ifndef GPIO_LEVEL_HIGH
-    #define GPIO_LEVEL_HIGH 1
-#endif
-
-#ifndef GPIO_LEVEL_LOW
-    #define GPIO_LEVEL_LOW 0
-#endif
-
-#ifndef aht21_log
-	#define aht21_log(x)
 #endif
 
 /* AHT21的I2C从机地址 */
@@ -44,10 +32,10 @@ typedef struct {
 	uint32_t scl_pin;				// SCL引脚
 	AHT21GPIOPort_t sda_port;		// SDA端口
 	uint32_t sda_pin;				// SDA引脚
-}AHT21Info_t;
+}AHT21Config_t;
 
 typedef struct AHT21Dev {
-	AHT21Info_t info;
+	AHT21Config_t config;
 	bool init_flag;		// 初始化标志
     void *priv_data;	// 私有数据指针
 	float temp;

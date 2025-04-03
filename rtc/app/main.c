@@ -1,6 +1,6 @@
 #include "main.h"
 
-UARTDev_t debug = {.info = {
+UARTDev_t debug = {.config = {
     USART1, 115200,
     GPIOA, GPIO_Pin_9,
     GPIOA, GPIO_Pin_10

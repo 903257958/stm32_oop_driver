@@ -11,16 +11,12 @@
 	#include "stm32f10x.h"
 	typedef GPIO_TypeDef*	BMP280GPIOPort_t;
 	
-#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	#include "stm32f4xx.h"
 	typedef GPIO_TypeDef*	BMP280GPIOPort_t;
 	
 #else
 	#error bmp280.h: No processor defined!
-#endif
-
-#ifndef bmp280_log
-	#define bmp280_log(x)
 #endif
 
 /* BMP280的I2C从机地址 */
@@ -105,14 +101,14 @@ typedef struct {
 	BMPTimeStandby_t 				time_standby;
 	BMP280FliterCoefficient_t 		filter_coefficient;
 	bool							spi_en;
-}BMP280Config_t;
+}BMP280Setting_t;
 
 typedef struct {
     BMP280GPIOPort_t scl_port;	// SCL端口
 	uint32_t scl_pin;			// SCL引脚
 	BMP280GPIOPort_t sda_port;	// SDA端口
 	uint32_t sda_pin;			// SDA引脚
-}BMP280Info_t;
+}BMP280Config_t;
 
 typedef struct {
 	float temperature;	// 温度值
@@ -121,7 +117,7 @@ typedef struct {
 }BMP280Data_t;
 
 typedef struct BMP280Dev {
-	BMP280Info_t info;
+	BMP280Config_t config;
 	BMP280Data_t data;
 	bool init_flag;										// 初始化标志
     void *priv_data;									// 私有数据指针

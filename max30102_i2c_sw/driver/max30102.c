@@ -10,7 +10,6 @@
 														else if(port == GPIOE)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);} \
 														else if(port == GPIOF)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE);} \
 														else if(port == GPIOG)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, ENABLE);} \
-														else					{max30102_log("max30102 gpio clock no enable\r\n");} \
 													}
 													
 #define	__max30102_config_io_in_up(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -22,7 +21,7 @@
 												
 #define __max30102_io_read(port, pin)	GPIO_ReadInputDataBit(port, pin)
 
-#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 
 #define	__max30102_config_gpio_clock_enable(port)	{	if(port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);} \
 														else if(port == GPIOB)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);} \
@@ -31,7 +30,6 @@
 														else if(port == GPIOE)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);} \
 														else if(port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);} \
 														else if(port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);} \
-														else					{max30102_log("max30102 gpio clock no enable\r\n");} \
 													}
 													
 #define	__max30102_config_io_in_up(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -99,14 +97,14 @@ int max30102_init(MAX30102Dev_t *dev)
 	
 	MAX30102PrivData_t *priv_data = (MAX30102PrivData_t *)dev->priv_data;
 	
-	priv_data->i2c.info.scl_port = dev->info.scl_port;
-	priv_data->i2c.info.scl_pin = dev->info.scl_pin;
-	priv_data->i2c.info.sda_port = dev->info.sda_port;
-	priv_data->i2c.info.sda_pin = dev->info.sda_pin;
+	priv_data->i2c.config.scl_port = dev->config.scl_port;
+	priv_data->i2c.config.scl_pin = dev->config.scl_pin;
+	priv_data->i2c.config.sda_port = dev->config.sda_port;
+	priv_data->i2c.config.sda_pin = dev->config.sda_pin;
 
 	/* 配置MAX30102 */
-	__max30102_config_gpio_clock_enable(dev->info.int_port);
-	__max30102_config_io_in_up(dev->info.int_port, dev->info.int_pin);
+	__max30102_config_gpio_clock_enable(dev->config.int_port);
+	__max30102_config_io_in_up(dev->config.int_port, dev->config.int_pin);
 	
 	/* 配置软件I2C */
 	i2c_init(&priv_data->i2c);
@@ -134,7 +132,7 @@ int max30102_init(MAX30102Dev_t *dev)
 	/* 读取前500个样本，并确定信号范围 */
 	for (i = 0; i < BUFFER_SIZE; i++)
 	{
-		while (__max30102_io_read(dev->info.int_port, dev->info.int_pin) == 1);
+		while (__max30102_io_read(dev->config.int_port, dev->config.int_pin) == 1);
 			
 		__max30102_read_fifo(dev, &aun_red_buffer[i], &aun_ir_buffer[i]);
 				
@@ -241,7 +239,7 @@ static int __max30102_get_data(MAX30102Dev_t *dev)
 	{
 			un_prev_data=aun_red_buffer[i - 1];	// 在计算心率前取100组样本，取的数据放在400-500缓存数组中
 			
-			while (__max30102_io_read(dev->info.int_port, dev->info.int_pin) == 1);
+			while (__max30102_io_read(dev->config.int_port, dev->config.int_pin) == 1);
 			
 			__max30102_read_fifo(dev, &aun_red_buffer[i], &aun_ir_buffer[i]);
 

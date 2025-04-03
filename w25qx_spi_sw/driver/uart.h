@@ -13,17 +13,13 @@
 	typedef USART_TypeDef*			UARTPER_t;
 	typedef GPIO_TypeDef*			UARTGPIOPort_t;
 	
-#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	#include "stm32f4xx.h"
 	typedef USART_TypeDef*			UARTPER_t;
 	typedef GPIO_TypeDef*			UARTGPIOPort_t;
 	
 #else
 	#error uart.h: No processor defined!
-#endif
-
-#ifndef uart_log
-	#define uart_log(x)
 #endif
 
 typedef struct {
@@ -33,10 +29,10 @@ typedef struct {
 	uint32_t tx_pin;				// 发送引脚
 	UARTGPIOPort_t rx_port;			// 接收端口
 	uint32_t rx_pin;				// 接收引脚
-}UARTInfo_t;
+}UARTConfig_t;
 
 typedef struct UARTDev {
-	UARTInfo_t info;
+	UARTConfig_t config;
 	bool init_flag;																// 初始化标志
 	bool dma_Flag;																// 使用DMA标志
 	void *priv_data;															// 私有数据指针

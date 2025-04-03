@@ -9,7 +9,6 @@
 													else if(port == GPIOE)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);} \
 													else if(port == GPIOF)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE);} \
 													else if(port == GPIOG)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, ENABLE);} \
-													else					{led_log("gpio clock no enable\r\n");} \
 												}
 
 #define	__led_config_io_out_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -21,7 +20,7 @@
 
 #define	__led_io_write(port, pin, value)	GPIO_WriteBit(port, pin, (BitAction)value)
 
-#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 
 #define	__led_config_gpio_clock_enable(port)	{	if(port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);} \
 													else if(port == GPIOB)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);} \
@@ -30,7 +29,6 @@
 													else if(port == GPIOE)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);} \
 													else if(port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);} \
 													else if(port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);} \
-													else					{led_log("gpio clock no enable\r\n");} \
 												}
 
 #define	__led_config_io_out_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -75,8 +73,8 @@ int led_init(LEDDev_t *dev)
 	LEDPrivData_t *priv_data = (LEDPrivData_t *)dev->priv_data;
 	
 	/* 配置时钟与GPIO */	
-	__led_config_gpio_clock_enable(dev->info.port);
-	__led_config_io_out_pp(dev->info.port, dev->info.pin);
+	__led_config_gpio_clock_enable(dev->config.port);
+	__led_config_io_out_pp(dev->config.port, dev->config.pin);
 	
 	/* 函数指针赋值 */
 	dev->on = __led_on;
@@ -105,7 +103,7 @@ static int __led_on(LEDDev_t *dev)
 	if (!dev || !dev->init_flag)
 		return -1;
 	
-	 __led_io_write(dev->info.port, dev->info.pin, !dev->info.off_level);	// LED亮
+	 __led_io_write(dev->config.port, dev->config.pin, !dev->config.off_level);	// LED亮
 	priv_data->status = true;												// 保存此时LED的状态
 	
 	return 0;
@@ -123,7 +121,7 @@ static int __led_off(LEDDev_t *dev)
 	if (!dev || !dev->init_flag)
 		return -1;
 	
-	 __led_io_write(dev->info.port, dev->info.pin, dev->info.off_level);	// LED灭
+	 __led_io_write(dev->config.port, dev->config.pin, dev->config.off_level);	// LED灭
 	priv_data->status = false;												// 保存此时LED的状态
 	
 	return 0;

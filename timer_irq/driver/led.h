@@ -11,7 +11,7 @@
 	
 	typedef GPIO_TypeDef*	LEDGPIOPort_t;
 	
-#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	#include "stm32f4xx.h"
 	
 	typedef GPIO_TypeDef*	LEDGPIOPort_t;
@@ -28,18 +28,14 @@
     #define GPIO_LEVEL_LOW 0
 #endif
 
-#ifndef led_log
-    #define led_log(x) 
-#endif
-
 typedef struct {
 	LEDGPIOPort_t port;						// 端口
 	uint32_t pin;							// 引脚
 	bool off_level;							// LED灭时IO口的电平
-}LEDInfo_t;
+}LEDConfig_t;
 
 typedef struct LEDDev {
-	LEDInfo_t info;
+	LEDConfig_t config;
 	bool init_flag;							// 初始化标志
 	void *priv_data;						// 私有数据指针
 	int (*on)(struct LEDDev *dev);			// 打开

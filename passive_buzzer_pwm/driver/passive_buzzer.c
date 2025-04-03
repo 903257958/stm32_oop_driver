@@ -10,6 +10,9 @@
 #elif defined(STM32F411xE)
 #define TIMER_FREQ	100000000
 
+#elif defined(STM32F429_439xx)
+#define TIMER_FREQ	90000000
+
 #endif
 
 /* PassiveBuzzer私有数据结构体 */
@@ -44,12 +47,12 @@ int passive_buzzer_init(PassiveBuzzerDev_t *dev)
 	
 	PassiveBuzzerPrivData_t *priv_data = (PassiveBuzzerPrivData_t *)dev->priv_data;
 	
-	priv_data->pwm.info.timx = dev->info.timx;
-	priv_data->pwm.info.oc_channel = dev->info.oc_channel;
-	priv_data->pwm.info.psc = TIMER_FREQ / 1000000 - 1;
-	priv_data->pwm.info.arr = 3817 - 1;
-	priv_data->pwm.info.port = dev->info.port;
-	priv_data->pwm.info.pin = dev->info.pin;
+	priv_data->pwm.config.timx = dev->config.timx;
+	priv_data->pwm.config.oc_channel = dev->config.oc_channel;
+	priv_data->pwm.config.psc = TIMER_FREQ / 1000000 - 1;
+	priv_data->pwm.config.arr = 3817 - 1;
+	priv_data->pwm.config.port = dev->config.port;
+	priv_data->pwm.config.pin = dev->config.pin;
 	
 	/* 配置PWM */
 	pwm_init(&priv_data->pwm);

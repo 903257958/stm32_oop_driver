@@ -9,7 +9,6 @@
 													else if(port == GPIOE)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);} \
 													else if(port == GPIOF)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE);} \
 													else if(port == GPIOG)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, ENABLE);} \
-													else					{key_log("key clock no enable\r\n");} \
 												}
 
 #define	__key_config_io_in_pd(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -28,7 +27,7 @@
 
 #define __key_io_read(port, pin)	GPIO_ReadInputDataBit(port, pin)
 
-#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 
 #define	__key_config_gpio_clock_enable(port)	{	if(port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);} \
 													else if(port == GPIOB)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);} \
@@ -37,7 +36,6 @@
 													else if(port == GPIOE)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);} \
 													else if(port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);} \
 													else if(port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);} \
-													else					{key_log("gpio clock no enable\r\n");} \
 												}
 
 #define	__key_config_io_in_pd(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -75,15 +73,15 @@ int key_init(KeyDev_t *dev)
 		return -1;
 	
 	/* 配置时钟与GPIO */
-	__key_config_gpio_clock_enable(dev->info.port);
+	__key_config_gpio_clock_enable(dev->config.port);
 	
-	if(dev->info.press_level == GPIO_LEVEL_HIGH)			// 根据press_level配置为上拉或下拉输入
+	if(dev->config.press_level == GPIO_LEVEL_HIGH)			// 根据press_level配置为上拉或下拉输入
 	{
-		__key_config_io_in_pd(dev->info.port, dev->info.pin);
+		__key_config_io_in_pd(dev->config.port, dev->config.pin);
 	}
 	else
 	{
-		__key_config_io_in_pu(dev->info.port, dev->info.pin);
+		__key_config_io_in_pu(dev->config.port, dev->config.pin);
 	}
 	
 	/* 函数指针赋值 */
@@ -104,9 +102,9 @@ static bool __key_is_press(KeyDev_t *dev)
 	if (!dev || !dev->init_flag)
 		return -1;
 	
-	if (__key_io_read(dev->info.port, dev->info.pin) == dev->info.press_level)
+	if (__key_io_read(dev->config.port, dev->config.pin) == dev->config.press_level)
 	{
-		while((__key_io_read(dev->info.port, dev->info.pin) == dev->info.press_level));
+		while((__key_io_read(dev->config.port, dev->config.pin) == dev->config.press_level));
 		return true;
 	}
 	

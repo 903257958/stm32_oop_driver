@@ -1,6 +1,6 @@
 #include "main.h"
 
-LCDDev_t lcd = {.info = {
+LCDDev_t lcd = {.config = {
 	SPI1,
 	GPIOA, GPIO_Pin_5,
 	GPIOA, GPIO_Pin_7,
@@ -12,7 +12,7 @@ LCDDev_t lcd = {.info = {
 	VERTICAL_FORWARD
 }};
 
-AHT21Dev_t aht21 = {.info = {
+AHT21Dev_t aht21 = {.config = {
     GPIOB, GPIO_Pin_6,
     GPIOB, GPIO_Pin_7
 }};

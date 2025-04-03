@@ -10,13 +10,11 @@
 													else if(port == GPIOE)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);} \
 													else if(port == GPIOF)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE);} \
 													else if(port == GPIOG)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, ENABLE);} \
-													else					{oled_log("oled gpio clock no enable\r\n");} \
 												}
 												
 #define	__oled_config_dma_clock_enable(spix)	{	if(spix == SPI1)		{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);} \
 													else if(spix == SPI2)	{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);} \
 													else if(spix == SPI3)	{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA2, ENABLE);} \
-													else					{oled_log("oled dma clock no enable\r\n");} \
 												}
 													
 #define	__oled_config_io_out_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -38,7 +36,7 @@
 											spix == SPI3 ? DMA2_FLAG_TC2 : \
 											(int)0)
 			
-#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 
 #define	__oled_config_gpio_clock_enable(port)	{	if(port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);} \
 													else if(port == GPIOB)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);} \
@@ -47,13 +45,11 @@
 													else if(port == GPIOE)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);} \
 													else if(port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);} \
 													else if(port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);} \
-													else					{oled_log("oled gpio clock no enable\r\n");} \
 												}
 
 #define	__oled_config_dma_clock_enable(spix)	{	if(spix == SPI1)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);} \
 													else if(spix == SPI2)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);} \
 													else if(spix == SPI3)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);} \
-													else					{oled_log("oled dma clock no enable\r\n");} \
 												}
 													
 #define	__oled_config_io_out_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -159,17 +155,17 @@ int oled_init(OLEDDev_t *dev)
 	
 	OLEDPrivData_t *priv_data = (OLEDPrivData_t *)dev->priv_data;
 	
-	priv_data->spi.info.spix = dev->info.spix;
-	priv_data->spi.info.sck_port = dev->info.sck_port;
-	priv_data->spi.info.sck_pin = dev->info.sck_pin;
-	priv_data->spi.info.mosi_port = dev->info.mosi_port;
-	priv_data->spi.info.mosi_pin = dev->info.mosi_pin;
-	priv_data->spi.info.miso_port = NULL;
-	priv_data->spi.info.miso_pin = NULL;
-	priv_data->spi.info.cs_port = dev->info.cs_port;
-	priv_data->spi.info.cs_pin = dev->info.cs_pin;
-	priv_data->spi.info.prescaler = dev->info.prescaler;
-	priv_data->spi.info.mode = dev->info.mode;
+	priv_data->spi.config.spix = dev->config.spix;
+	priv_data->spi.config.sck_port = dev->config.sck_port;
+	priv_data->spi.config.sck_pin = dev->config.sck_pin;
+	priv_data->spi.config.mosi_port = dev->config.mosi_port;
+	priv_data->spi.config.mosi_pin = dev->config.mosi_pin;
+	priv_data->spi.config.miso_port = NULL;
+	priv_data->spi.config.miso_pin = NULL;
+	priv_data->spi.config.cs_port = dev->config.cs_port;
+	priv_data->spi.config.cs_pin = dev->config.cs_pin;
+	priv_data->spi.config.prescaler = dev->config.prescaler;
+	priv_data->spi.config.mode = dev->config.mode;
 	
 	priv_data->index = g_index++;
 	
@@ -177,11 +173,11 @@ int oled_init(OLEDDev_t *dev)
 	spi_init(&priv_data->spi);
 	
 	/* 配置时钟与GPIO */
-	__oled_config_gpio_clock_enable(dev->info.res_port);
-	__oled_config_gpio_clock_enable(dev->info.dc_port);
+	__oled_config_gpio_clock_enable(dev->config.res_port);
+	__oled_config_gpio_clock_enable(dev->config.dc_port);
 	
-	__oled_config_io_out_pp(dev->info.res_port, dev->info.res_pin);
-	__oled_config_io_out_pp(dev->info.dc_port, dev->info.dc_pin);
+	__oled_config_io_out_pp(dev->config.res_port, dev->config.res_pin);
+	__oled_config_io_out_pp(dev->config.dc_port, dev->config.dc_pin);
 	
 	/* 置引脚默认电平 */
 	__oled_res_write(dev, 1);
@@ -279,7 +275,7 @@ int oled_init(OLEDDev_t *dev)
  ******************************************************************************/
 static void __oled_res_write(OLEDDev_t *dev, uint8_t bit_val)
 {
-	__oled_io_write(dev->info.res_port, dev->info.res_pin, bit_val);
+	__oled_io_write(dev->config.res_port, dev->config.res_pin, bit_val);
 }
 
 /******************************************************************************
@@ -290,7 +286,7 @@ static void __oled_res_write(OLEDDev_t *dev, uint8_t bit_val)
  ******************************************************************************/
 static void __oled_dc_write(OLEDDev_t *dev, uint8_t bit_val)
 {
-	__oled_io_write(dev->info.dc_port, dev->info.dc_pin, bit_val);
+	__oled_io_write(dev->config.dc_port, dev->config.dc_pin, bit_val);
 }
 
 /******************************************************************************
@@ -357,13 +353,13 @@ static int __oled_write_data_dma(OLEDDev_t *dev, uint8_t *data, uint16_t count)
 	priv_data->spi.start(&priv_data->spi);				// SPI起始
 	__oled_dc_write(dev, 1);								// 拉高DC，表示即将发送数据
 	
-	__oled_config_dma_clock_enable(dev->info.spix);		// 开启DMA时钟
+	__oled_config_dma_clock_enable(dev->config.spix);		// 开启DMA时钟
 	
 	#if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 	
 	DMA_InitTypeDef DMA_InitStructure;
-	DMA_DeInit(__oled_get_dma_channel(dev->info.spix));
-	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&dev->info.spix->DR;
+	DMA_DeInit(__oled_get_dma_channel(dev->config.spix));
+	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&dev->config.spix->DR;
 	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)data;
 	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;
 	DMA_InitStructure.DMA_BufferSize = count;
@@ -374,24 +370,24 @@ static int __oled_write_data_dma(OLEDDev_t *dev, uint8_t *data, uint16_t count)
 	DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
 	DMA_InitStructure.DMA_Priority = DMA_Priority_High;
 	DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
-	DMA_Init(__oled_get_dma_channel(dev->info.spix), &DMA_InitStructure);
+	DMA_Init(__oled_get_dma_channel(dev->config.spix), &DMA_InitStructure);
 	
-	SPI_I2S_DMACmd(dev->info.spix, SPI_I2S_DMAReq_Tx, ENABLE);			// 配置SPI为DMA模式
+	SPI_I2S_DMACmd(dev->config.spix, SPI_I2S_DMAReq_Tx, ENABLE);			// 配置SPI为DMA模式
 	
-	DMA_Cmd(__oled_get_dma_channel(dev->info.spix), ENABLE);			// 启动DMA传输
+	DMA_Cmd(__oled_get_dma_channel(dev->config.spix), ENABLE);			// 启动DMA传输
 	
-	while (!DMA_GetFlagStatus(__oled_get_dma_flag(dev->info.spix)));	// 等待DMA传输完成
+	while (!DMA_GetFlagStatus(__oled_get_dma_flag(dev->config.spix)));	// 等待DMA传输完成
 	
-	DMA_ClearFlag(__oled_get_dma_flag(dev->info.spix));				// 清除DMA传输完成标志
+	DMA_ClearFlag(__oled_get_dma_flag(dev->config.spix));				// 清除DMA传输完成标志
 	
-	DMA_Cmd(__oled_get_dma_channel(dev->info.spix), DISABLE);			// 禁用DMA传输
+	DMA_Cmd(__oled_get_dma_channel(dev->config.spix), DISABLE);			// 禁用DMA传输
 	
-	#elif defined(STM32F40_41xxx)
+	#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	
 	DMA_InitTypeDef DMA_InitStructure;
-	DMA_DeInit(__oled_get_dma_stream(dev->info.spix));
-	DMA_InitStructure.DMA_Channel = __oled_get_dma_channel(dev->info.spix);
-	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&dev->info.spix->DR;
+	DMA_DeInit(__oled_get_dma_stream(dev->config.spix));
+	DMA_InitStructure.DMA_Channel = __oled_get_dma_channel(dev->config.spix);
+	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&dev->config.spix->DR;
 	DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)data;
 	DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;
 	DMA_InitStructure.DMA_BufferSize = count;
@@ -405,19 +401,19 @@ static int __oled_write_data_dma(OLEDDev_t *dev, uint8_t *data, uint16_t count)
 	DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_Full;
 	DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;
 	DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
-	DMA_Init(__oled_get_dma_stream(dev->info.spix), &DMA_InitStructure);
+	DMA_Init(__oled_get_dma_stream(dev->config.spix), &DMA_InitStructure);
 	
-	SPI_I2S_DMACmd(dev->info.spix, SPI_I2S_DMAReq_Tx, ENABLE);				// 配置SPI为DMA模式
+	SPI_I2S_DMACmd(dev->config.spix, SPI_I2S_DMAReq_Tx, ENABLE);				// 配置SPI为DMA模式
 	
-	DMA_Cmd(__oled_get_dma_stream(dev->info.spix), ENABLE);					// 启动DMA传输
+	DMA_Cmd(__oled_get_dma_stream(dev->config.spix), ENABLE);					// 启动DMA传输
 	
-	while (!DMA_GetFlagStatus(	__oled_get_dma_stream(dev->info.spix), 
-								__oled_get_dma_flag(dev->info.spix))	);	// 等待DMA传输完成
+	while (!DMA_GetFlagStatus(	__oled_get_dma_stream(dev->config.spix), 
+								__oled_get_dma_flag(dev->config.spix))	);	// 等待DMA传输完成
 	
-	DMA_ClearFlag(	__oled_get_dma_stream(dev->info.spix), 
-					__oled_get_dma_flag(dev->info.spix)	);					// 清除DMA传输完成标志
+	DMA_ClearFlag(	__oled_get_dma_stream(dev->config.spix), 
+					__oled_get_dma_flag(dev->config.spix)	);					// 清除DMA传输完成标志
 	
-	DMA_Cmd(__oled_get_dma_stream(dev->info.spix), DISABLE);				// 禁用DMA传输
+	DMA_Cmd(__oled_get_dma_stream(dev->config.spix), DISABLE);				// 禁用DMA传输
 	
 	#endif
 	

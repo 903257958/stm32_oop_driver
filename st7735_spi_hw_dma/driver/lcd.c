@@ -11,13 +11,11 @@
 													else if(port == GPIOE)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);} \
 													else if(port == GPIOF)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE);} \
 													else if(port == GPIOG)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, ENABLE);} \
-													else					{lcd_log("lcd gpio clock no enable\r\n");} \
 												}
 													
 #define	__lcd_config_dma_clock_enable(spix)	{	if(spix == SPI1)		{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);} \
 												else if(spix == SPI2)	{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);} \
 												else if(spix == SPI3)	{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA2, ENABLE);} \
-												else					{lcd_log("lcd dma clock no enable\r\n");} \
 											}
 													
 #define	__lcd_config_io_out_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -39,7 +37,7 @@
 											spix == SPI3 ? DMA2_FLAG_TC2 : \
 											(int)0)
 
-#elif defined(STM32F40_41xxx)
+#elif defined(STM32F40_41xxx) || defined(STM32F429_439xx)
 
 #define	__lcd_config_gpio_clock_enable(port)	{	if(port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);} \
 													else if(port == GPIOB)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);} \
@@ -48,13 +46,11 @@
 													else if(port == GPIOE)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);} \
 													else if(port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);} \
 													else if(port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);} \
-													else					{lcd_log("lcd gpio clock no enable\r\n");} \
 												}
 
 #define	__lcd_config_dma_clock_enable(spix)	{	if(spix == SPI1)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);} \
 												else if(spix == SPI2)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);} \
 												else if(spix == SPI3)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);} \
-												else					{lcd_log("lcd dma clock no enable\r\n");} \
 											}
 													
 #define	__lcd_config_io_out_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -142,32 +138,32 @@ int lcd_init(LCDDev_t *dev)
 	
 	LCDPrivData_t *priv_data = (LCDPrivData_t *)dev->priv_data;
 	
-	priv_data->spi.info.spix = dev->info.spix;
-	priv_data->spi.info.sck_port = dev->info.sck_port;
-	priv_data->spi.info.sck_pin = dev->info.sck_pin;
-	priv_data->spi.info.mosi_port = dev->info.mosi_port;
-	priv_data->spi.info.mosi_pin = dev->info.mosi_pin;
-	priv_data->spi.info.miso_port = NULL;
-	priv_data->spi.info.miso_pin = NULL;
-	priv_data->spi.info.cs_port = dev->info.cs_port;
-	priv_data->spi.info.cs_pin = dev->info.cs_pin;
-	priv_data->spi.info.prescaler = dev->info.prescaler;
-	priv_data->spi.info.mode = dev->info.mode;
+	priv_data->spi.config.spix = dev->config.spix;
+	priv_data->spi.config.sck_port = dev->config.sck_port;
+	priv_data->spi.config.sck_pin = dev->config.sck_pin;
+	priv_data->spi.config.mosi_port = dev->config.mosi_port;
+	priv_data->spi.config.mosi_pin = dev->config.mosi_pin;
+	priv_data->spi.config.miso_port = NULL;
+	priv_data->spi.config.miso_pin = NULL;
+	priv_data->spi.config.cs_port = dev->config.cs_port;
+	priv_data->spi.config.cs_pin = dev->config.cs_pin;
+	priv_data->spi.config.prescaler = dev->config.prescaler;
+	priv_data->spi.config.mode = dev->config.mode;
 	
 	/* 配置硬件SPI */
 	spi_init(&priv_data->spi);
 	
 	/* 配置时钟与GPIO */
-	__lcd_config_gpio_clock_enable(dev->info.res_port);
-	__lcd_config_gpio_clock_enable(dev->info.dc_port);
-	__lcd_config_gpio_clock_enable(dev->info.bl_port);
+	__lcd_config_gpio_clock_enable(dev->config.res_port);
+	__lcd_config_gpio_clock_enable(dev->config.dc_port);
+	__lcd_config_gpio_clock_enable(dev->config.bl_port);
 	
-	__lcd_config_io_out_pp(dev->info.res_port, dev->info.res_pin);
-	__lcd_config_io_out_pp(dev->info.dc_port, dev->info.dc_pin);
-	__lcd_config_io_out_pp(dev->info.bl_port, dev->info.bl_pin);
+	__lcd_config_io_out_pp(dev->config.res_port, dev->config.res_pin);
+	__lcd_config_io_out_pp(dev->config.dc_port, dev->config.dc_pin);
+	__lcd_config_io_out_pp(dev->config.bl_port, dev->config.bl_pin);
 	
 	/* 配置DMA */
-	if(dev->info.use_dma == LCD_USE_DMA)
+	if(dev->config.use_dma == LCD_USE_DMA)
 	{
 		__lcd_dma_init(dev);
 	}
@@ -303,10 +299,10 @@ static void __lcd_dma_init(LCDDev_t *dev)
 {
 	#if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 	
-	__lcd_config_dma_clock_enable(dev->info.spix);	// 开启DMA时钟
-	DMA_DeInit(__lcd_get_dma_channel(dev->info.spix));
+	__lcd_config_dma_clock_enable(dev->config.spix);	// 开启DMA时钟
+	DMA_DeInit(__lcd_get_dma_channel(dev->config.spix));
 	DMA_InitTypeDef DMA_InitStructure;
-    DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&dev->info.spix->DR;	// SPI数据寄存器地址
+    DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&dev->config.spix->DR;	// SPI数据寄存器地址
     DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)g_lcd_display_buf;			// 内存地址
     DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;							// 方向：从内存到外设
     DMA_InitStructure.DMA_BufferSize = 0;										// 传输大小
@@ -317,20 +313,20 @@ static void __lcd_dma_init(LCDDev_t *dev)
     DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;								// 工作在正常模式，一次传输后自动结束
     DMA_InitStructure.DMA_Priority = DMA_Priority_Medium;						// 优先级：中
     DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;								// 没有设置为内存到内存传输
-    DMA_Init(__lcd_get_dma_channel(dev->info.spix), &DMA_InitStructure);
+    DMA_Init(__lcd_get_dma_channel(dev->config.spix), &DMA_InitStructure);
 	
-    DMA_ClearFlag(__lcd_get_dma_flag(dev->info.spix));
+    DMA_ClearFlag(__lcd_get_dma_flag(dev->config.spix));
 	
-    DMA_Cmd(__lcd_get_dma_channel(dev->info.spix), DISABLE);
+    DMA_Cmd(__lcd_get_dma_channel(dev->config.spix), DISABLE);
 	
-	#elif defined(STM32F40_41xxx)
+	#elif defined(STM32F40_41xxx) || defined(STM32F429_439xx)
 	
-    __lcd_config_dma_clock_enable(dev->info.spix);	// 开启DMA时钟
+    __lcd_config_dma_clock_enable(dev->config.spix);	// 开启DMA时钟
 	
-	DMA_DeInit(__lcd_get_dma_stream(dev->info.spix));
+	DMA_DeInit(__lcd_get_dma_stream(dev->config.spix));
 	DMA_InitTypeDef DMA_InitStructure;
-    DMA_InitStructure.DMA_Channel = __lcd_get_dma_channel(dev->info.spix);		// 选择DMA通道
-    DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&dev->info.spix->DR;	// SPI数据寄存器地址
+    DMA_InitStructure.DMA_Channel = __lcd_get_dma_channel(dev->config.spix);		// 选择DMA通道
+    DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&dev->config.spix->DR;	// SPI数据寄存器地址
     DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)g_lcd_display_buf;			// 内存地址
     DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;						// 方向：从内存到外设
     DMA_InitStructure.DMA_BufferSize = 0;										// 传输大小
@@ -344,12 +340,12 @@ static void __lcd_dma_init(LCDDev_t *dev)
     DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_Full;				// FIFO阈值为满
     DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;					// 内存突发传输为单次
     DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;			// 外设突发传输为单次
-    DMA_Init(__lcd_get_dma_stream(dev->info.spix), &DMA_InitStructure);
+    DMA_Init(__lcd_get_dma_stream(dev->config.spix), &DMA_InitStructure);
 	
-    DMA_ClearFlag(	__lcd_get_dma_stream(dev->info.spix), 
-					__lcd_get_dma_flag(dev->info.spix)	);
+    DMA_ClearFlag(	__lcd_get_dma_stream(dev->config.spix), 
+					__lcd_get_dma_flag(dev->config.spix)	);
 					
-    DMA_Cmd(__lcd_get_dma_stream(dev->info.spix), DISABLE);
+    DMA_Cmd(__lcd_get_dma_stream(dev->config.spix), DISABLE);
 	
 	#endif
 }
@@ -364,7 +360,7 @@ static void __lcd_dma_init(LCDDev_t *dev)
  ******************************************************************************/
 static void __lcd_res_write(LCDDev_t *dev, uint8_t bitValue)
 {
-	__lcd_io_write(dev->info.res_port, dev->info.res_pin, bitValue);
+	__lcd_io_write(dev->config.res_port, dev->config.res_pin, bitValue);
 }
 
 /******************************************************************************
@@ -375,7 +371,7 @@ static void __lcd_res_write(LCDDev_t *dev, uint8_t bitValue)
  ******************************************************************************/
 static void __lcd_dc_write(LCDDev_t *dev, uint8_t bitValue)
 {
-	__lcd_io_write(dev->info.dc_port, dev->info.dc_pin, bitValue);
+	__lcd_io_write(dev->config.dc_port, dev->config.dc_pin, bitValue);
 }
 
 /******************************************************************************
@@ -386,7 +382,7 @@ static void __lcd_dc_write(LCDDev_t *dev, uint8_t bitValue)
  ******************************************************************************/
 static void __lcd_bl_write(LCDDev_t *dev, uint8_t bitValue)
 {
-	__lcd_io_write(dev->info.bl_port, dev->info.bl_pin, bitValue);
+	__lcd_io_write(dev->config.bl_port, dev->config.bl_pin, bitValue);
 }
 
 /******************************************************************************
@@ -499,7 +495,7 @@ static uint32_t __lcd_pow(uint32_t x, uint32_t y)
  ******************************************************************************/
 static void __lcd_update(LCDDev_t *dev)
 {
-	if(dev->info.use_dma == LCD_USE_DMA)
+	if(dev->config.use_dma == LCD_USE_DMA)
 	{
 		LCDPrivData_t *priv_data = (LCDPrivData_t *)dev->priv_data;
 		
@@ -509,38 +505,38 @@ static void __lcd_update(LCDDev_t *dev)
 		/* 重新设置缓存大小，开启一次DMA传输 */
 		#if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 		
-		DMA_Cmd(__lcd_get_dma_channel(dev->info.spix), DISABLE);							// 关闭DMA
-		DMA_SetCurrDataCounter(__lcd_get_dma_channel(dev->info.spix), LCD_W * LCD_H * 2);	// 数据传输量
-		DMA_ClearFlag(__lcd_get_dma_flag(dev->info.spix));
+		DMA_Cmd(__lcd_get_dma_channel(dev->config.spix), DISABLE);							// 关闭DMA
+		DMA_SetCurrDataCounter(__lcd_get_dma_channel(dev->config.spix), LCD_W * LCD_H * 2);	// 数据传输量
+		DMA_ClearFlag(__lcd_get_dma_flag(dev->config.spix));
 		
 		priv_data->spi.cs_write(&priv_data->spi, 0);
 		__lcd_res_write(dev, 1);
 		
-		SPI_I2S_DMACmd(dev->info.spix, SPI_I2S_DMAReq_Tx, ENABLE);							// 开启SPI的DMA接收
-		DMA_Cmd(__lcd_get_dma_channel(dev->info.spix), ENABLE);							// 使能DMA
+		SPI_I2S_DMACmd(dev->config.spix, SPI_I2S_DMAReq_Tx, ENABLE);							// 开启SPI的DMA接收
+		DMA_Cmd(__lcd_get_dma_channel(dev->config.spix), ENABLE);							// 使能DMA
 		
-		while(!DMA_GetFlagStatus(__lcd_get_dma_flag(dev->info.spix)));						// 等待传输完成
-		DMA_ClearFlag(__lcd_get_dma_flag(dev->info.spix));
+		while(!DMA_GetFlagStatus(__lcd_get_dma_flag(dev->config.spix)));						// 等待传输完成
+		DMA_ClearFlag(__lcd_get_dma_flag(dev->config.spix));
 		
 		#elif defined(STM32F40_41xxx)
 		
-		DMA_Cmd(__lcd_get_dma_stream(dev->info.spix), DISABLE);							// 关闭DMA
-		DMA_SetCurrDataCounter(__lcd_get_dma_stream(dev->info.spix), LCD_W * LCD_H * 2);	// 数据传输量
+		DMA_Cmd(__lcd_get_dma_stream(dev->config.spix), DISABLE);							// 关闭DMA
+		DMA_SetCurrDataCounter(__lcd_get_dma_stream(dev->config.spix), LCD_W * LCD_H * 2);	// 数据传输量
 		
-		DMA_ClearFlag(	__lcd_get_dma_stream(dev->info.spix), 
-						__lcd_get_dma_flag(dev->info.spix)	);
+		DMA_ClearFlag(	__lcd_get_dma_stream(dev->config.spix), 
+						__lcd_get_dma_flag(dev->config.spix)	);
 		
 		priv_data->spi.cs_write(&priv_data->spi, 0);
 		__lcd_res_write(dev, 1);
 		
-		SPI_I2S_DMACmd(dev->info.spix, SPI_I2S_DMAReq_Tx, ENABLE);							// 开启SPI的DMA接收
-		DMA_Cmd(__lcd_get_dma_stream(dev->info.spix), ENABLE);								// 使能DMA
+		SPI_I2S_DMACmd(dev->config.spix, SPI_I2S_DMAReq_Tx, ENABLE);							// 开启SPI的DMA接收
+		DMA_Cmd(__lcd_get_dma_stream(dev->config.spix), ENABLE);								// 使能DMA
 		
-		while(!DMA_GetFlagStatus(	__lcd_get_dma_stream(dev->info.spix), 					// 等待传输完成
-									__lcd_get_dma_flag(dev->info.spix)		));
+		while(!DMA_GetFlagStatus(	__lcd_get_dma_stream(dev->config.spix), 					// 等待传输完成
+									__lcd_get_dma_flag(dev->config.spix)		));
 		
-		DMA_ClearFlag(	__lcd_get_dma_stream(dev->info.spix),
-						__lcd_get_dma_flag(dev->info.spix)	);
+		DMA_ClearFlag(	__lcd_get_dma_stream(dev->config.spix),
+						__lcd_get_dma_flag(dev->config.spix)	);
 		
 		#endif
 		
@@ -558,7 +554,7 @@ static void __lcd_fill(LCDDev_t *dev, uint16_t color)
 {          
 	uint16_t i, j;
 	
-	if(dev->info.use_dma == LCD_USE_DMA)
+	if(dev->config.use_dma == LCD_USE_DMA)
 	{
 		for(i = 0 ; i < LCD_H; i++)
 		{
@@ -569,7 +565,7 @@ static void __lcd_fill(LCDDev_t *dev, uint16_t color)
 			}
 		}
 	}
-	else if(dev->info.use_dma == LCD_NONUSE_DMA)
+	else if(dev->config.use_dma == LCD_NONUSE_DMA)
 	{
 		__lcd_set_address(dev, 0, 0, LCD_W - 1, LCD_H - 1);// 设置显示范围
 		for(i = 0; i < LCD_H; i++)
@@ -595,7 +591,7 @@ static void __lcd_fill_area(LCDDev_t *dev, uint16_t x, uint16_t y, uint16_t widt
 {          
 	uint16_t i, j;
 	
-	if(dev->info.use_dma == LCD_USE_DMA)
+	if(dev->config.use_dma == LCD_USE_DMA)
 	{
 		for(i = y ; i < y + height; i++)
 		{
@@ -606,7 +602,7 @@ static void __lcd_fill_area(LCDDev_t *dev, uint16_t x, uint16_t y, uint16_t widt
 			}
 		}
 	}
-	else if(dev->info.use_dma == LCD_NONUSE_DMA)
+	else if(dev->config.use_dma == LCD_NONUSE_DMA)
 	{
 		__lcd_set_address(dev, x, y, x + width - 1, y + height - 1);// 设置显示范围
 		for(i = y; i < y + height; i++)
@@ -651,7 +647,7 @@ static void __lcd_show_char(LCDDev_t *dev, uint16_t x, uint16_t y, uint8_t chara
 		else return;
 		for(t = 0; t < 8; t++)
 		{
-			if(dev->info.use_dma == LCD_USE_DMA)
+			if(dev->config.use_dma == LCD_USE_DMA)
 			{
 				if(temp & (0x01 << t))__lcd_draw_point(dev, x, y, fc);//画一个点
 				else __lcd_draw_point(dev, x, y, bc);
@@ -663,7 +659,7 @@ static void __lcd_show_char(LCDDev_t *dev, uint16_t x, uint16_t y, uint8_t chara
 					break;
 				}
 			}
-			else if(dev->info.use_dma == LCD_NONUSE_DMA)
+			else if(dev->config.use_dma == LCD_NONUSE_DMA)
 			{
 				if(temp & (0x01 << t))__lcd_write_halfword(dev, fc);
 				else __lcd_write_halfword(dev, bc);
@@ -814,7 +810,7 @@ static void __lcd_show_chinese12x12(LCDDev_t *dev, uint16_t x, uint16_t y, char 
 			{
 				for (j = 0; j < 8; j++)
 				{
-					if(dev->info.use_dma == LCD_USE_DMA)
+					if(dev->config.use_dma == LCD_USE_DMA)
 					{
 						if (LCD_CF12x12[k].Msk[i] & (0x01 << j))
 							__lcd_draw_point(dev, x, y, fc); //画一个点
@@ -828,7 +824,7 @@ static void __lcd_show_chinese12x12(LCDDev_t *dev, uint16_t x, uint16_t y, char 
 							break;
 						}
 					}
-					else if(dev->info.use_dma == LCD_NONUSE_DMA)
+					else if(dev->config.use_dma == LCD_NONUSE_DMA)
 					{
 						if (LCD_CF12x12[k].Msk[i] & (0x01 << j))
 							__lcd_write_halfword(dev, fc);
@@ -879,7 +875,7 @@ static void __lcd_show_chinese16x16(LCDDev_t *dev, uint16_t x, uint16_t y, char 
 			{
 				for (j = 0; j < 8; j++)
 				{
-					if(dev->info.use_dma == LCD_USE_DMA)
+					if(dev->config.use_dma == LCD_USE_DMA)
 					{
 						if (LCD_CF16x16[k].Msk[i] & (0x01 << j))
 							__lcd_draw_point(dev, x, y, fc); //画一个点
@@ -893,7 +889,7 @@ static void __lcd_show_chinese16x16(LCDDev_t *dev, uint16_t x, uint16_t y, char 
 							break;
 						}
 					}
-					else if(dev->info.use_dma == LCD_NONUSE_DMA)
+					else if(dev->config.use_dma == LCD_NONUSE_DMA)
 					{
 						if (LCD_CF16x16[k].Msk[i] & (0x01 << j))
 							__lcd_write_halfword(dev, fc);
@@ -944,7 +940,7 @@ static void __lcd_show_chinese24x24(LCDDev_t *dev, uint16_t x, uint16_t y, char 
 			{
 				for (j = 0; j < 8; j++)
 				{
-					if(dev->info.use_dma == LCD_USE_DMA)
+					if(dev->config.use_dma == LCD_USE_DMA)
 					{
 						if (LCD_CF24x24[k].Msk[i] & (0x01 << j))
 							__lcd_draw_point(dev, x, y, fc); //画一个点
@@ -958,7 +954,7 @@ static void __lcd_show_chinese24x24(LCDDev_t *dev, uint16_t x, uint16_t y, char 
 							break;
 						}
 					}
-					else if(dev->info.use_dma == LCD_NONUSE_DMA)
+					else if(dev->config.use_dma == LCD_NONUSE_DMA)
 					{
 						if (LCD_CF24x24[k].Msk[i] & (0x01 << j))
 							__lcd_write_halfword(dev, fc);
@@ -1009,7 +1005,7 @@ static void __lcd_show_chinese32x32(LCDDev_t *dev, uint16_t x, uint16_t y, char 
 			{
 				for (j = 0; j < 8; j++)
 				{
-					if(dev->info.use_dma == LCD_USE_DMA)
+					if(dev->config.use_dma == LCD_USE_DMA)
 					{
 						if (LCD_CF32x32[k].Msk[i] & (0x01 << j))
 							__lcd_draw_point(dev, x, y, fc); //画一个点
@@ -1023,7 +1019,7 @@ static void __lcd_show_chinese32x32(LCDDev_t *dev, uint16_t x, uint16_t y, char 
 							break;
 						}
 					}
-					else if(dev->info.use_dma == LCD_NONUSE_DMA)
+					else if(dev->config.use_dma == LCD_NONUSE_DMA)
 					{
 						if (LCD_CF32x32[k].Msk[i] & (0x01 << j))
 							__lcd_write_halfword(dev, fc);
@@ -1086,7 +1082,7 @@ static void __lcd_show_image(LCDDev_t *dev, uint16_t x, uint16_t y, uint16_t wid
 	uint16_t i, j; 
 	uint32_t k = 0;
 	
-	if(dev->info.use_dma == LCD_USE_DMA)
+	if(dev->config.use_dma == LCD_USE_DMA)
 	{
 		for(i = y; i < y + height; i++)
 		{
@@ -1098,7 +1094,7 @@ static void __lcd_show_image(LCDDev_t *dev, uint16_t x, uint16_t y, uint16_t wid
 			}
 		}
 	}
-	else if(dev->info.use_dma == LCD_NONUSE_DMA)
+	else if(dev->config.use_dma == LCD_NONUSE_DMA)
 	{
 		__lcd_set_address(dev, x, y, x + width - 1, y + height - 1);	//设置显示范围
 		for(i = 0; i < height; i++)
@@ -1122,13 +1118,13 @@ static void __lcd_show_image(LCDDev_t *dev, uint16_t x, uint16_t y, uint16_t wid
  ******************************************************************************/
 static void __lcd_draw_point(LCDDev_t *dev, uint16_t x, uint16_t y, uint16_t color)
 {
-	if(dev->info.use_dma == LCD_USE_DMA)
+	if(dev->config.use_dma == LCD_USE_DMA)
 	{
 		/*使用DMA的话，从对点刷屏到对显存数组写入数据，DMA传输数据的时候再统一进行传输*/
 		g_lcd_display_buf[y][x*2] = color >> 8;
 		g_lcd_display_buf[y][x*2+1] = color;
 	}
-	else if(dev->info.use_dma == LCD_NONUSE_DMA)
+	else if(dev->config.use_dma == LCD_NONUSE_DMA)
 	{
 		__lcd_set_address(dev, x, y, x, y);		//设置光标位置 
 		__lcd_write_halfword(dev, color);

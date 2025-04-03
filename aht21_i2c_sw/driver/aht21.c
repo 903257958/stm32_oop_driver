@@ -30,10 +30,10 @@ int aht21_init(AHT21Dev_t *dev)
 	
 	AHT21PrivData_t *priv_data = (AHT21PrivData_t *)dev->priv_data;
 	
-	priv_data->i2c.info.scl_port = dev->info.scl_port;
-	priv_data->i2c.info.scl_pin = dev->info.scl_pin;
-	priv_data->i2c.info.sda_port = dev->info.sda_port;
-	priv_data->i2c.info.sda_pin = dev->info.sda_pin;
+	priv_data->i2c.config.scl_port = dev->config.scl_port;
+	priv_data->i2c.config.scl_pin = dev->config.scl_pin;
+	priv_data->i2c.config.sda_port = dev->config.sda_port;
+	priv_data->i2c.config.sda_pin = dev->config.sda_pin;
 	
 	/* 配置软件I2C */
 	i2c_init(&priv_data->i2c);

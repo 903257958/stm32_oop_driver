@@ -11,16 +11,12 @@
     #include "stm32f10x.h"
     typedef GPIO_TypeDef*	W25QXGPIOPort_t;
 	
-#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	#include "stm32f4xx.h"
 	typedef GPIO_TypeDef*	W25QXGPIOPort_t;
 	
 #else
     #error w25qx.h: No processor defined!
-#endif
-
-#ifndef w25qx_log
-    #define w25qx_log(x) 
 #endif
 
 #define W25QX_PAGE_SIZE				256
@@ -70,10 +66,10 @@ typedef struct {
 	uint32_t mosi_pin;				// MOSI引脚
 	W25QXGPIOPort_t cs_port;		// CS端口
 	uint32_t cs_pin;				// CS引脚
-}W25QXInfo_t;
+}W25QXConfig_t;
 
 typedef struct W25QXDev {
-	W25QXInfo_t info;
+	W25QXConfig_t config;
 	bool init_flag;																					// 初始化标志
 	void *priv_data;																				// 私有数据指针
 	void (*read_id)(struct W25QXDev *dev, uint8_t *mid, uint16_t *did);								// W25QX读取ID号

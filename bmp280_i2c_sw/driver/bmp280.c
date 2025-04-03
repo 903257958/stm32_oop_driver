@@ -28,7 +28,7 @@ typedef struct
 BMP280CalibrationData_t	calibration_data;
 
 /* 函数声明 */
-static int __bmp280_configure(BMP280Dev_t *dev, BMP280Config_t *config);
+static int __bmp280_settings(BMP280Dev_t *dev, BMP280Setting_t *setting);
 static int __bmp280_get_id(BMP280Dev_t *dev, uint8_t *id);
 static int __bmp280_get_raw_data(BMP280Dev_t *dev, int32_t *pressure_raw, int32_t *temperature_raw);
 static int __bmp280_temperature_compensate(BMP280Dev_t *dev, int32_t *temperature_raw);
@@ -54,10 +54,10 @@ int bmp280_init(BMP280Dev_t *dev)
 	
 	BMP280PrivData_t *priv_data = (BMP280PrivData_t *)dev->priv_data;
 	
-	priv_data->i2c.info.scl_port = dev->info.scl_port;
-	priv_data->i2c.info.scl_pin = dev->info.scl_pin;
-	priv_data->i2c.info.sda_port = dev->info.sda_port;
-	priv_data->i2c.info.sda_pin = dev->info.sda_pin;
+	priv_data->i2c.config.scl_port = dev->config.scl_port;
+	priv_data->i2c.config.scl_pin = dev->config.scl_pin;
+	priv_data->i2c.config.sda_port = dev->config.sda_port;
+	priv_data->i2c.config.sda_pin = dev->config.sda_pin;
 	
 	/* 配置软件I2C */
 	i2c_init(&priv_data->i2c);
@@ -74,14 +74,14 @@ int bmp280_init(BMP280Dev_t *dev)
 	delay_ms(50);
 	
 	/* 设置过采样因子、保持时间和滤波器分频因子 */
-	BMP280Config_t	bmp280_config_structure;
-	bmp280_config_structure.pressure_oversample = BMP280_P_MODE_3;
-	bmp280_config_structure.temperature_oversample = BMP280_T_MODE_1;
-	bmp280_config_structure.work_mode = BMP280_NORMAL_MODE;
-	bmp280_config_structure.time_standby = BMP280_TIME_STANDBY_1;
-	bmp280_config_structure.filter_coefficient = BMP280_FILTER_MODE_4;
-	bmp280_config_structure.spi_en = false;
-	__bmp280_configure(dev, &bmp280_config_structure);
+	BMP280Setting_t	bmp280_setting_structure;
+	bmp280_setting_structure.pressure_oversample = BMP280_P_MODE_3;
+	bmp280_setting_structure.temperature_oversample = BMP280_T_MODE_1;
+	bmp280_setting_structure.work_mode = BMP280_NORMAL_MODE;
+	bmp280_setting_structure.time_standby = BMP280_TIME_STANDBY_1;
+	bmp280_setting_structure.filter_coefficient = BMP280_FILTER_MODE_4;
+	bmp280_setting_structure.spi_en = false;
+	__bmp280_settings(dev, &bmp280_setting_structure);
 	
     /* 函数指针赋值 */
 	dev->get_id = __bmp280_get_id;
@@ -94,10 +94,10 @@ int bmp280_init(BMP280Dev_t *dev)
 /******************************************************************************
  * @brief	BMP280配置的测量参数和运行模式（过采样、待机时间、滤波器等）
  * @param	dev		:  BMP280Dev_t 结构体指针
- * @param	config	:  BMP280Config_t 结构体指针
+ * @param	setting	:  BMP280Setting_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __bmp280_configure(BMP280Dev_t *dev, BMP280Config_t *config)
+static int __bmp280_settings(BMP280Dev_t *dev, BMP280Setting_t *setting)
 {
 	if (!dev || !dev->init_flag)
         return -1;
@@ -106,13 +106,13 @@ static int __bmp280_configure(BMP280Dev_t *dev, BMP280Config_t *config)
 
 	uint8_t reg1, reg2;
 
-	reg1 = 	((config->temperature_oversample) << 5) | 
-			((config->pressure_oversample) << 2) | 
-			((config)->work_mode);
+	reg1 = 	((setting->temperature_oversample) << 5) | 
+			((setting->pressure_oversample) << 2) | 
+			((setting)->work_mode);
 
-	reg2 = 	((config->time_standby) << 5) | 
-			((config->filter_coefficient) << 2) | 
-			((config->spi_en));
+	reg2 = 	((setting->time_standby) << 5) | 
+			((setting->filter_coefficient) << 2) | 
+			((setting->spi_en));
 	
 	priv_data->i2c.write_reg(&priv_data->i2c, BMP280_ADDRESS, BMP280_CTRL_MEAS_REG, reg1);
 	priv_data->i2c.write_reg(&priv_data->i2c, BMP280_ADDRESS, BMP280_CONFIG_REG, reg2);

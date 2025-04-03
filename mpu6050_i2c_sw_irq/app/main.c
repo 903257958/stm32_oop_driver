@@ -2,7 +2,7 @@
 
 int g_cnt = 0;
 
-UARTDev_t debug = {.info = {
+UARTDev_t debug = {.config = {
 	USART1, 115200,
 	GPIOA, GPIO_Pin_9,
 	GPIOA, GPIO_Pin_10
@@ -13,7 +13,7 @@ void mpu6050_handler_test(void)
 	g_cnt++;
 }
 
-MPU6050Dev_t mpu6050 = {.info = {
+MPU6050Dev_t mpu6050 = {.config = {
 	GPIOB, GPIO_Pin_6, 
 	GPIOB, GPIO_Pin_7, 
 	GPIOB, GPIO_Pin_5, 

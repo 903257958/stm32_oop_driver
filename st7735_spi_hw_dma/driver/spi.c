@@ -5,7 +5,6 @@
 #define	__spi_config_clock_enable(SPIx)		{	if(SPIx == SPI1)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);} \
 												else if(SPIx == SPI2)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);} \
 												else if(SPIx == SPI3)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI3, ENABLE);} \
-												else					{spi_log("spi clock no enable\r\n");} \
 											}
 
 #define	__spi_config_gpio_clock_enable(port)	{	if(port == GPIOA)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);} \
@@ -15,7 +14,6 @@
 													else if(port == GPIOE)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);} \
 													else if(port == GPIOF)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE);} \
 													else if(port == GPIOG)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, ENABLE);} \
-													else					{spi_log("spi gpio clock no enable\r\n");} \
 												}
 								
 #define	__spi_config_io_af_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -56,7 +54,6 @@
 #define	__spi_config_clock_enable(SPIx)		{	if(SPIx == SPI1)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);} \
 												else if(SPIx == SPI2)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);} \
 												else if(SPIx == SPI3)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI3, ENABLE);} \
-												else					{spi_log("spi clock no enable\r\n");} \
 											}
 
 #define	__spi_config_gpio_clock_enable(port)	{	if(port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);} \
@@ -66,7 +63,6 @@
 													else if(port == GPIOE)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);} \
 													else if(port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);} \
 													else if(port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);} \
-													else					{spi_log("spi gpio clock no enable\r\n");} \
 												}
 								
 #define	__spi_config_io_af_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -144,41 +140,41 @@ int spi_init(SPIDev_t *dev)
 		return -1;
 	
 	/* 配置时钟与GPIO */
-	__spi_config_clock_enable(dev->info.spix);
-	__spi_config_gpio_clock_enable(dev->info.sck_port);
-	__spi_config_gpio_clock_enable(dev->info.mosi_port);
-	__spi_config_gpio_clock_enable(dev->info.miso_port);
-	__spi_config_gpio_clock_enable(dev->info.cs_port);
+	__spi_config_clock_enable(dev->config.spix);
+	__spi_config_gpio_clock_enable(dev->config.sck_port);
+	__spi_config_gpio_clock_enable(dev->config.mosi_port);
+	__spi_config_gpio_clock_enable(dev->config.miso_port);
+	__spi_config_gpio_clock_enable(dev->config.cs_port);
 	
-	__spi_config_io_af_pp(dev->info.sck_port, dev->info.sck_pin);
-	__spi_config_io_af_pp(dev->info.mosi_port, dev->info.mosi_pin);
-	__spi_config_io_af_pp(dev->info.miso_port, dev->info.miso_pin);
-	__spi_config_io_out_pp(dev->info.cs_port, dev->info.cs_pin);
+	__spi_config_io_af_pp(dev->config.sck_port, dev->config.sck_pin);
+	__spi_config_io_af_pp(dev->config.mosi_port, dev->config.mosi_pin);
+	__spi_config_io_af_pp(dev->config.miso_port, dev->config.miso_pin);
+	__spi_config_io_out_pp(dev->config.cs_port, dev->config.cs_pin);
 	
 	#if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 	
 	/* STM32F1的PB3、PB4、PA15为JTAG引脚，配置SPI3时需要解除JTAG */
-	if(dev->info.spix == SPI3)
+	if(dev->config.spix == SPI3)
 	{
 		RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
 		GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);
 		DBGMCU->CR &= ~((uint32_t)1 << 5);
 	}
 	
-	#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
+	#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	
 	/* STM32F4配置为复用输出时需要配置引脚复用映射 */
-	GPIO_PinAFConfig(	dev->info.sck_port, 
-						__spi_get_gpio_pin_sourse(dev->info.sck_pin), 
-						__spi_get_gpio_af(dev->info.spix)	);
+	GPIO_PinAFConfig(	dev->config.sck_port, 
+						__spi_get_gpio_pin_sourse(dev->config.sck_pin), 
+						__spi_get_gpio_af(dev->config.spix)	);
 						
-	GPIO_PinAFConfig(	dev->info.mosi_port, 
-						__spi_get_gpio_pin_sourse(dev->info.mosi_pin), 
-						__spi_get_gpio_af(dev->info.spix)	);
+	GPIO_PinAFConfig(	dev->config.mosi_port, 
+						__spi_get_gpio_pin_sourse(dev->config.mosi_pin), 
+						__spi_get_gpio_af(dev->config.spix)	);
 						
-	GPIO_PinAFConfig(	dev->info.miso_port, 
-						__spi_get_gpio_pin_sourse(dev->info.miso_pin), 
-						__spi_get_gpio_af(dev->info.spix)	);
+	GPIO_PinAFConfig(	dev->config.miso_port, 
+						__spi_get_gpio_pin_sourse(dev->config.miso_pin), 
+						__spi_get_gpio_af(dev->config.spix)	);
 	
 	#endif
 		
@@ -188,33 +184,33 @@ int spi_init(SPIDev_t *dev)
 	SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;						// 双线全双工
 	SPI_InitStructure.SPI_DataSize = SPI_DataSize_8b;										// 8位数据帧
 	SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;										// 高位先行
-	SPI_InitStructure.SPI_BaudRatePrescaler = __spi_get_prescaler(dev->info.prescaler);		// 分频系数
-	if(dev->info.mode == SPI_MODE_0)											// 模式0
+	SPI_InitStructure.SPI_BaudRatePrescaler = __spi_get_prescaler(dev->config.prescaler);		// 分频系数
+	if(dev->config.mode == SPI_MODE_0)											// 模式0
 	{
 		SPI_InitStructure.SPI_CPOL = SPI_CPOL_Low;
 		SPI_InitStructure.SPI_CPHA = SPI_CPHA_1Edge;
 	}
-	else if(dev->info.mode == SPI_MODE_1)										// 模式1
+	else if(dev->config.mode == SPI_MODE_1)										// 模式1
 	{
 		SPI_InitStructure.SPI_CPOL = SPI_CPOL_Low;
 		SPI_InitStructure.SPI_CPHA = SPI_CPHA_2Edge;
 	}
-	else if(dev->info.mode == SPI_MODE_2)										// 模式2
+	else if(dev->config.mode == SPI_MODE_2)										// 模式2
 	{
 		SPI_InitStructure.SPI_CPOL = SPI_CPOL_High;
 		SPI_InitStructure.SPI_CPHA = SPI_CPHA_1Edge;
 	}
-	else if(dev->info.mode == SPI_MODE_3)										// 模式3
+	else if(dev->config.mode == SPI_MODE_3)										// 模式3
 	{
 		SPI_InitStructure.SPI_CPOL = SPI_CPOL_High;
 		SPI_InitStructure.SPI_CPHA = SPI_CPHA_2Edge;
 	}
 	SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;									// 软件NSS
 	SPI_InitStructure.SPI_CRCPolynomial = 7;									// CRC，不使用
-	SPI_Init(dev->info.spix, &SPI_InitStructure);
+	SPI_Init(dev->config.spix, &SPI_InitStructure);
 	
 	/* 开启硬件SPI */
-	SPI_Cmd(dev->info.spix, ENABLE);
+	SPI_Cmd(dev->config.spix, ENABLE);
 	
 	/* 函数指针赋值 */
 	dev->cs_write = __spi_cs_write;
@@ -238,7 +234,7 @@ int spi_init(SPIDev_t *dev)
  ******************************************************************************/
 static void __spi_cs_write(SPIDev_t *dev, uint8_t bit_val)
 {
-	__spi_io_write(dev->info.cs_port, dev->info.cs_pin, bit_val);
+	__spi_io_write(dev->config.cs_port, dev->config.cs_pin, bit_val);
 }
 
 /******************************************************************************
@@ -269,13 +265,13 @@ static void __spi_stop(SPIDev_t *dev)
  ******************************************************************************/
 static uint8_t __spi_swap_byte(SPIDev_t *dev, uint8_t send_byte)
 {
-	#if defined(STM32F10X_HD) || defined(STM32F10X_MD) || defined(STM32F40_41xxx) || defined(STM32F411xE)
+	#if defined(STM32F10X_HD) || defined(STM32F10X_MD) || defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	
-	while(SPI_I2S_GetFlagStatus(dev->info.spix, SPI_I2S_FLAG_TXE) != SET);		// 等待TXE置1，表示发送寄存器为空，发送一个字节
-	SPI_I2S_SendData(dev->info.spix, send_byte);								// 发送字节
-	while(SPI_I2S_GetFlagStatus(dev->info.spix, SPI_I2S_FLAG_RXNE) != SET);		// 等待RXNE置1，表示接收寄存器非空，收到一个字节
+	while(SPI_I2S_GetFlagStatus(dev->config.spix, SPI_I2S_FLAG_TXE) != SET);		// 等待TXE置1，表示发送寄存器为空，发送一个字节
+	SPI_I2S_SendData(dev->config.spix, send_byte);								// 发送字节
+	while(SPI_I2S_GetFlagStatus(dev->config.spix, SPI_I2S_FLAG_RXNE) != SET);		// 等待RXNE置1，表示接收寄存器非空，收到一个字节
 	
-	return SPI_I2S_ReceiveData(dev->info.spix);	// 读取接收到的字节
+	return SPI_I2S_ReceiveData(dev->config.spix);	// 读取接收到的字节
 	
 	#endif
 }

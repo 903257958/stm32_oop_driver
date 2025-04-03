@@ -10,7 +10,6 @@
 														else if(port == GPIOE)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);} \
 														else if(port == GPIOF)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE);} \
 														else if(port == GPIOG)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, ENABLE);} \
-														else					{mpu6050_log("mpu6050 gpio clock no enable\r\n");} \
 													}
 														
 #define	__mpu6050_config_io_in_pu(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -83,7 +82,7 @@
 											pin == GPIO_Pin_15 ? EXTI15_10_IRQn : \
 											(int)0	)
 											
-#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 
 #define	__mpu6050_config_gpio_clock_enable(port)	{	if(port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);} \
 														else if(port == GPIOB)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);} \
@@ -92,7 +91,6 @@
 														else if(port == GPIOE)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);} \
 														else if(port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);} \
 														else if(port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);} \
-														else					{mpu6050_log("mpu6050 gpio clock no enable\r\n");} \
 													}
 														
 #define	__mpu6050_config_io_in_pu(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -198,10 +196,10 @@ int mpu6050_init(MPU6050Dev_t *dev)
 	
 	MPU6050PrivData_t *priv_data = (MPU6050PrivData_t *)dev->priv_data;
 	
-	priv_data->i2c.info.scl_port = dev->info.scl_port;
-	priv_data->i2c.info.scl_pin = dev->info.scl_pin;
-	priv_data->i2c.info.sda_port = dev->info.sda_port;
-	priv_data->i2c.info.sda_pin = dev->info.sda_pin;
+	priv_data->i2c.config.scl_port = dev->config.scl_port;
+	priv_data->i2c.config.scl_pin = dev->config.scl_pin;
+	priv_data->i2c.config.sda_port = dev->config.sda_port;
+	priv_data->i2c.config.sda_pin = dev->config.sda_pin;
 	
 	/* 配置软件I2C */
 	i2c_init(&priv_data->i2c);
@@ -240,31 +238,31 @@ static void __mpu6050_irq_init(MPU6050Dev_t *dev)
 	
 	/* 配置时钟与GPIO */
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);	// 开启AFIO时钟
-	__mpu6050_config_gpio_clock_enable(dev->info.int_port);	// 开启中断GPIO口时钟
+	__mpu6050_config_gpio_clock_enable(dev->config.int_port);	// 开启中断GPIO口时钟
 	
-	__mpu6050_config_io_in_pu(dev->info.int_port, dev->info.int_pin);	// 上拉输入
+	__mpu6050_config_io_in_pu(dev->config.int_port, dev->config.int_pin);	// 上拉输入
 	
 	/* 配置AFIO */
-	GPIO_EXTILineConfig(	__mpu6050_exti_get_port_source(dev->info.int_port), 
-							__mpu6050_exti_get_pin_source(dev->info.int_pin)	);
+	GPIO_EXTILineConfig(	__mpu6050_exti_get_port_source(dev->config.int_port), 
+							__mpu6050_exti_get_pin_source(dev->config.int_pin)	);
 	
-	#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
+	#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	
 	/*配置时钟与GPIO*/
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);	// 开启SYSCFG时钟
-	__mpu6050_config_gpio_clock_enable(dev->info.int_port);	// 开启中断GPIO口时钟
+	__mpu6050_config_gpio_clock_enable(dev->config.int_port);	// 开启中断GPIO口时钟
 	
-	__mpu6050_config_io_in_pu(dev->info.int_port, dev->info.int_pin);	// 上拉输入
+	__mpu6050_config_io_in_pu(dev->config.int_port, dev->config.int_pin);	// 上拉输入
 							
 	/* 配置SYSCFG */
-	SYSCFG_EXTILineConfig(	__mpu6050_exti_get_port_source(dev->info.int_port), 
-							__mpu6050_exti_get_pin_source(dev->info.int_pin)	);
+	SYSCFG_EXTILineConfig(	__mpu6050_exti_get_port_source(dev->config.int_port), 
+							__mpu6050_exti_get_pin_source(dev->config.int_pin)	);
 							
 	#endif
 							
 	/* 配置EXTI */
 	EXTI_InitTypeDef EXTI_InitStructure;
-	EXTI_InitStructure.EXTI_Line = __mpu6050_get_exti_line(dev->info.int_pin);
+	EXTI_InitStructure.EXTI_Line = __mpu6050_get_exti_line(dev->config.int_pin);
 	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
 	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
 	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;
@@ -272,15 +270,15 @@ static void __mpu6050_irq_init(MPU6050Dev_t *dev)
 	
 	/* 配置NVIC */
 	NVIC_InitTypeDef NVIC_InitStructure;
-	NVIC_InitStructure.NVIC_IRQChannel = __mpu6050_get_exti_irqn(dev->info.int_pin);
+	NVIC_InitStructure.NVIC_IRQChannel = __mpu6050_get_exti_irqn(dev->config.int_pin);
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
 	NVIC_Init(&NVIC_InitStructure);
 	
 	/* 注册外部中断回调函数 */
-	irq_handler_register(	__mpu6050_get_exti_line(dev->info.int_pin), 
-							dev->info.irq_callback	);
+	irq_handler_register(	__mpu6050_get_exti_line(dev->config.int_pin), 
+							dev->config.irq_callback	);
 
 	priv_data->i2c.write_reg(&priv_data->i2c, MPU6050_ADDRESS, MPU6050_INT_PIN_CFG, 0x00);	// 配置中断引脚
 	priv_data->i2c.write_reg(&priv_data->i2c, MPU6050_ADDRESS, MPU6050_INT_ENABLE, 0xFF);	// 使能所有中断

@@ -10,7 +10,6 @@
 															else if(port == GPIOE)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);} \
 															else if(port == GPIOF)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE);} \
 															else if(port == GPIOG)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, ENABLE);} \
-															else					{stepper_motor_log("stepper motor gpio clock no enable\r\n");} \
 														}
 
 #define	__stepper_motor_config_io_out_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -22,7 +21,7 @@
 
 #define	__stepper_motor_io_write(port, pin, value)	GPIO_WriteBit(port, pin, (BitAction)value)
 
-#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 
 #define	__stepper_motor_config_gpio_clock_enable(port)	{	if(port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);} \
 															else if(port == GPIOB)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);} \
@@ -31,7 +30,6 @@
 															else if(port == GPIOE)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);} \
 															else if(port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);} \
 															else if(port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);} \
-															else					{stepper_motor_log("stepper motor gpio clock no enable\r\n");} \
 														}
 
 #define	__stepper_motor_config_io_out_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
@@ -67,14 +65,14 @@ int stepper_motor_init(StepperMotorDev_t *dev)
 		return -1;
 	
 	/* 配置时钟与GPIO */
-	__stepper_motor_config_gpio_clock_enable(dev->info.in1_port);
-	__stepper_motor_config_gpio_clock_enable(dev->info.in2_port);
-	__stepper_motor_config_gpio_clock_enable(dev->info.in3_port);
-	__stepper_motor_config_gpio_clock_enable(dev->info.in4_port);
-	__stepper_motor_config_io_out_pp(dev->info.in1_port, dev->info.in1_pin);
-	__stepper_motor_config_io_out_pp(dev->info.in2_port, dev->info.in2_pin);
-	__stepper_motor_config_io_out_pp(dev->info.in3_port, dev->info.in3_pin);
-	__stepper_motor_config_io_out_pp(dev->info.in4_port, dev->info.in4_pin);
+	__stepper_motor_config_gpio_clock_enable(dev->config.in1_port);
+	__stepper_motor_config_gpio_clock_enable(dev->config.in2_port);
+	__stepper_motor_config_gpio_clock_enable(dev->config.in3_port);
+	__stepper_motor_config_gpio_clock_enable(dev->config.in4_port);
+	__stepper_motor_config_io_out_pp(dev->config.in1_port, dev->config.in1_pin);
+	__stepper_motor_config_io_out_pp(dev->config.in2_port, dev->config.in2_pin);
+	__stepper_motor_config_io_out_pp(dev->config.in3_port, dev->config.in3_pin);
+	__stepper_motor_config_io_out_pp(dev->config.in4_port, dev->config.in4_pin);
 	
 	/* 函数指针赋值 */
 	dev->control = __stepper_motor_control;
@@ -97,24 +95,24 @@ int stepper_motor_init(StepperMotorDev_t *dev)
 static void __stepper_motor_set_pins(StepperMotorDev_t *dev, int index)
 {
 	if ((g_stepper_motor_pin_ctrl[index] & (1 << 0)))
-		__stepper_motor_io_write(dev->info.in1_port, dev->info.in1_pin, GPIO_LEVEL_HIGH);
+		__stepper_motor_io_write(dev->config.in1_port, dev->config.in1_pin, GPIO_LEVEL_HIGH);
 	else
-		__stepper_motor_io_write(dev->info.in1_port, dev->info.in1_pin, GPIO_LEVEL_LOW);
+		__stepper_motor_io_write(dev->config.in1_port, dev->config.in1_pin, GPIO_LEVEL_LOW);
 
 	if ((g_stepper_motor_pin_ctrl[index] & (1 << 1)))
-		__stepper_motor_io_write(dev->info.in2_port, dev->info.in2_pin, GPIO_LEVEL_HIGH);
+		__stepper_motor_io_write(dev->config.in2_port, dev->config.in2_pin, GPIO_LEVEL_HIGH);
 	else
-		__stepper_motor_io_write(dev->info.in2_port, dev->info.in2_pin, GPIO_LEVEL_LOW);
+		__stepper_motor_io_write(dev->config.in2_port, dev->config.in2_pin, GPIO_LEVEL_LOW);
 
 	if ((g_stepper_motor_pin_ctrl[index] & (1 << 2)))
-		__stepper_motor_io_write(dev->info.in3_port, dev->info.in3_pin, GPIO_LEVEL_HIGH);
+		__stepper_motor_io_write(dev->config.in3_port, dev->config.in3_pin, GPIO_LEVEL_HIGH);
 	else
-		__stepper_motor_io_write(dev->info.in3_port, dev->info.in3_pin, GPIO_LEVEL_LOW);
+		__stepper_motor_io_write(dev->config.in3_port, dev->config.in3_pin, GPIO_LEVEL_LOW);
 
 	if ((g_stepper_motor_pin_ctrl[index] & (1 << 3)))
-		__stepper_motor_io_write(dev->info.in4_port, dev->info.in4_pin, GPIO_LEVEL_HIGH);
+		__stepper_motor_io_write(dev->config.in4_port, dev->config.in4_pin, GPIO_LEVEL_HIGH);
 	else
-		__stepper_motor_io_write(dev->info.in4_port, dev->info.in4_pin, GPIO_LEVEL_LOW);
+		__stepper_motor_io_write(dev->config.in4_port, dev->config.in4_pin, GPIO_LEVEL_LOW);
 
 }
 
@@ -171,10 +169,10 @@ static void __stepper_motor_control(StepperMotorDev_t *dev, int cnt, int time_ms
 static void __stepper_motor_disable(StepperMotorDev_t *dev)
 {
 	/* gpio的电平都为0，对应控制线均为高阻状态，不导通 */
-	__stepper_motor_io_write(dev->info.in1_port, dev->info.in1_pin, GPIO_LEVEL_LOW);
-	__stepper_motor_io_write(dev->info.in2_port, dev->info.in2_pin, GPIO_LEVEL_LOW);
-	__stepper_motor_io_write(dev->info.in3_port, dev->info.in3_pin, GPIO_LEVEL_LOW);
-	__stepper_motor_io_write(dev->info.in4_port, dev->info.in4_pin, GPIO_LEVEL_LOW);
+	__stepper_motor_io_write(dev->config.in1_port, dev->config.in1_pin, GPIO_LEVEL_LOW);
+	__stepper_motor_io_write(dev->config.in2_port, dev->config.in2_pin, GPIO_LEVEL_LOW);
+	__stepper_motor_io_write(dev->config.in3_port, dev->config.in3_pin, GPIO_LEVEL_LOW);
+	__stepper_motor_io_write(dev->config.in4_port, dev->config.in4_pin, GPIO_LEVEL_LOW);
 }
 
 /******************************************************************************

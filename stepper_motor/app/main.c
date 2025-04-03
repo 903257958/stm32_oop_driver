@@ -1,6 +1,6 @@
 #include "main.h"
 
-StepperMotorDev_t stepper_motor = {.info = {
+StepperMotorDev_t stepper_motor = {.config = {
 	GPIOA, GPIO_Pin_4,
 	GPIOA, GPIO_Pin_5,
 	GPIOA, GPIO_Pin_6,

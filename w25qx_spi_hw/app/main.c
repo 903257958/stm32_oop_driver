@@ -5,13 +5,13 @@ uint16_t g_did;										// 定义用于存放DID号的变量
 uint8_t g_array_write[] = {0x01, 0x02, 0x03, 0x04};	// 定义要写入数据的测试数组
 uint8_t g_array_read[4];							// 定义要读取数据的测试数组
 
-UARTDev_t debug = {.info = {
+UARTDev_t debug = {.config = {
     USART1, 115200,
     GPIOA, GPIO_Pin_9,
     GPIOA, GPIO_Pin_10
 }};
 
-W25QXDev_t w25q128 = {.info = {
+W25QXDev_t w25q128 = {.config = {
 	SPI1, 
 	GPIOA, GPIO_Pin_5, 
 	GPIOA, GPIO_Pin_6, 

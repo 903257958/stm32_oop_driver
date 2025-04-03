@@ -64,9 +64,6 @@
             "path": "../fireware/cmsis/device/startup_stm32f40_41xxx.s"
           },
           {
-            "path": "../fireware/cmsis/device/stm32f4xx.h"
-          },
-          {
             "path": "../fireware/cmsis/device/stm32f4xx_conf.h"
           },
           {
@@ -74,6 +71,9 @@
           },
           {
             "path": "../fireware/cmsis/device/stm32f4xx_it.h"
+          },
+          {
+            "path": "../fireware/cmsis/device/stm32f4xx.h"
           },
           {
             "path": "../fireware/cmsis/device/system_stm32f4xx.c"
@@ -97,9 +97,6 @@
             "path": "../fireware/driver/src/stm32f4xx_crc.c"
           },
           {
-            "path": "../fireware/driver/src/stm32f4xx_cryp.c"
-          },
-          {
             "path": "../fireware/driver/src/stm32f4xx_cryp_aes.c"
           },
           {
@@ -107,6 +104,9 @@
           },
           {
             "path": "../fireware/driver/src/stm32f4xx_cryp_tdes.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_cryp.c"
           },
           {
             "path": "../fireware/driver/src/stm32f4xx_dac.c"
@@ -133,10 +133,10 @@
             "path": "../fireware/driver/src/stm32f4xx_exti.c"
           },
           {
-            "path": "../fireware/driver/src/stm32f4xx_flash.c"
+            "path": "../fireware/driver/src/stm32f4xx_flash_ramfunc.c"
           },
           {
-            "path": "../fireware/driver/src/stm32f4xx_flash_ramfunc.c"
+            "path": "../fireware/driver/src/stm32f4xx_flash.c"
           },
           {
             "path": "../fireware/driver/src/stm32f4xx_fmpi2c.c"
@@ -148,13 +148,13 @@
             "path": "../fireware/driver/src/stm32f4xx_gpio.c"
           },
           {
-            "path": "../fireware/driver/src/stm32f4xx_hash.c"
-          },
-          {
             "path": "../fireware/driver/src/stm32f4xx_hash_md5.c"
           },
           {
             "path": "../fireware/driver/src/stm32f4xx_hash_sha1.c"
+          },
+          {
+            "path": "../fireware/driver/src/stm32f4xx_hash.c"
           },
           {
             "path": "../fireware/driver/src/stm32f4xx_i2c.c"

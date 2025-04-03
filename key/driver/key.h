@@ -9,7 +9,7 @@
 	#include "stm32f10x.h"
 	typedef GPIO_TypeDef*	KeyGPIOPort_t;
 	
-#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	#include "stm32f4xx.h"
 	typedef GPIO_TypeDef*	KeyGPIOPort_t;
 
@@ -25,18 +25,14 @@
 	#define GPIO_LEVEL_LOW 0
 #endif
 
-#ifndef key_log
-	#define key_log(x) 
-#endif
-
 typedef struct {
 	KeyGPIOPort_t port;						// 端口
 	uint32_t pin;							// 引脚
 	bool press_level;						// 按键按下的时候IO口的电平
-}KeyInfo_t;
+}KeyConfig_t;
 
 typedef struct KeyDev {
-	KeyInfo_t info;
+	KeyConfig_t config;
 	bool init_flag;								// 初始化标志
 	bool (*is_press)(struct KeyDev *dev);		// 判断按键是否按下
 	int (*deinit)(struct KeyDev *dev);			// 去初始化

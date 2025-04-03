@@ -2,7 +2,7 @@
 
 LCDDev_t lcd;
 
-MAX30102Dev_t max30102 = {.info = {
+MAX30102Dev_t max30102 = {.config = {
     GPIOB, GPIO_Pin_6,
     GPIOB, GPIO_Pin_7,
 	GPIOB, GPIO_Pin_9

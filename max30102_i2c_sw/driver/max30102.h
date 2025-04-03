@@ -11,24 +11,12 @@
 	#include "stm32f10x.h"
 	typedef GPIO_TypeDef*	MAX30102GPIOPort_t;
 	
-#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	#include "stm32f4xx.h"
 	typedef GPIO_TypeDef*	MAX30102GPIOPort_t;
 	
 #else
 	#error max30102.h: No processor defined!
-#endif
-
-#ifndef GPIO_LEVEL_HIGH
-    #define GPIO_LEVEL_HIGH 1
-#endif
-
-#ifndef GPIO_LEVEL_LOW
-    #define GPIO_LEVEL_LOW 0
-#endif
-
-#ifndef max30102_log
-	#define max30102_log(x)
 #endif
 
 /* MAX30102的I2C从机地址 */
@@ -65,10 +53,10 @@ typedef struct {
 	uint32_t sda_pin;				// SDA引脚
 	MAX30102GPIOPort_t int_port;	// INT端口
 	uint32_t int_pin;				// INT引脚
-}MAX30102Info_t;
+}MAX30102Config_t;
 
 typedef struct MAX30102Dev {
-	MAX30102Info_t info;
+	MAX30102Config_t config;
 	bool init_flag;		// 初始化标志
     void *priv_data;	// 私有数据指针
 	int32_t heart_rate;
