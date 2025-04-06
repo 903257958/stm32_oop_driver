@@ -52,6 +52,12 @@
 												GPIO_Init(port, &GPIO_InitStructure); \
 											}
 
+#define	__uart_get_dma_channel(uartx)		(	uartx == USART1 ? DMA1_Channel5 : \
+												uartx == USART2 ? DMA1_Channel6 : \
+												uartx == USART3 ? DMA1_Channel3 : \
+												uartx == UART4 ? DMA2_Channel3 : \
+												(int)0)
+
 #elif defined(STM32F40_41xxx) || defined(STM32F429_439xx)
 											
 #define __uart_get_irqn(uartx)	(	uartx == USART1 ? USART1_IRQn : \
@@ -336,17 +342,11 @@ int uart_dma_init(UARTDev_t *dev)
 	UARTPrivData_t *priv_data = (UARTPrivData_t *)dev->priv_data;
 	
 	#if defined(STM32F10X_HD) || defined(STM32F10X_MD)
-	
-	if (dev->config.uartx == USART1)			{	priv_data->DMAChannel = DMA1_Channel5;	}
-	else if (dev->config.uartx == USART2)	{	priv_data->DMAChannel = DMA1_Channel6;	}
-	else if (dev->config.uartx == USART3)	{	priv_data->DMAChannel = DMA1_Channel3;	}
-	else if (dev->config.uartx == UART4)		{	priv_data->DMAChannel = DMA2_Channel3;	}
-	else	{return -1;}
 
 	/* 配置DMA */
 	__uart_config_dma_clock_enable(dev->config.uartx);
 	DMA_InitTypeDef DMA_InitStructure;
-	DMA_DeInit(priv_data->DMAChannel);													// 将DMA的通道寄存器重设为缺省值
+	DMA_DeInit(__uart_get_dma_channel(dev->config.uartx));								// 将DMA的通道寄存器重设为缺省值
 	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&dev->config.uartx->DR;		// DMA外设基地址
 	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)(g_rx_str[priv_data->index]);		// DMA内存基地址
 	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;									// 数据传输方向，从外设读取发送到内存
@@ -358,14 +358,14 @@ int uart_dma_init(UARTDev_t *dev)
 	DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;										// 工作在正常模式，一次传输后自动结束
 	DMA_InitStructure.DMA_Priority = DMA_Priority_Medium;								// 中优先级 
 	DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;										// 没有设置为内存到内存传输
-	DMA_Init(priv_data->DMAChannel, &DMA_InitStructure);
+	DMA_Init(__uart_get_dma_channel(dev->config.uartx), &DMA_InitStructure);
 
 	/* 中断使能 */
 	USART_ITConfig(dev->config.uartx, USART_IT_RXNE, DISABLE);							// 关闭串口接受中断
 	USART_ITConfig(dev->config.uartx, USART_IT_IDLE, ENABLE);								// 使能UART空闲中断
 
 	/* 开启DMA */
-	DMA_Cmd(priv_data->DMAChannel, ENABLE);
+	DMA_Cmd(__uart_get_dma_channel(dev->config.uartx), ENABLE);
 
 	/* 启用UART的DMA请求 */
 	USART_DMACmd(dev->config.uartx, USART_DMAReq_Rx, ENABLE);
@@ -431,10 +431,10 @@ static int __uart_dma_recv_enable(UARTDev_t *dev)
 	memset(g_rx_str[priv_data->index], 0, sizeof(g_rx_str[priv_data->index]));
 	
 	/* 重新设置传输数据长度 */
-	DMA_SetCurrDataCounter(priv_data->DMAChannel, sizeof(g_rx_str[priv_data->index]));
+	DMA_SetCurrDataCounter(__uart_get_dma_channel(dev->config.uartx), sizeof(g_rx_str[priv_data->index]));
 
 	/* 重新打开DMA */
-	DMA_Cmd(priv_data->DMAChannel, ENABLE);
+	DMA_Cmd(__uart_get_dma_channel(dev->config.uartx), ENABLE);
 	
 	#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	
@@ -663,7 +663,9 @@ static void __uart_recv_string_callback(UARTPER_t uartx)
 	else if (uartx == USART3)	{index = 2;}
 	else if (uartx == UART4)	{index = 3;}
 	else if (uartx == UART5)	{index = 4;}
+    #if defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	else if (uartx == USART6)	{index = 5;}
+    #endif
 	
 	static uint8_t rx_string_num = 0; 						// 接收到文本数据包的数据个数
 	
