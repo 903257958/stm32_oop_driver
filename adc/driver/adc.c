@@ -16,7 +16,7 @@
 													else if(port == GPIOG)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, ENABLE);} \
 												}
 
-#define	__adc_config_io_an_in(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
+#define	__adc_config_io_in_an(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
 												GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN; \
 												GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; \
 												GPIO_InitStructure.GPIO_Pin = pin; \
@@ -39,7 +39,7 @@
 													else if(port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);} \
 												}
 
-#define	__adc_config_io_an_in(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
+#define	__adc_config_io_in_an(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
 												GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN; \
 												GPIO_InitStructure.GPIO_Pin = pin; \
 												GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL; \
@@ -64,7 +64,7 @@ int adc_init(ADCDev_t *dev)
 	
 	/* 配置时钟与GPIO */	
 	__adc_config_gpio_clock_enable(dev->config.port);
-	__adc_config_io_an_in(dev->config.port, dev->config.pin);
+	__adc_config_io_in_an(dev->config.port, dev->config.pin);
 	
 	/* 配置ADC */
 	#if defined(STM32F10X_HD) || defined(STM32F10X_MD)
