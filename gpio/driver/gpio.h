@@ -42,7 +42,6 @@ typedef struct {
 typedef struct GPIODev {
 	GPIOConfig_t config;
 	bool init_flag;							    		// 初始化标志
-	void *priv_data;						    		// 私有数据指针
 	int (*set)(struct GPIODev *dev);					// 置位
 	int (*reset)(struct GPIODev *dev);		    		// 复位
 	int (*read)(struct GPIODev *dev, uint8_t *status);	// 读
