@@ -17,6 +17,7 @@
 - **key**: 按键 + 延时消抖
 - **key_fifo_timer**: 按键 + 环形缓冲区 + 定时器中断扫描 + 定时器消抖
 - **timer_irq**: 定时器中断
+- **adc**: ADC多通道采集
 - **usart_dma**: 串口 + 空闲中断 + DMA
 - **esp_at**: ESP32或ES8266通过AT命令获取天气与时间
 - **w25qx_spi_hw**: 硬件SPI读写外部Flash
@@ -34,6 +35,7 @@
 - **aht21_i2c_sw**: 软件I2C + AHT21 获取温湿度
 - **max30102_i2c_sw**: 软件I2C + MAX30102 获取心率血氧
 - **bmp280_i2c_sw**: 软件I2C + BMP280 获取气压与海拔
+
 
 
 
