@@ -50,6 +50,7 @@ typedef struct {
 }MAX30102PrivData_t;
 
 /* 函数声明 */
+static int __max30102_software_init(MAX30102Dev_t *dev);
 static int __max30102_read_fifo(MAX30102Dev_t *dev, uint32_t *red_led_data, uint32_t *ir_led_data);
 static int __max30102_get_data(MAX30102Dev_t *dev);
 static int __max30102_deinit(MAX30102Dev_t *dev);
@@ -88,8 +89,6 @@ int max30102_init(MAX30102Dev_t *dev)
     if (!dev)
 		return -1;
 
-	uint16_t i;
-
     /* 保存私有数据 */
 	dev->priv_data = (MAX30102PrivData_t *)malloc(sizeof(MAX30102PrivData_t));
 	if (!dev->priv_data)
@@ -125,9 +124,27 @@ int max30102_init(MAX30102Dev_t *dev)
 	priv_data->i2c.write_reg(&priv_data->i2c, MAX30102_ADDRESS, REG_LED2_PA, 0x24);			// LED2电流设置为7.4mA
 	priv_data->i2c.write_reg(&priv_data->i2c, MAX30102_ADDRESS, REG_PILOT_PA, 0x7F);
 	
-	/* MAX30102软件初始化 */
-	un_min = 0x3FFFF;
+    /* 函数指针赋值 */
+    dev->software_init = __max30102_software_init;
+	dev->get_data = __max30102_get_data;
+	dev->deinit = __max30102_deinit;
+    
+	return 0;
+}
+
+/******************************************************************************
+ * @brief	MAX30102软件初始化，在测量前应当调用一次（由于比较耗时所以与init函数分开）
+ * @param	dev    			:   MAX30102Dev_t 结构体指针
+ * @return	0, 表示成功, 其他值表示失败
+ ******************************************************************************/
+static int __max30102_software_init(MAX30102Dev_t *dev)
+{
+    if (!dev || !dev->init_flag)
+ 		return -1;
+    
+    un_min = 0x3FFFF;
 	un_max = 0;
+    uint16_t i;
 
 	/* 读取前500个样本，并确定信号范围 */
 	for (i = 0; i < BUFFER_SIZE; i++)
@@ -146,12 +163,8 @@ int max30102_init(MAX30102Dev_t *dev)
 	/* 计算前500个样本后的心率和血氧饱和度 */
 	maxim_heart_rate_and_oxygen_saturation(	aun_ir_buffer, BUFFER_SIZE, aun_red_buffer, 
 											&n_sp02, &ch_spo2_valid, &n_heart_rate, &ch_hr_valid); 
-	
-    /* 函数指针赋值 */
-	dev->get_data = __max30102_get_data;
-	dev->deinit = __max30102_deinit;
-    
-	return 0;
+
+    return 0;
 }
 
 /******************************************************************************
@@ -322,9 +335,9 @@ const uint8_t uch_spo2_table[184]={	95, 95, 95, 96, 96, 96, 97, 97, 97, 97, 97, 
 									49, 48, 47, 46, 45, 44, 43, 42, 41, 40, 39, 38, 37, 36, 35, 34, 33, 31, 30, 29, 
 									28, 27, 26, 25, 23, 22, 21, 20, 19, 17, 16, 15, 14, 12, 11, 10, 9, 7, 6, 5, 
 									3, 2, 1} ;
-static  int32_t an_dx[ BUFFER_SIZE-MA4_SIZE]; // delta
-static  int32_t an_x[ BUFFER_SIZE]; //ir
-static  int32_t an_y[ BUFFER_SIZE]; //red
+static int32_t an_dx[ BUFFER_SIZE-MA4_SIZE]; // delta
+static int32_t an_x[ BUFFER_SIZE]; //ir
+static int32_t an_y[ BUFFER_SIZE]; //red
 
 void maxim_heart_rate_and_oxygen_saturation(uint32_t *pun_ir_buffer,  int32_t n_ir_buffer_length, uint32_t *pun_red_buffer, int32_t *pn_spo2, int8_t *pch_spo2_valid, 
                               int32_t *pn_heart_rate, int8_t  *pch_hr_valid)

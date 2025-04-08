@@ -19,6 +19,8 @@ int main(void)
 	lcd.show_string(&lcd, 0, 20, "blood oxygen:", WHITE, BLACK, LCD_8X16, 0);
 	lcd.show_string(&lcd, 124, 20, "%", WHITE, BLACK, LCD_8X16, 0);
 
+    max30102.software_init(&max30102);
+    
 	while(1)
 	{
 		max30102.get_data(&max30102);

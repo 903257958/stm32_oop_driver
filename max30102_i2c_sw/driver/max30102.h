@@ -61,6 +61,7 @@ typedef struct MAX30102Dev {
     void *priv_data;	// 私有数据指针
 	int32_t heart_rate;
 	int32_t blood_oxygen;
+	int (*software_init)(struct MAX30102Dev *dev);
 	int (*get_data)(struct MAX30102Dev *dev);
 	int (*deinit)(struct MAX30102Dev *dev); // 去初始化
 }MAX30102Dev_t;
