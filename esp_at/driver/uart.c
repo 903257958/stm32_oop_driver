@@ -1,6 +1,56 @@
 #include "uart.h"
 
-#if defined(STM32F10X_HD) || defined(STM32F10X_MD)
+#if defined(STM32F10X_MD)
+											
+#define __uart_get_irqn(uartx)	(	uartx == USART1 ? USART1_IRQn : \
+									uartx == USART2 ? USART2_IRQn : \
+									uartx == USART3 ? USART3_IRQn : \
+									(int)0	)
+											
+#define __uart_get_index(uartx)	(	uartx == USART1 ? 0 : \
+									uartx == USART2 ? 1 : \
+									uartx == USART3 ? 2 : \
+										(int)-1	)
+										
+#define	__uart_config_clock_enable(uartx)	{	if (uartx == USART1)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);} \
+												else if (uartx == USART2)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);} \
+												else if (uartx == USART3)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);} \
+											}
+
+#define	__uart_config_gpio_clock_enable(port)	{	if (port == GPIOA)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);} \
+													else if (port == GPIOB)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);} \
+													else if (port == GPIOC)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);} \
+													else if (port == GPIOD)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);} \
+													else if (port == GPIOE)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);} \
+													else if (port == GPIOF)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE);} \
+													else if (port == GPIOG)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, ENABLE);} \
+												}
+
+#define	__uart_config_dma_clock_enable(uartx)	{	if (uartx == USART1)		{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);} \
+													else if (uartx == USART2)	{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);} \
+													else if (uartx == USART3)	{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);} \
+												}
+
+#define	__uart_config_io_af_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
+												GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP; \
+												GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; \
+												GPIO_InitStructure.GPIO_Pin = pin ; \
+												GPIO_Init(port, &GPIO_InitStructure); \
+											}
+
+#define	__uart_config_io_in_pu(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
+												GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU; \
+												GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; \
+												GPIO_InitStructure.GPIO_Pin = pin ; \
+												GPIO_Init(port, &GPIO_InitStructure); \
+											}
+
+#define	__uart_get_dma_channel(uartx)		(	uartx == USART1 ? DMA1_Channel5 : \
+												uartx == USART2 ? DMA1_Channel6 : \
+												uartx == USART3 ? DMA1_Channel3 : \
+												(int)0)
+                                                
+#elif defined(STM32F10X_HD)
 											
 #define __uart_get_irqn(uartx)	(	uartx == USART1 ? USART1_IRQn : \
 									uartx == USART2 ? USART2_IRQn : \
@@ -797,7 +847,7 @@ void UART4_IRQHandler(void)
 			g_rx_str_flag[3] = 1;	// 置接收标志位
 			
 			/* 空闲中断产生，关闭DMA，等待数据处理，在调用 dma_recv_enable 函数后DMA才被重新开启 */
-			#if defined(STM32F10X_HD) || defined(STM32F10X_MD)
+			#if defined(STM32F10X_HD)
 			DMA_Cmd(DMA2_Channel3, DISABLE);
 			#elif defined(STM32F40_41xxx) || defined(STM32F429_439xx)
 			DMA_Cmd(DMA1_Stream2, DISABLE);
