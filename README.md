@@ -29,6 +29,7 @@
 - **st7789_spi_hw_dma_touch**: 硬件SPI + DMA驱动 ST7789 主控 分辨率240*280 1.69寸LCD屏幕 + CST816T 电容触摸
 - **ili9341_fsmc**: FSMC驱动 ILI9341 主控 分辨率240*320 2.8寸LCD屏幕
 - **stepper_motor**: 步进电机
+- **pwm**: 输出PWM
 - **passive_buzzer_pwm**: PWM控制无源蜂鸣器
 - **rtc**: RTC实时时钟
 - **mpu6050_i2c_sw**: 软件I2C + MPU6050
