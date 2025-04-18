@@ -1,6 +1,27 @@
 #include "timer.h"
 
-#if defined(STM32F10X_HD)
+#if defined(STM32F10X_MD)
+
+#define MAX_TIMER_NUM	3
+
+#define TIMER_FREQ	72000000
+	
+#define __timer_get_irqn_channel(TIMx)	(	TIMx == TIM2 ? TIM2_IRQn : \
+											TIMx == TIM3 ? TIM3_IRQn : \
+											TIMx == TIM4 ? TIM4_IRQn : \
+											(int)0	)
+										
+#define __timer_get_index(TIMx)	(	TIMx == TIM2 ? 0 : \
+									TIMx == TIM3 ? 1 : \
+									TIMx == TIM4 ? 2 : \
+									(int)-1	)
+										
+#define	__timer_config_clock_enable(TIMx)	{	if(TIMx == TIM2)		{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);} \
+												else if(TIMx == TIM3)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);} \
+												else if(TIMx == TIM4)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);} \
+											}
+                                            
+#elif defined(STM32F10X_HD)
 
 #define MAX_TIMER_NUM	6
 
@@ -175,15 +196,18 @@ int timer_init(TimerDev_t *dev)
 	TIM_TimeBaseInit(dev->config.timx, &TIM_TimeBaseInitStructure);
 	
 	/* 配置中断 */
-	TIM_ClearFlag(dev->config.timx, TIM_FLAG_Update);		// 清除定时器更新标志位
-	TIM_ITConfig(dev->config.timx, TIM_IT_Update, ENABLE);	// 更新中断
-		
-	NVIC_InitTypeDef NVIC_InitStructure;
-	NVIC_InitStructure.NVIC_IRQChannel = priv_data->irqn;			// 中断通道
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;					// 中断通道使能
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;		// 抢占优先级
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;				// 响应优先级
-	NVIC_Init(&NVIC_InitStructure);
+    if (dev->config.irq_callback != NULL)
+    {
+        TIM_ClearFlag(dev->config.timx, TIM_FLAG_Update);		// 清除定时器更新标志位
+        TIM_ITConfig(dev->config.timx, TIM_IT_Update, ENABLE);	// 更新中断
+            
+        NVIC_InitTypeDef NVIC_InitStructure;
+        NVIC_InitStructure.NVIC_IRQChannel = priv_data->irqn;			// 中断通道
+        NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;					// 中断通道使能
+        NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;		// 抢占优先级
+        NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;				// 响应优先级
+        NVIC_Init(&NVIC_InitStructure);
+    }
 	
 	/* 启用定时器 */
 	TIM_Cmd(dev->config.timx, ENABLE);
@@ -310,6 +334,7 @@ void TIM4_IRQHandler(void)
 	}
 }
 
+#if defined(STM32F10X_HD) || defined(STM32F40_41xxx) || defined(STM32F429_439xx)
 /******************************************************************************
  * @brief	TIM5中断函数
  * @param	无
@@ -327,6 +352,7 @@ void TIM5_IRQHandler(void)
 		}
 	}
 }
+#endif
 
 /******************************************************************************
  * @brief	TIM6中断函数
