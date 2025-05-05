@@ -23,6 +23,7 @@
 - **esp_at**: ESP32或ES8266通过AT命令获取天气与时间
 - **w25qx_spi_hw**: 硬件SPI读写外部Flash
 - **w25qx_spi_sw**: 软件SPI读写外部Flash
+- **ssd1306_i2c_sw**: 软件I2C驱动 SSD1306 主控 分辨率128*64 0.96寸OLED屏幕
 - **ssd1306_spi_hw_dma**: 硬件SPI + DMA驱动 SSD1306 主控 分辨率128*64 0.96寸OLED屏幕
 - **st7735_spi_hw_dma**: 硬件SPI + DMA驱动 ST7735 主控 分辨率128*160 1.8寸LCD屏幕
 - **st7789_spi_hw_dma**: 硬件SPI + DMA驱动 ST7789 主控 分辨率240*280 1.69寸LCD屏幕
