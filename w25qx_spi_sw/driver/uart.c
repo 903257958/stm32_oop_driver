@@ -304,9 +304,12 @@ int uart_init(UARTDev_t *dev)
 	__uart_config_gpio_clock_enable(dev->config.tx_port);
 	__uart_config_gpio_clock_enable(dev->config.rx_port);
 	__uart_config_io_af_pp(dev->config.tx_port, dev->config.tx_pin);
-	__uart_config_io_af_pp(dev->config.rx_port, dev->config.rx_pin);
+    
+    #if defined(STM32F10X_MD) || defined(STM32F10X_HD)
+	__uart_config_io_in_pu(dev->config.rx_port, dev->config.rx_pin);
 	
-	#if defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
+	#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
+    __uart_config_io_af_pp(dev->config.rx_port, dev->config.rx_pin);
 	if (dev->config.uartx == USART1)
 	{
 		GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_USART1);
@@ -800,6 +803,7 @@ void USART2_IRQHandler(void)
 	}
 }
 
+#if defined(STM32F10X_MD) || defined(STM32F10X_HD) || defined(STM32F40_41xxx) || defined(STM32F429_439xx)
 /******************************************************************************
  * @brief	UART3中断函数
  * @param	无
@@ -830,7 +834,9 @@ void USART3_IRQHandler(void)
 		USART_ClearITPendingBit(USART3, USART_IT_RXNE);	// 清除中断标志位
 	}
 }
+#endif
 
+#if defined(STM32F10X_HD) || defined(STM32F40_41xxx) || defined(STM32F429_439xx)
 /******************************************************************************
  * @brief	UART4中断函数
  * @param	无
@@ -861,7 +867,9 @@ void UART4_IRQHandler(void)
 		USART_ClearITPendingBit(UART4, USART_IT_RXNE);	// 清除中断标志位
 	}
 }
+#endif
 
+#if defined(STM32F10X_HD) || defined(STM32F40_41xxx) || defined(STM32F429_439xx)
 /******************************************************************************
 * @brief	UART5中断函数
  * @param	无
@@ -890,7 +898,9 @@ void UART5_IRQHandler(void)
 		USART_ClearITPendingBit(UART5, USART_IT_RXNE);	// 清除中断标志位
 	}
 }
+#endif
 
+#if defined(STM32F10X_HD) || defined(STM32F40_41xxx) || defined(STM32F429_439xx) || defined(STM32F411xE) 
 /******************************************************************************
 * @brief	UART6中断函数
  * @param	无
@@ -898,7 +908,6 @@ void UART5_IRQHandler(void)
  ******************************************************************************/
 void USART6_IRQHandler(void)
 {
-	#if defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	volatile uint8_t clear;
 
 	if (USART_GetITStatus(USART6, USART_IT_IDLE) != RESET)   // 空闲中断
@@ -917,5 +926,5 @@ void USART6_IRQHandler(void)
 
 		USART_ClearITPendingBit(USART6, USART_IT_RXNE);	// 清除中断标志位
 	}
-	#endif
 }
+#endif

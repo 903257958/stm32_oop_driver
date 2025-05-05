@@ -83,11 +83,12 @@ int led_init(LEDDev_t *dev)
 	dev->toggle = __led_toggle;
 	dev->deinit = __led_deinit;
 	
+    dev->init_flag = true;
+    
 	/* 默认关闭 */
 	priv_data->status = false;
 	__led_off(dev);
-	
-	dev->init_flag = true;
+
 	return 0;
 }
 
