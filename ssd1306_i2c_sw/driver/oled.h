@@ -13,12 +13,12 @@
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
     #include "stm32f10x.h"
 	
-    typedef GPIO_TypeDef*	OLED_GPIO_Port;
+    typedef GPIO_TypeDef*	OLEDGPIOPort_t;
 	
 #elif defined(STM32F40_41xxx)
 	#include "stm32f4xx.h"
 	
-	typedef GPIO_TypeDef*	OLED_GPIO_Port;
+	typedef GPIO_TypeDef*	OLEDGPIOPort_t;
 	
 #else
     #error oled.h: No processor defined!
@@ -37,9 +37,9 @@
 #define OLED_FILLED				1
 
 typedef struct {
-	OLED_GPIO_Port scl_port;		// SCL端口
+	OLEDGPIOPort_t scl_port;		// SCL端口
 	uint32_t scl_pin;				// SCL引脚
-	OLED_GPIO_Port sda_port;		// SDA端口
+	OLEDGPIOPort_t sda_port;		// SDA端口
 	uint32_t sda_pin;				// SDA引脚
 }OLEDConfig_t;
 
