@@ -7,11 +7,11 @@
 
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 	#include "stm32f10x.h"
-	typedef GPIO_TypeDef*	GPIO_Port;
+	typedef GPIO_TypeDef*	GPIOPort_t;
 	
 #elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	#include "stm32f4xx.h"
-	typedef GPIO_TypeDef*	GPIO_Port;
+	typedef GPIO_TypeDef*	GPIOPort_t;
 
 #else
     #error gpio.h: No processor defined!
@@ -34,7 +34,7 @@ typedef enum {
 }GPIOMode_t;
 
 typedef struct {
-	GPIO_Port port;     // 端口
+	GPIOPort_t port;     // 端口
 	uint32_t pin;       // 引脚
 	GPIOMode_t mode;	// 模式
 }GPIOConfig_t;
