@@ -47,30 +47,47 @@
 												
 #define __i2c_io_read(port, pin)	GPIO_ReadInputDataBit(port, pin)
 
+#elif defined(GD32F10X_MD) || defined(GD32F10X_HD)
+
+#define	__i2c_config_gpio_clock_enable(port)	{	if(port == GPIOA)		{rcu_periph_clock_enable(RCU_GPIOA);} \
+													else if(port == GPIOB)	{rcu_periph_clock_enable(RCU_GPIOB);} \
+													else if(port == GPIOC)	{rcu_periph_clock_enable(RCU_GPIOC);} \
+													else if(port == GPIOD)	{rcu_periph_clock_enable(RCU_GPIOD);} \
+													else if(port == GPIOE)	{rcu_periph_clock_enable(RCU_GPIOE);} \
+													else if(port == GPIOF)	{rcu_periph_clock_enable(RCU_GPIOF);} \
+													else if(port == GPIOG)	{rcu_periph_clock_enable(RCU_GPIOG);} \
+												}
+													
+#define	__i2c_config_io_out_od(port, pin)	gpio_init(port, GPIO_MODE_OUT_OD, GPIO_OSPEED_50MHZ, pin)
+												
+#define	__i2c_io_write(port, pin, value)	gpio_bit_write(port, pin, (bit_status)value)
+												
+#define __i2c_io_read(port, pin)	gpio_input_bit_get(port, pin)
+
 #endif
 		
 /* 函数声明 */
-static int __i2c_scl_write(I2CDev_t *dev, uint8_t level);
-static int __i2c_sda_write(I2CDev_t *dev, uint8_t level);
+static int8_t __i2c_scl_write(I2CDev_t *dev, uint8_t level);
+static int8_t __i2c_sda_write(I2CDev_t *dev, uint8_t level);
 static uint8_t __i2c_sda_read(I2CDev_t *dev);
-static int __i2c_start(I2CDev_t *dev);
-static int __i2c_stop(I2CDev_t *dev);
-static int __i2c_send_byte(I2CDev_t *dev, uint8_t byte);
+static int8_t __i2c_start(I2CDev_t *dev);
+static int8_t __i2c_stop(I2CDev_t *dev);
+static int8_t __i2c_send_byte(I2CDev_t *dev, uint8_t byte);
 static uint8_t __i2c_recv_byte(I2CDev_t *dev);
-static int __i2c_send_ack(I2CDev_t *dev, uint8_t ack);
+static int8_t __i2c_send_ack(I2CDev_t *dev, uint8_t ack);
 static uint8_t __i2c_recv_ack(I2CDev_t *dev);
-static int __i2c_read_reg(I2CDev_t *dev, uint8_t dev_addr, uint8_t reg_addr, uint8_t *data);
-static int __i2c_read_regs(I2CDev_t *dev, uint8_t dev_addr, uint8_t reg_addr, uint8_t num, uint8_t data[]);
-static int __i2c_write_reg(I2CDev_t *dev, uint8_t dev_addr, uint8_t reg_addr, uint8_t data);
-static int __i2c_write_regs(I2CDev_t *dev, uint8_t dev_addr, uint8_t reg_addr, uint8_t num, uint8_t data[]);
-static int __i2c_deinit(I2CDev_t *dev);
+static int8_t __i2c_read_reg(I2CDev_t *dev, uint8_t dev_addr, uint8_t reg_addr, uint8_t *data);
+static int8_t __i2c_read_regs(I2CDev_t *dev, uint8_t dev_addr, uint8_t reg_addr, uint16_t num, uint8_t data[]);
+static int8_t __i2c_write_reg(I2CDev_t *dev, uint8_t dev_addr, uint8_t reg_addr, uint8_t data);
+static int8_t __i2c_write_regs(I2CDev_t *dev, uint8_t dev_addr, uint8_t reg_addr, uint16_t num, uint8_t data[]);
+static int8_t __i2c_deinit(I2CDev_t *dev);
 	
 /******************************************************************************
  * @brief	初始化软件I2C
  * @param	dev	:  I2CDev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-int i2c_init(I2CDev_t *dev)
+int8_t i2c_init(I2CDev_t *dev)
 {
 	if (!dev)
 		return -1;
@@ -109,7 +126,7 @@ int i2c_init(I2CDev_t *dev)
  * @param	level	:  要写入的电平值，取1/0
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __i2c_scl_write(I2CDev_t *dev, uint8_t level)
+static int8_t __i2c_scl_write(I2CDev_t *dev, uint8_t level)
 {
 	if (!dev->init_flag)
 		return -1;
@@ -126,7 +143,7 @@ static int __i2c_scl_write(I2CDev_t *dev, uint8_t level)
  * @param	level	:  要写入的电平值，取1/0
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __i2c_sda_write(I2CDev_t *dev, uint8_t level)
+static int8_t __i2c_sda_write(I2CDev_t *dev, uint8_t level)
 {
 	if (!dev->init_flag)
 		return -1;
@@ -156,7 +173,7 @@ static uint8_t __i2c_sda_read(I2CDev_t *dev)
  * @param	dev	:  I2CDev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __i2c_start(I2CDev_t *dev)
+static int8_t __i2c_start(I2CDev_t *dev)
 {
 	if (!dev)
 		return -1;
@@ -174,7 +191,7 @@ static int __i2c_start(I2CDev_t *dev)
  * @param	dev	:  I2CDev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __i2c_stop(I2CDev_t *dev)
+static int8_t __i2c_stop(I2CDev_t *dev)
 {
 	if (!dev)
 		return -1;
@@ -193,7 +210,7 @@ static int __i2c_stop(I2CDev_t *dev)
  * @param	byte	:  要发送的字节
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __i2c_send_byte(I2CDev_t *dev, uint8_t byte)
+static int8_t __i2c_send_byte(I2CDev_t *dev, uint8_t byte)
 {
 	if (!dev)
 		return -1;
@@ -216,9 +233,10 @@ static int __i2c_send_byte(I2CDev_t *dev, uint8_t byte)
 static uint8_t __i2c_recv_byte(I2CDev_t *dev)
 {
 	uint8_t data = 0x00;
+	int8_t i;
 	
 	__i2c_sda_write(dev, 1);					// 主机释放SDA，等待从机放入数据
-	for(int i = 7;i >= 0;i--)
+	for(i = 7; i >= 0; i--)
 	{
 		__i2c_scl_write(dev, 1);				// SCL原来是低电平，从机放完数据SCL置高电平，主机开始读取
 		data |= (__i2c_sda_read(dev) << i);		// 高位先行
@@ -234,7 +252,7 @@ static uint8_t __i2c_recv_byte(I2CDev_t *dev)
  * @param	ack		:  要发送的应答位
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __i2c_send_ack(I2CDev_t *dev, uint8_t ack)
+static int8_t __i2c_send_ack(I2CDev_t *dev, uint8_t ack)
 {
 	if (!dev)
 		return -1;
@@ -271,7 +289,7 @@ static uint8_t __i2c_recv_ack(I2CDev_t *dev)
  * @param	data    	:   要读的寄存器数据
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __i2c_read_reg(I2CDev_t *dev, uint8_t dev_addr, uint8_t reg_addr, uint8_t *data)
+static int8_t __i2c_read_reg(I2CDev_t *dev, uint8_t dev_addr, uint8_t reg_addr, uint8_t *data)
 {
 	if (!dev || !dev->init_flag)
 		return -1;
@@ -301,12 +319,12 @@ static int __i2c_read_reg(I2CDev_t *dev, uint8_t dev_addr, uint8_t reg_addr, uin
  * @param	data    	:   要读的寄存器数据
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __i2c_read_regs(I2CDev_t *dev, uint8_t dev_addr, uint8_t reg_addr, uint8_t num, uint8_t data[])
+static int8_t __i2c_read_regs(I2CDev_t *dev, uint8_t dev_addr, uint8_t reg_addr, uint16_t num, uint8_t data[])
 {
 	if (!dev || !dev->init_flag)
 		return -1;
 	
-	uint8_t i;
+	uint16_t i;
 	
 	__i2c_start(dev);								// I2C起始
 	__i2c_send_byte(dev, dev_addr << 1);			// 发送从机地址，读写位为0，表示即将写
@@ -338,7 +356,7 @@ static int __i2c_read_regs(I2CDev_t *dev, uint8_t dev_addr, uint8_t reg_addr, ui
  * @param	data		:	要写入寄存器的数据，范围：0x00~0xFF
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __i2c_write_reg(I2CDev_t *dev, uint8_t dev_addr, uint8_t reg_addr, uint8_t data)
+static int8_t __i2c_write_reg(I2CDev_t *dev, uint8_t dev_addr, uint8_t reg_addr, uint8_t data)
 {
 	if (!dev || !dev->init_flag)
 		return -1;
@@ -364,12 +382,12 @@ static int __i2c_write_reg(I2CDev_t *dev, uint8_t dev_addr, uint8_t reg_addr, ui
  * @param	data		:  要写入的寄存器数据
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __i2c_write_regs(I2CDev_t *dev, uint8_t dev_addr, uint8_t reg_addr, uint8_t num, uint8_t data[])
+static int8_t __i2c_write_regs(I2CDev_t *dev, uint8_t dev_addr, uint8_t reg_addr, uint16_t num, uint8_t data[])
 {
 	if (!dev || !dev->init_flag)
 		return -1;
 
-	uint8_t i;
+	uint16_t i;
 
     __i2c_start(dev);								// I2C起始
 	__i2c_send_byte(dev, dev_addr << 1);			// 发送从机地址，读写位为0，表示即将写入
@@ -393,7 +411,7 @@ static int __i2c_write_regs(I2CDev_t *dev, uint8_t dev_addr, uint8_t reg_addr, u
  * @param	dev   :  I2CDev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int __i2c_deinit(I2CDev_t *dev)
+static int8_t __i2c_deinit(I2CDev_t *dev)
 {    
     if (!dev || !dev->init_flag)
         return -1;
