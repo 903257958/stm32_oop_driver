@@ -13,17 +13,18 @@
 
 ## 驱动列表
 
-| 驱动模块             | 简要说明 |
+| 驱动模块              | 简要说明 |
 |----------------------|----------|
-| `xxx_adc`            | 多通道ADC采集 |
-| `xxx_eeprom_i2c_sw`  | 软件I2C读写EEPROM（AT24C02） |
-| `xxx_esp8266`        | （DEMO）ESP8266通过AT指令获取时间、天气等信息 |
-| `xxx_fmc`            | 内部Flash读写 |
 | `xxx_gpio`           | 基本GPIO输入输出操作 |
+| `xxx_led_and_delay`  | LED 控制 + 基于SysTick/定时器的延时函数 |
+| `xxx_timer_irq`      | 定时器中断 |
 | `xxx_key`            | 按键输入 + 延时消抖 |
 | `xxx_key_fifo`       | 按键 + 环形缓冲区 + 定时器中断扫描 + 定时器消抖 |
-| `xxx_led_and_delay`  | LED 控制 + 基于SysTick/定时器的延时函数 |
-| `xxx_ssd1306_i2c_sw` | 软件I2C驱动0.96寸OLED（SSD1306，128×64）|
-| `xxx_timer_irq`      | 定时器中断使用 |
+| `xxx_adc`            | 多通道ADC采集 |
 | `xxx_uart`           | 串口发送 + 空闲中断 + DMA 接收 |
+| `xxx_esp8266`        | （待优化）ESP8266通过AT指令获取时间、天气等信息 |
+| `xxx_eeprom_i2c_sw`  | 软件I2C读写EEPROM（AT24C02） |
+| `xxx_ssd1306_i2c_sw` | 软件I2C驱动0.96寸OLED（SSD1306，128×64）|
 | `xxx_w25qx_spi_hw`   | 硬件SPI读写外部Flash |
+| `xxx_fmc`            | 内部Flash读写 |
+| `xxx_rtc`            | RTC实时时钟 |
