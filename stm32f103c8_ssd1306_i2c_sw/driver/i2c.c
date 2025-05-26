@@ -87,7 +87,7 @@ static int8_t __i2c_deinit(I2CDev_t *dev);
  * @param	dev	:  I2CDev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-int8_t i2c_init(I2CDev_t *dev)
+int8_t i2c_sw_init(I2CDev_t *dev)
 {
 	if (!dev)
 		return -1;

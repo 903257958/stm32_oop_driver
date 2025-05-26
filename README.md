@@ -24,8 +24,11 @@
 | `xxx_uart`                | 串口发送 + 空闲中断 + DMA 接收 |
 | `xxx_esp8266`             | （待优化）ESP8266通过AT指令获取时间、天气等信息 |
 | `xxx_eeprom_i2c_sw`       | 软件I2C读写EEPROM（AT24C02） |
+| `xxx_mpu6050_i2c_sw`      | 软件I2C驱动MPU6050获取陀螺仪数据 |
+| `xxx_max30102_i2c_sw`     | 软件I2C驱动MAX30102获取心率血氧 |
 | `xxx_ssd1306_i2c_sw`      | 软件I2C驱动0.96寸OLED（SSD1306，128×64）|
 | `xxx_w25qx_spi_hw`        | 硬件SPI读写外部Flash |
 | `xxx_ssd1306_spi_hw_dma`  | 硬件SPI + DMA驱动0.96寸OLED（SSD1306，128×64）|
+| `xxx_st7735_spi_hw_dma`   | 硬件SPI + DMA驱动1.8寸LCD（ST7735，128×160）|
 | `xxx_fmc`                 | 内部Flash读写 |
 | `xxx_rtc`                 | RTC实时时钟 |

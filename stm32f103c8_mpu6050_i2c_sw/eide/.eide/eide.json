@@ -1,0 +1,325 @@
+{
+  "name": "Project",
+  "type": "ARM",
+  "dependenceList": [],
+  "srcDirs": [
+    ".eide/deps"
+  ],
+  "virtualFolder": {
+    "name": "<virtual_root>",
+    "files": [],
+    "folders": [
+      {
+        "name": "app",
+        "files": [
+          {
+            "path": "../app/main.c"
+          },
+          {
+            "path": "../app/main.h"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "name": "driver",
+        "files": [
+          {
+            "path": "../driver/delay.c"
+          },
+          {
+            "path": "../driver/delay.h"
+          },
+          {
+            "path": "../driver/i2c.c"
+          },
+          {
+            "path": "../driver/i2c.h"
+          },
+          {
+            "path": "../driver/mpu6050.c"
+          },
+          {
+            "path": "../driver/mpu6050.h"
+          },
+          {
+            "path": "../driver/uart.c"
+          },
+          {
+            "path": "../driver/uart.h"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "name": "firmware",
+        "files": [
+          {
+            "path": "../firmware/cmsis/core/core_cm3.c"
+          },
+          {
+            "path": "../firmware/cmsis/core/core_cm3.h"
+          },
+          {
+            "path": "../firmware/cmsis/device/startup_stm32f10x_md.s"
+          },
+          {
+            "path": "../firmware/cmsis/device/stm32f10x_conf.h"
+          },
+          {
+            "path": "../firmware/cmsis/device/stm32f10x_it.c"
+          },
+          {
+            "path": "../firmware/cmsis/device/stm32f10x_it.h"
+          },
+          {
+            "path": "../firmware/cmsis/device/stm32f10x.h"
+          },
+          {
+            "path": "../firmware/cmsis/device/system_stm32f10x.c"
+          },
+          {
+            "path": "../firmware/cmsis/device/system_stm32f10x.h"
+          },
+          {
+            "path": "../firmware/driver/src/misc.c"
+          },
+          {
+            "path": "../firmware/driver/src/stm32f10x_adc.c"
+          },
+          {
+            "path": "../firmware/driver/src/stm32f10x_bkp.c"
+          },
+          {
+            "path": "../firmware/driver/src/stm32f10x_can.c"
+          },
+          {
+            "path": "../firmware/driver/src/stm32f10x_cec.c"
+          },
+          {
+            "path": "../firmware/driver/src/stm32f10x_crc.c"
+          },
+          {
+            "path": "../firmware/driver/src/stm32f10x_dac.c"
+          },
+          {
+            "path": "../firmware/driver/src/stm32f10x_dbgmcu.c"
+          },
+          {
+            "path": "../firmware/driver/src/stm32f10x_dma.c"
+          },
+          {
+            "path": "../firmware/driver/src/stm32f10x_exti.c"
+          },
+          {
+            "path": "../firmware/driver/src/stm32f10x_flash.c"
+          },
+          {
+            "path": "../firmware/driver/src/stm32f10x_fsmc.c"
+          },
+          {
+            "path": "../firmware/driver/src/stm32f10x_gpio.c"
+          },
+          {
+            "path": "../firmware/driver/src/stm32f10x_i2c.c"
+          },
+          {
+            "path": "../firmware/driver/src/stm32f10x_iwdg.c"
+          },
+          {
+            "path": "../firmware/driver/src/stm32f10x_pwr.c"
+          },
+          {
+            "path": "../firmware/driver/src/stm32f10x_rcc.c"
+          },
+          {
+            "path": "../firmware/driver/src/stm32f10x_rtc.c"
+          },
+          {
+            "path": "../firmware/driver/src/stm32f10x_sdio.c"
+          },
+          {
+            "path": "../firmware/driver/src/stm32f10x_spi.c"
+          },
+          {
+            "path": "../firmware/driver/src/stm32f10x_tim.c"
+          },
+          {
+            "path": "../firmware/driver/src/stm32f10x_usart.c"
+          },
+          {
+            "path": "../firmware/driver/src/stm32f10x_wwdg.c"
+          }
+        ],
+        "folders": []
+      }
+    ]
+  },
+  "outDir": "build",
+  "deviceName": null,
+  "packDir": null,
+  "miscInfo": {
+    "uid": "f0d991e643dda7125867ce609531f363"
+  },
+  "targets": {
+    "Target 1": {
+      "excludeList": [],
+      "toolchain": "AC5",
+      "compileConfig": {
+        "cpuType": "Cortex-M3",
+        "floatingPointHardware": "none",
+        "scatterFilePath": "",
+        "useCustomScatterFile": false,
+        "storageLayout": {
+          "RAM": [
+            {
+              "tag": "RAM",
+              "id": 1,
+              "mem": {
+                "startAddr": "0x0",
+                "size": "0x0"
+              },
+              "isChecked": false,
+              "noInit": false
+            },
+            {
+              "tag": "RAM",
+              "id": 2,
+              "mem": {
+                "startAddr": "0x0",
+                "size": "0x0"
+              },
+              "isChecked": false,
+              "noInit": false
+            },
+            {
+              "tag": "RAM",
+              "id": 3,
+              "mem": {
+                "startAddr": "0x0",
+                "size": "0x0"
+              },
+              "isChecked": false,
+              "noInit": false
+            },
+            {
+              "tag": "IRAM",
+              "id": 1,
+              "mem": {
+                "startAddr": "0x20000000",
+                "size": "0x5000"
+              },
+              "isChecked": true,
+              "noInit": false
+            },
+            {
+              "tag": "IRAM",
+              "id": 2,
+              "mem": {
+                "startAddr": "0x0",
+                "size": "0x0"
+              },
+              "isChecked": false,
+              "noInit": false
+            }
+          ],
+          "ROM": [
+            {
+              "tag": "ROM",
+              "id": 1,
+              "mem": {
+                "startAddr": "0x0",
+                "size": "0x0"
+              },
+              "isChecked": false,
+              "isStartup": false
+            },
+            {
+              "tag": "ROM",
+              "id": 2,
+              "mem": {
+                "startAddr": "0x0",
+                "size": "0x0"
+              },
+              "isChecked": false,
+              "isStartup": false
+            },
+            {
+              "tag": "ROM",
+              "id": 3,
+              "mem": {
+                "startAddr": "0x0",
+                "size": "0x0"
+              },
+              "isChecked": false,
+              "isStartup": false
+            },
+            {
+              "tag": "IROM",
+              "id": 1,
+              "mem": {
+                "startAddr": "0x8000000",
+                "size": "0x10000"
+              },
+              "isChecked": true,
+              "isStartup": true
+            },
+            {
+              "tag": "IROM",
+              "id": 2,
+              "mem": {
+                "startAddr": "0x0",
+                "size": "0x0"
+              },
+              "isChecked": false,
+              "isStartup": false
+            }
+          ]
+        },
+        "options": "null"
+      },
+      "uploader": "OpenOCD",
+      "uploadConfig": {
+        "bin": "",
+        "target": "stm32f1x",
+        "interface": "stlink",
+        "baseAddr": "0x08000000"
+      },
+      "uploadConfigMap": {
+        "JLink": {
+          "bin": "",
+          "baseAddr": "",
+          "cpuInfo": {
+            "vendor": "null",
+            "cpuName": "null"
+          },
+          "proType": 1,
+          "speed": 8000,
+          "otherCmds": ""
+        }
+      },
+      "custom_dep": {
+        "name": "default",
+        "incList": [
+          "../app",
+          "../driver",
+          "../firmware/cmsis/core",
+          "../firmware/cmsis/device",
+          "../firmware/driver/inc",
+          "../third_lib/freertos/include",
+          "../third_lib/freertos/portable/RVDS/ARM_CM4F",
+          ".cmsis/include",
+          "../mdk/RTE/_Target 1",
+          ".eide/deps"
+        ],
+        "libList": [],
+        "sourceDirList": [],
+        "defineList": [
+          "STM32F10X_MD",
+          "USE_STDPERIPH_DRIVER"
+        ]
+      }
+    }
+  },
+  "version": "3.3"
+}

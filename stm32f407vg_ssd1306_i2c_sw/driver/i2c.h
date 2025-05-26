@@ -44,6 +44,6 @@ typedef struct I2CDev {
 	int8_t (*deinit)(struct I2CDev *dev);					// 去初始化
 }I2CDev_t;
 
-int8_t i2c_init(I2CDev_t *dev);
+int8_t i2c_sw_init(I2CDev_t *dev);
 
 #endif

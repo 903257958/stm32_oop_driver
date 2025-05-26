@@ -34,7 +34,7 @@ int8_t eeprom_init(EEPROMDev_t *dev)
 	priv_data->i2c.config.sda_pin = dev->config.sda_pin;
 	
 	/* 配置I2C */
-	i2c_init(&priv_data->i2c);
+	i2c_sw_init(&priv_data->i2c);
 	
 	/* 函数指针赋值 */
 	dev->write_byte = __eeprom_write_byte;

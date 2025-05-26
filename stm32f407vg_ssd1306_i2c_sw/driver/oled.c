@@ -81,7 +81,7 @@ int8_t oled_init(OLEDDev_t *dev)
 	priv_data->index = g_index++;
 	
 	/* 配置I2C */
-	i2c_init(&priv_data->i2c);
+	i2c_sw_init(&priv_data->i2c);
 	
 	/* 函数指针赋值 */
 	dev->update = __oled_update;
