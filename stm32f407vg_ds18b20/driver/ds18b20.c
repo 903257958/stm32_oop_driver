@@ -34,7 +34,7 @@
 
 #define __ds18b20_gpio_deinit(port)	GPIO_DeInit(port)
 	
-#elif defined(STM32F40_41xxx)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	
 #define	__ds18b20_config_clock_enable(port)		{	if(port == GPIOA)     	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);} \
 													else if(port == GPIOB)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);} \

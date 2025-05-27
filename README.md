@@ -25,6 +25,7 @@
 | `xxx_adc`                 | 多通道ADC采集 |
 | `xxx_uart`                | 串口发送 + 空闲中断 + DMA 接收 |
 | `xxx_esp8266`             | （待优化）ESP8266通过AT指令获取时间、天气等信息 |
+| `xxx_i2c_sw_bmp280`       | 软件I2C驱动BMP280获取温度与气压值 |
 | `xxx_i2c_sw_eeprom`       | 软件I2C读写EEPROM（AT24C02） |
 | `xxx_i2c_sw_mpu6050`      | 软件I2C驱动MPU6050获取陀螺仪数据 |
 | `xxx_i2c_sw_max30102`     | 软件I2C驱动MAX30102获取心率血氧 |
@@ -37,3 +38,4 @@
 | `xxx_rtc`                 | RTC实时时钟 |
 | `xxx_dht11`               | DHT11测量温湿度 |
 | `xxx_ds18b20`             | DS18B20测量温度 |
+| `xxx_stepper_motor`       | 步进电机 |
