@@ -20,15 +20,17 @@
 | `xxx_timer_irq`           | 定时器中断 |
 | `xxx_key`                 | 按键输入 + 延时消抖 |
 | `xxx_key_fifo`            | 按键 + 环形缓冲区 + 定时器中断扫描 + 定时器消抖 |
+| `xxx_pwm_servo`           | PWM驱动舵机 |
+| `xxx_pwm_rgb`             | PWM驱动RGB灯 |
 | `xxx_adc`                 | 多通道ADC采集 |
 | `xxx_uart`                | 串口发送 + 空闲中断 + DMA 接收 |
 | `xxx_esp8266`             | （待优化）ESP8266通过AT指令获取时间、天气等信息 |
-| `xxx_eeprom_i2c_sw`       | 软件I2C读写EEPROM（AT24C02） |
-| `xxx_mpu6050_i2c_sw`      | 软件I2C驱动MPU6050获取陀螺仪数据 |
-| `xxx_max30102_i2c_sw`     | 软件I2C驱动MAX30102获取心率血氧 |
-| `xxx_ssd1306_i2c_sw`      | 软件I2C驱动0.96寸OLED（SSD1306，128×64）|
-| `xxx_w25qx_spi_hw`        | 硬件SPI读写外部Flash |
-| `xxx_ssd1306_spi_hw_dma`  | 硬件SPI + DMA驱动0.96寸OLED（SSD1306，128×64）|
-| `xxx_st7735_spi_hw_dma`   | 硬件SPI + DMA驱动1.8寸LCD（ST7735，128×160）|
+| `xxx_i2c_sw_eeprom`       | 软件I2C读写EEPROM（AT24C02） |
+| `xxx_i2c_sw_mpu6050`      | 软件I2C驱动MPU6050获取陀螺仪数据 |
+| `xxx_i2c_sw_max30102`     | 软件I2C驱动MAX30102获取心率血氧 |
+| `xxx_i2c_sw_ssd1306`      | 软件I2C驱动0.96寸OLED（SSD1306，128×64）|
+| `xxx_spi_hw_w25qx`        | 硬件SPI读写外部Flash |
+| `xxx_spi_hw_dma_ssd1306`  | 硬件SPI + DMA驱动0.96寸OLED（SSD1306，128×64）|
+| `xxx_spi_hw_dma_st7735`   | 硬件SPI + DMA驱动1.8寸LCD（ST7735，128×160）|
 | `xxx_fmc`                 | 内部Flash读写 |
 | `xxx_rtc`                 | RTC实时时钟 |
