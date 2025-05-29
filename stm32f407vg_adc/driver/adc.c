@@ -2,19 +2,19 @@
 
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 
-#define	__adc_config_clock_enable(adcx)	{	if(adcx == ADC1)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);} \
-											else if(adcx == ADC2)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC2, ENABLE);} \
-											else if(adcx == ADC3)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC3, ENABLE);} \
-										}
+#define	__adc_clock_enable(adcx)	{	if(adcx == ADC1)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);} \
+										else if(adcx == ADC2)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC2, ENABLE);} \
+										else if(adcx == ADC3)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC3, ENABLE);} \
+									}
 
-#define	__adc_config_gpio_clock_enable(port)	{	if(port == GPIOA)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);} \
-													else if(port == GPIOB)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);} \
-													else if(port == GPIOC)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);} \
-													else if(port == GPIOD)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);} \
-													else if(port == GPIOE)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);} \
-													else if(port == GPIOF)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE);} \
-													else if(port == GPIOG)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, ENABLE);} \
-												}
+#define	__adc_io_clock_enable(port)	{	if(port == GPIOA)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);} \
+										else if(port == GPIOB)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);} \
+										else if(port == GPIOC)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);} \
+										else if(port == GPIOD)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);} \
+										else if(port == GPIOE)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);} \
+										else if(port == GPIOF)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE);} \
+										else if(port == GPIOG)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, ENABLE);} \
+									}
 
 #define	__adc_config_io_in_an(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
 												GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN; \
@@ -25,19 +25,19 @@
 
 #elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 
-#define	__adc_config_clock_enable(adcx)	{	if(adcx == ADC1)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);} \
-											else if(adcx == ADC2)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC2, ENABLE);} \
-											else if(adcx == ADC3)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC3, ENABLE);} \
-										}
+#define	__adc_clock_enable(adcx)	{	if(adcx == ADC1)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);} \
+										else if(adcx == ADC2)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC2, ENABLE);} \
+										else if(adcx == ADC3)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC3, ENABLE);} \
+									}
 
-#define	__adc_config_gpio_clock_enable(port)	{	if(port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);} \
-													else if(port == GPIOB)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);} \
-													else if(port == GPIOC)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);} \
-													else if(port == GPIOD)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);} \
-													else if(port == GPIOE)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);} \
-													else if(port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);} \
-													else if(port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);} \
-												}
+#define	__adc_io_clock_enable(port)	{	if(port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);} \
+										else if(port == GPIOB)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);} \
+										else if(port == GPIOC)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);} \
+										else if(port == GPIOD)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);} \
+										else if(port == GPIOE)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);} \
+										else if(port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);} \
+										else if(port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);} \
+									}
 
 #define	__adc_config_io_in_an(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
 												GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN; \
@@ -49,27 +49,28 @@
 
 #endif
 
-static int8_t __adc_get_val(ADCDev_t *dev, uint16_t *val);
-static int8_t __adc_deinit(ADCDev_t *dev);
+/* 函数声明 */
+static int8_t __adc_get_val(adc_dev_t *dev, uint16_t *val);
+static int8_t __adc_deinit(adc_dev_t *dev);
 
 /******************************************************************************
  * @brief	初始化ADC
- * @param	dev	:  ADCDev_t 结构体指针
+ * @param	dev	:  adc_dev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-int8_t adc_init(ADCDev_t *dev)
+int8_t adc_init(adc_dev_t *dev)
 {
 	if (!dev)
 		return -1;
 	
 	/* 配置时钟与GPIO */	
-	__adc_config_gpio_clock_enable(dev->config.port);
+	__adc_io_clock_enable(dev->config.port);
 	__adc_config_io_in_an(dev->config.port, dev->config.pin);
 	
 	/* 配置ADC */
 	#if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 	/* 开启ADC时钟 */
-	__adc_config_clock_enable(dev->config.adcx);
+	__adc_clock_enable(dev->config.adcx);
 
 	/* 设置ADC时钟，最大时钟配置为36MHz */
 	RCC_ADCCLKConfig(RCC_PCLK2_Div6);	// 选择时钟6分频，ADCCLK = 72MHz / 6 = 12MHz
@@ -95,7 +96,7 @@ int8_t adc_init(ADCDev_t *dev)
 
 	#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	/* 开启ADC时钟 */
-	__adc_config_clock_enable(dev->config.adcx);
+	__adc_clock_enable(dev->config.adcx);
 
 	/* ADC通用初始化 */
 	ADC_CommonInitTypeDef ADC_CommonInitStructure;
@@ -130,11 +131,11 @@ int8_t adc_init(ADCDev_t *dev)
 
 /******************************************************************************
  * @brief	获取ADC转换值
- * @param	dev   	:  ADCDev_t 结构体指针
- * @param	val   	:  ADC转换值
+ * @param	dev	:  adc_dev_t 结构体指针
+ * @param	val	:  ADC转换值
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int8_t __adc_get_val(ADCDev_t *dev, uint16_t *val)
+static int8_t __adc_get_val(adc_dev_t *dev, uint16_t *val)
 {
 	if (!dev || !dev->init_flag)
 		return -1;
@@ -158,10 +159,10 @@ static int8_t __adc_get_val(ADCDev_t *dev, uint16_t *val)
 
 /******************************************************************************
  * @brief	去初始化ADC
- * @param	dev   :  ADCDev_t 结构体指针
+ * @param	dev	:  adc_dev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int8_t __adc_deinit(ADCDev_t *dev)
+static int8_t __adc_deinit(adc_dev_t *dev)
 {
 	if (!dev || !dev->init_flag)
 		return -1;

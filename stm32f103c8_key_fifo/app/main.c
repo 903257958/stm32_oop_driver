@@ -1,10 +1,9 @@
 #include "main.h"
 
-UARTDev_t debug = {.config = {USART1, 115200, GPIOA, GPIO_Pin_9, GPIOA, GPIO_Pin_10}};
-
-KeyDev_t key1 = {.config = {TIM2, GPIOB, GPIO_Pin_12, GPIO_LEVEL_LOW, 1}};
-KeyDev_t key2 = {.config = {TIM2, GPIOA, GPIO_Pin_8, GPIO_LEVEL_LOW, 2}};
-KeyDev_t key3 = {.config = {TIM2, GPIOB, GPIO_Pin_5, GPIO_LEVEL_LOW, 3}};
+uart_dev_t debug = {.config = {USART1, 115200, GPIOA, GPIO_Pin_9, GPIOA, GPIO_Pin_10}};
+key_dev_t  key1  = {.config = {TIM2, GPIOB, GPIO_Pin_12, GPIO_LEVEL_LOW, 1}};
+key_dev_t  key2  = {.config = {TIM2, GPIOA, GPIO_Pin_8, GPIO_LEVEL_LOW, 2}};
+key_dev_t  key3  = {.config = {TIM2, GPIOB, GPIO_Pin_5, GPIO_LEVEL_LOW, 3}};
 
 int main(void)
 {

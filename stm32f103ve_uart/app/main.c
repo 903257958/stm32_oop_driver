@@ -1,9 +1,9 @@
 #include "main.h"
 
-UARTDev_t uart1 = {.config = {USART1, 115200, GPIOA, GPIO_Pin_9, GPIOA, GPIO_Pin_10}};
-UARTDev_t uart2 = {.config = {USART2, 115200, GPIOA, GPIO_Pin_2, GPIOA, GPIO_Pin_3}};
-UARTDev_t uart3 = {.config = {USART3, 115200, GPIOB, GPIO_Pin_10, GPIOB, GPIO_Pin_11}};
-UARTDev_t uart4 = {.config = {UART4, 115200, GPIOC, GPIO_Pin_10, GPIOC, GPIO_Pin_11}};
+uart_dev_t uart1 = {.config = {USART1, 115200, GPIOA, GPIO_Pin_9, GPIOA, GPIO_Pin_10}};
+uart_dev_t uart2 = {.config = {USART2, 115200, GPIOA, GPIO_Pin_2, GPIOA, GPIO_Pin_3}};
+uart_dev_t uart3 = {.config = {USART3, 115200, GPIOB, GPIO_Pin_10, GPIOB, GPIO_Pin_11}};
+uart_dev_t uart4 = {.config = {UART4, 115200, GPIOC, GPIO_Pin_10, GPIOC, GPIO_Pin_11}};
 
 char *uart1_rx_data;
 char *uart2_rx_data;

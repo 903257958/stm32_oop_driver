@@ -37,24 +37,6 @@
             "path": "../driver/esp8266.h"
           },
           {
-            "path": "../driver/i2c.c"
-          },
-          {
-            "path": "../driver/i2c.h"
-          },
-          {
-            "path": "../driver/oled_data.c"
-          },
-          {
-            "path": "../driver/oled_data.h"
-          },
-          {
-            "path": "../driver/oled.c"
-          },
-          {
-            "path": "../driver/oled.h"
-          },
-          {
             "path": "../driver/uart.c"
           },
           {

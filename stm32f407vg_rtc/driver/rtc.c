@@ -1,24 +1,24 @@
 #include "rtc.h"
 
 /* 函数声明 */
-static uint8_t __rtc_calc_week(RTCTime_t *time);
-static int8_t __rtc_set_time(RTCDev_t *dev, RTCTime_t *time);
-static int8_t __rtc_get_time(RTCDev_t *dev);
-static int8_t __rtc_deinit(RTCDev_t *dev);
+static uint8_t __rtc_calc_week(rtc_time_t *time);
+static int8_t __rtc_set_time(rtc_dev_t *dev, rtc_time_t *time);
+static int8_t __rtc_get_time(rtc_dev_t *dev);
+static int8_t __rtc_deinit(rtc_dev_t *dev);
 
 /******************************************************************************
  * @brief	初始化RTC
- * @param	dev	:  RTCDev_t 结构体指针
+ * @param	dev	:	rtc_dev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-int8_t rtc_init(RTCDev_t *dev)
+int8_t rtc_init(rtc_dev_t *dev)
 {
 	if (!dev)
 		return -1;
 
 	dev->init_flag = true;
 
-	RTCTime_t rtc_time = {
+	rtc_time_t rtc_time = {
 		.year = dev->config.year,
 		.month = dev->config.month,
 		.day = dev->config.day,
@@ -102,11 +102,11 @@ int8_t rtc_init(RTCDev_t *dev)
 
 /******************************************************************************
  * @brief	RTC设置时间
- * @param	dev	:  RTCDev_t 结构体指针
- * @param	time	:  RTCTime_t 结构体指针
+ * @param	dev		:	rtc_dev_t 结构体指针
+ * @param	time	:	rtc_time_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int8_t __rtc_set_time(RTCDev_t *dev, RTCTime_t *time)
+static int8_t __rtc_set_time(rtc_dev_t *dev, rtc_time_t *time)
 {
 	if (!dev || !dev->init_flag)
 		return -1;
@@ -161,10 +161,10 @@ static int8_t __rtc_set_time(RTCDev_t *dev, RTCTime_t *time)
 
 /******************************************************************************
  * @brief	RTC读取时间
- * @param	dev	:  RTCDev_t 结构体指针
+ * @param	dev	:	rtc_dev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int8_t __rtc_get_time(RTCDev_t *dev)
+static int8_t __rtc_get_time(rtc_dev_t *dev)
 {
 	if (!dev || !dev->init_flag)
 		return -1;
@@ -209,10 +209,10 @@ static int8_t __rtc_get_time(RTCDev_t *dev)
 
 /******************************************************************************
  * @brief	去初始化RTC
- * @param	dev	:  RTCDev_t 结构体指针
+ * @param	dev	:	rtc_dev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int8_t __rtc_deinit(RTCDev_t *dev)
+static int8_t __rtc_deinit(rtc_dev_t *dev)
 {
 	if (!dev || !dev->init_flag)
 		return -1;
@@ -224,10 +224,10 @@ static int8_t __rtc_deinit(RTCDev_t *dev)
 
 /******************************************************************************
  * @brief	RTC根据日期计算星期
- * @param	time	:  RTCTime_t 结构体指针
+ * @param	time	:	rtc_time_t 结构体指针
  * @return	当前星期
  ******************************************************************************/
-static uint8_t __rtc_calc_week(RTCTime_t *time)
+static uint8_t __rtc_calc_week(rtc_time_t *time)
 {
     uint16_t year = time->year;
     uint8_t month = time->month;

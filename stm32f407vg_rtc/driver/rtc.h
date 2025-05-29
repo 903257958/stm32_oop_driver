@@ -1,5 +1,5 @@
-#ifndef __RTC_H
-#define __RTC_H
+#ifndef RTC_H
+#define RTC_H
 
 #include <stdint.h>
 #include <stdio.h>
@@ -23,7 +23,7 @@ typedef struct {
     uint8_t hour;
     uint8_t minute;
     uint8_t second;
-}RTCConfig_t;
+} rtc_config_t;
 
 typedef struct {
     uint16_t year;
@@ -33,17 +33,17 @@ typedef struct {
     uint8_t minute;
     uint8_t second;
     uint8_t week;
-}RTCTime_t;
+} rtc_time_t;
 
-typedef struct RTCDev {
-    RTCConfig_t config;
-    RTCTime_t time;
+typedef struct rtc_dev {
+    rtc_config_t config;
+    rtc_time_t time;
 	bool init_flag;							// 初始化标志
-    int8_t (*set_time)(struct RTCDev *dev, RTCTime_t *time);
-    int8_t (*get_time)(struct RTCDev *dev);
-	int8_t (*deinit)(struct RTCDev *dev);	// 去初始化
-}RTCDev_t;
+    int8_t (*set_time)(struct rtc_dev *dev, rtc_time_t *time);
+    int8_t (*get_time)(struct rtc_dev *dev);
+	int8_t (*deinit)(struct rtc_dev *dev);	// 去初始化
+} rtc_dev_t;
 
-int8_t rtc_init(RTCDev_t *dev);
+int8_t rtc_init(rtc_dev_t *dev);
 
 #endif

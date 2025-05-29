@@ -19,38 +19,38 @@
 
 /* RGB私有数据结构体 */
 typedef struct {
-	PWMDev_t red_pwm;	// R PWM
-	PWMDev_t green_pwm;	// G PWM
-	PWMDev_t blue_pwm;	// B PWM
-}RGBPrivData_t;	
+	pwm_dev_t red_pwm;	// R PWM
+	pwm_dev_t green_pwm;// G PWM
+	pwm_dev_t blue_pwm;	// B PWM
+} rgb_priv_data_t;	
 
 /* 函数声明 */				
-static int8_t __rgb_red(RGBDev_t *dev);
-static int8_t __rgb_yellow(RGBDev_t *dev);
-static int8_t __rgb_green(RGBDev_t *dev);
-static int8_t __rgb_blue(RGBDev_t *dev);
-static int8_t __rgb_white(RGBDev_t *dev);
-static int8_t __rgb_off(RGBDev_t *dev);
-static int8_t __rgb_set_color(RGBDev_t *dev, uint8_t red, uint8_t green, uint8_t blue);
-static int8_t __rgb_next_rainbow_color(struct RGBDev *dev, uint8_t *red, uint8_t *green, uint8_t *blue);
-static int8_t __rgb_deinit(RGBDev_t *dev);
+static int8_t __rgb_red(rgb_dev_t *dev);
+static int8_t __rgb_yellow(rgb_dev_t *dev);
+static int8_t __rgb_green(rgb_dev_t *dev);
+static int8_t __rgb_blue(rgb_dev_t *dev);
+static int8_t __rgb_white(rgb_dev_t *dev);
+static int8_t __rgb_off(rgb_dev_t *dev);
+static int8_t __rgb_set_color(rgb_dev_t *dev, uint8_t red, uint8_t green, uint8_t blue);
+static int8_t __rgb_next_rainbow_color(struct rgb_dev *dev, uint8_t *red, uint8_t *green, uint8_t *blue);
+static int8_t __rgb_deinit(rgb_dev_t *dev);
 
 /******************************************************************************
  * @brief	初始化RGB
- * @param	dev	:	RGBDev_t 结构体指针
+ * @param	dev	:	rgb_dev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-int8_t rgb_init(RGBDev_t *dev)
+int8_t rgb_init(rgb_dev_t *dev)
 {
 	if (!dev)
 		return -1;
 
 	/* 保存私有数据 */
-	dev->priv_data = (RGBPrivData_t *)malloc(sizeof(RGBPrivData_t));
+	dev->priv_data = (rgb_priv_data_t *)malloc(sizeof(rgb_priv_data_t));
 	if (!dev->priv_data)
 		return -1;
 	
-	RGBPrivData_t *priv_data = (RGBPrivData_t *)dev->priv_data;
+	rgb_priv_data_t *priv_data = (rgb_priv_data_t *)dev->priv_data;
 
 	priv_data->red_pwm.config.timx = dev->config.red_timx;
 	priv_data->red_pwm.config.oc_channel = dev->config.red_oc_channel;
@@ -98,10 +98,10 @@ int8_t rgb_init(RGBDev_t *dev)
 
 /******************************************************************************
  * @brief	RGB红色
- * @param	dev		：	RGBDev_t 结构体指针
+ * @param	dev	:	rgb_dev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int8_t __rgb_red(RGBDev_t *dev)
+static int8_t __rgb_red(rgb_dev_t *dev)
 {
 	if (!dev || !dev->init_flag)
 		return -1;
@@ -113,10 +113,10 @@ static int8_t __rgb_red(RGBDev_t *dev)
 
 /******************************************************************************
  * @brief	RGB黄色
- * @param	dev		：	RGBDev_t 结构体指针
+ * @param	dev	:	rgb_dev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int8_t __rgb_yellow(RGBDev_t *dev)
+static int8_t __rgb_yellow(rgb_dev_t *dev)
 {
 	if (!dev || !dev->init_flag)
 		return -1;
@@ -128,10 +128,10 @@ static int8_t __rgb_yellow(RGBDev_t *dev)
 
 /******************************************************************************
  * @brief	RGB绿色
- * @param	dev		：	RGBDev_t 结构体指针
+ * @param	dev	:	rgb_dev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int8_t __rgb_green(RGBDev_t *dev)
+static int8_t __rgb_green(rgb_dev_t *dev)
 {
 	if (!dev || !dev->init_flag)
 		return -1;
@@ -143,10 +143,10 @@ static int8_t __rgb_green(RGBDev_t *dev)
 
 /******************************************************************************
  * @brief	RGB蓝色
- * @param	dev		：	RGBDev_t 结构体指针
+ * @param	dev	:	rgb_dev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int8_t __rgb_blue(RGBDev_t *dev)
+static int8_t __rgb_blue(rgb_dev_t *dev)
 {
 	if (!dev || !dev->init_flag)
 		return -1;
@@ -158,10 +158,10 @@ static int8_t __rgb_blue(RGBDev_t *dev)
 
 /******************************************************************************
  * @brief	RGB白色
- * @param	dev		：	RGBDev_t 结构体指针
+ * @param	dev	:	rgb_dev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int8_t __rgb_white(RGBDev_t *dev)
+static int8_t __rgb_white(rgb_dev_t *dev)
 {
 	if (!dev || !dev->init_flag)
 		return -1;
@@ -173,10 +173,10 @@ static int8_t __rgb_white(RGBDev_t *dev)
 
 /******************************************************************************
  * @brief	RGB熄灭
- * @param	dev		：	RGBDev_t 结构体指针
+ * @param	dev	:	rgb_dev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int8_t __rgb_off(RGBDev_t *dev)
+static int8_t __rgb_off(rgb_dev_t *dev)
 {
 	if (!dev || !dev->init_flag)
 		return -1;
@@ -188,18 +188,18 @@ static int8_t __rgb_off(RGBDev_t *dev)
 
 /******************************************************************************
  * @brief	RGB设置颜色
- * @param	dev		：	RGBDev_t 结构体指针
+ * @param	dev		:	rgb_dev_t 结构体指针
  * @param	red		：	红色RGB值，范围：0~255
  * @param	green	：	绿色RGB值，范围：0~255
  * @param	blue	：	蓝色RGB值，范围：0~255
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int8_t __rgb_set_color(RGBDev_t *dev, uint8_t red, uint8_t green, uint8_t blue)
+static int8_t __rgb_set_color(rgb_dev_t *dev, uint8_t red, uint8_t green, uint8_t blue)
 {
 	if (!dev || !dev->init_flag)
 		return -1;
 
-	RGBPrivData_t *priv_data = (RGBPrivData_t *)dev->priv_data;
+	rgb_priv_data_t *priv_data = (rgb_priv_data_t *)dev->priv_data;
 
 	if (dev->config.off_level == GPIO_LEVEL_HIGH)
 	{
@@ -228,13 +228,13 @@ static int8_t __rgb_set_color(RGBDev_t *dev, uint8_t red, uint8_t green, uint8_t
 
 /******************************************************************************
  * @brief	RGB彩虹的下一个颜色，用于彩色循环
- * @param	dev		：	RGBDev_t 结构体指针
+ * @param	dev		:	rgb_dev_t 结构体指针
  * @param	red		：	红色RGB值，范围：0~255
  * @param	green	：	绿色RGB值，范围：0~255
  * @param	blue	：	蓝色RGB值，范围：0~255
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int8_t __rgb_next_rainbow_color(struct RGBDev *dev, uint8_t *red, uint8_t *green, uint8_t *blue)
+static int8_t __rgb_next_rainbow_color(struct rgb_dev *dev, uint8_t *red, uint8_t *green, uint8_t *blue)
 {
 	if (!dev || !dev->init_flag)
 		return -1;
@@ -269,15 +269,15 @@ static int8_t __rgb_next_rainbow_color(struct RGBDev *dev, uint8_t *red, uint8_t
 
 /******************************************************************************
  * @brief	去初始化RGB
- * @param	dev   :  RGBDev_t 结构体指针
+ * @param	dev	:	rgb_dev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int8_t __rgb_deinit(RGBDev_t *dev)
+static int8_t __rgb_deinit(rgb_dev_t *dev)
 {
 	if (!dev || !dev->init_flag)
 		return -1;
 	
-	RGBPrivData_t *priv_data = (RGBPrivData_t *)dev->priv_data;
+	rgb_priv_data_t *priv_data = (rgb_priv_data_t *)dev->priv_data;
 
 	/* 去初始化PWM */
 	priv_data->red_pwm.deinit(&priv_data->red_pwm);

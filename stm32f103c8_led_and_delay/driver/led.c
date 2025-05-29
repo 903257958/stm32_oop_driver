@@ -2,19 +2,19 @@
 
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 	
-#define	__led_config_gpio_clock_enable(port)	{	if(port == GPIOA)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);} \
-													else if(port == GPIOB)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);} \
-													else if(port == GPIOC)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);} \
-													else if(port == GPIOD)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);} \
-													else if(port == GPIOE)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);} \
-													else if(port == GPIOF)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE);} \
-													else if(port == GPIOG)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, ENABLE);} \
-												}
+#define	__led_io_clock_enable(port)	{	if (port == GPIOA)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);} \
+										else if (port == GPIOB)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);} \
+										else if (port == GPIOC)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);} \
+										else if (port == GPIOD)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);} \
+										else if (port == GPIOE)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);} \
+										else if (port == GPIOF)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE);} \
+										else if (port == GPIOG)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, ENABLE);} \
+									}
 
 #define	__led_config_io_out_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
 												GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; \
 												GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; \
-												GPIO_InitStructure.GPIO_Pin = pin ; \
+												GPIO_InitStructure.GPIO_Pin = pin; \
 												GPIO_Init(port, &GPIO_InitStructure); \
 											}
 
@@ -22,14 +22,14 @@
 
 #elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 
-#define	__led_config_gpio_clock_enable(port)	{	if(port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);} \
-													else if(port == GPIOB)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);} \
-													else if(port == GPIOC)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);} \
-													else if(port == GPIOD)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);} \
-													else if(port == GPIOE)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);} \
-													else if(port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);} \
-													else if(port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);} \
-												}
+#define	__led_io_clock_enable(port)	{	if (port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);} \
+										else if (port == GPIOB)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);} \
+										else if (port == GPIOC)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);} \
+										else if (port == GPIOD)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);} \
+										else if (port == GPIOE)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);} \
+										else if (port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);} \
+										else if (port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);} \
+									}
 
 #define	__led_config_io_out_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
 												GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT; \
@@ -46,34 +46,35 @@
 
 /* LED私有数据结构体 */
 typedef struct {
-	bool status;		// 状态，false灭/true亮，默认灭
-}LEDPrivData_t;
+	bool status;	// 状态，false灭/true亮，默认灭
+} led_priv_data_t;
 
-static int8_t __led_on(LEDDev_t *dev);
-static int8_t __led_off(LEDDev_t *dev);
-static int8_t __led_get_status(LEDDev_t *dev);
-static int8_t __led_toggle(LEDDev_t *dev);
-static int8_t __led_deinit(LEDDev_t *dev);
+/* 函数声明 */
+static int8_t __led_on(led_dev_t *dev);
+static int8_t __led_off(led_dev_t *dev);
+static bool __led_get_status(led_dev_t *dev);
+static int8_t __led_toggle(led_dev_t *dev);
+static int8_t __led_deinit(led_dev_t *dev);
 
 /******************************************************************************
  * @brief	初始化LED
- * @param	dev	:  LEDDev_t 结构体指针
+ * @param	dev	:	led_dev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-int8_t led_init(LEDDev_t *dev)
+int8_t led_init(led_dev_t *dev)
 {
 	if (!dev)
 		return -1;
 	
 	/* 初始化私有数据 */
-	dev->priv_data = (LEDPrivData_t *)malloc(sizeof(LEDPrivData_t));
+	dev->priv_data = (led_priv_data_t *)malloc(sizeof(led_priv_data_t));
 	if (!dev->priv_data)
 		return -1;
 	
-	LEDPrivData_t *priv_data = (LEDPrivData_t *)dev->priv_data;
+	led_priv_data_t *priv_data = (led_priv_data_t *)dev->priv_data;
 	
 	/* 配置时钟与GPIO */	
-	__led_config_gpio_clock_enable(dev->config.port);
+	__led_io_clock_enable(dev->config.port);
 	__led_config_io_out_pp(dev->config.port, dev->config.pin);
 	
 	/* 函数指针赋值 */
@@ -94,12 +95,12 @@ int8_t led_init(LEDDev_t *dev)
 
 /******************************************************************************
  * @brief	打开LED
- * @param	dev   :  LEDDev_t 结构体指针
+ * @param	dev	:	led_dev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int8_t __led_on(LEDDev_t *dev)
+static int8_t __led_on(led_dev_t *dev)
 {
-	LEDPrivData_t *priv_data = (LEDPrivData_t *)dev->priv_data;
+	led_priv_data_t *priv_data = (led_priv_data_t *)dev->priv_data;
 	
 	if (!dev || !dev->init_flag)
 		return -1;
@@ -112,12 +113,12 @@ static int8_t __led_on(LEDDev_t *dev)
 
 /******************************************************************************
  * @brief	关闭LED
- * @param	dev   :  LEDDev_t 结构体指针
+ * @param	dev	:	led_dev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int8_t __led_off(LEDDev_t *dev)
+static int8_t __led_off(led_dev_t *dev)
 {
-	LEDPrivData_t *priv_data = (LEDPrivData_t *)dev->priv_data;
+	led_priv_data_t *priv_data = (led_priv_data_t *)dev->priv_data;
 	
 	if (!dev || !dev->init_flag)
 		return -1;
@@ -130,30 +131,27 @@ static int8_t __led_off(LEDDev_t *dev)
 
 /******************************************************************************
  * @brief	获取LED的状态
- * @param	dev   :  LEDDev_t 结构体指针
- * @return	0, 表示成功, 其他值表示失败
+ * @param	dev	:	led_dev_t 结构体指针
+ * @return	状态
  ******************************************************************************/
-static int8_t __led_get_status(LEDDev_t *dev)
+static bool __led_get_status(led_dev_t *dev)
 {
-	LEDPrivData_t *priv_data = (LEDPrivData_t *)dev->priv_data;
-	
-	if (!dev || !dev->init_flag)
-		return -1;
+	led_priv_data_t *priv_data = (led_priv_data_t *)dev->priv_data;
 	
 	return priv_data->status;
 }
 
 /******************************************************************************
  * @brief	翻转LED
- * @param	dev   :  LEDDev_t 结构体指针
+ * @param	dev	:	led_dev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int8_t __led_toggle(LEDDev_t *dev)
+static int8_t __led_toggle(led_dev_t *dev)
 {
 	if (!dev || !dev->init_flag)
 		return -1;
 	
-	if(dev->get_status(dev))
+	if (dev->get_status(dev))
 	{
 		dev->off(dev);
 	}
@@ -167,10 +165,10 @@ static int8_t __led_toggle(LEDDev_t *dev)
 
 /******************************************************************************
  * @brief	去初始化LED
- * @param	dev   :  LEDDev_t 结构体指针
+ * @param	dev	:	led_dev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int8_t __led_deinit(LEDDev_t *dev)
+static int8_t __led_deinit(led_dev_t *dev)
 {
 	if (!dev || !dev->init_flag)
 		return -1;

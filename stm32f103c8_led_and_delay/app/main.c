@@ -1,14 +1,16 @@
 #include "main.h"
 
 #if !USE_FREERTOS
-LEDDev_t led = {.config = {GPIOC, GPIO_Pin_13, GPIO_LEVEL_LOW}};
+led_dev_t led = {.config = {GPIOC, GPIO_Pin_13, GPIO_LEVEL_LOW}};
 
 int main(void)
 {
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
+
     delay_init(72);
 	led_init(&led);
 	
-	while(1)
+	while (1)
 	{
 		led.toggle(&led);
 		delay_ms(500);
@@ -16,15 +18,17 @@ int main(void)
 }
 
 #else
-TimerDev_t timer_delay = {.config = {TIM4, 71, 49999, NULL}}; // 用于FreeRTOS下的微秒级延时，计数周期1us
-LEDDev_t led = {.config = {GPIOC, GPIO_Pin_13, GPIO_LEVEL_HIGH}};
+timer_dev_t timer_delay = {.config = {TIM4, 71, 49999, NULL}}; // 用于FreeRTOS下的微秒级延时，计数周期1us
+led_dev_t 	led 		= {.config = {GPIOC, GPIO_Pin_13, GPIO_LEVEL_HIGH}};
 
 int main(void)
 {
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
+
     delay_init(&timer_delay);
 	led_init(&led);
 	
-	while(1)
+	while (1)
 	{
 		led.toggle(&led);
 		delay_ms(500);

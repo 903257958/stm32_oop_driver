@@ -1,9 +1,11 @@
 #include "main.h"
 
-LCDDev_t lcd;
+lcd_dev_t lcd;
 
 int main(void)
 {
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
+
 	delay_init(168);
 	lcd_init(&lcd);
 

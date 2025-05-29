@@ -1,4 +1,3 @@
-#include "delay.h"
 #include "esp8266.h"
 
 #define REV_OK		0	// 接收完成标志
@@ -16,27 +15,27 @@ typedef struct {
     uint8_t hour;
     uint8_t minute;
     uint8_t second;
-}Time_t;
+} time_t;
 
 /* 函数声明 */
-static int8_t __esp8266_clear(ESP8266Dev_t *dev);
-static int8_t __esp8266_send_cmd(ESP8266Dev_t *dev, char *cmd, char *res);
-static int8_t __esp8266_send_data(ESP8266Dev_t *dev, unsigned char *data, unsigned short len);
-static uint8_t *__esp8266_get_ipd(ESP8266Dev_t *dev, unsigned short timeout);
-static int8_t __esp8266_get_beijing_time(ESP8266Dev_t *dev, uint16_t *year, uint8_t *month, uint8_t *day, uint8_t *hour, uint8_t *minute, uint8_t *second);
-static int8_t __esp8266_get_weather(ESP8266Dev_t *dev);
-static int8_t __esp8266_deinit(ESP8266Dev_t *dev);
+static int8_t __esp8266_clear(esp8266_dev_t *dev);
+static int8_t __esp8266_send_cmd(esp8266_dev_t *dev, char *cmd, char *res);
+static int8_t __esp8266_send_data(esp8266_dev_t *dev, unsigned char *data, unsigned short len);
+static uint8_t *__esp8266_get_ipd(esp8266_dev_t *dev, unsigned short timeout);
+static int8_t __esp8266_get_beijing_time(esp8266_dev_t *dev, uint16_t *year, uint8_t *month, uint8_t *day, uint8_t *hour, uint8_t *minute, uint8_t *second);
+static int8_t __esp8266_get_weather(esp8266_dev_t *dev);
+static int8_t __esp8266_deinit(esp8266_dev_t *dev);
 static void __esp8266_uart_init(unsigned int baud);
 static void __esp8266_uart_send_string(USART_TypeDef *USARTx, unsigned char *str, unsigned short len);
 static int8_t __esp8266_wait_recv(void);
-static int8_t __extract_time_from_buf(uint8_t *buf, Time_t *time);
+static int8_t __extract_time_from_buf(uint8_t *buf, time_t *time);
 
 /******************************************************************************
  * @brief	ESP8266初始化
- * @param	dev	:	ESP8266Dev_t 结构体指针
+ * @param	dev	:	esp8266_dev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-int8_t esp8266_init(ESP8266Dev_t *dev)
+int8_t esp8266_init(esp8266_dev_t *dev)
 {
 	__esp8266_uart_init(115200);
 	
@@ -55,27 +54,27 @@ int8_t esp8266_init(ESP8266Dev_t *dev)
 	
     /* 恢复出厂设置 */
 	while(__esp8266_send_cmd(dev, "AT+RESTORE\r\n", "OK"))
-		delay_ms(500);
+		ESP8266_DELAY_MS(500);
     ESP8266_DEBUG("RESTORE OK\r\n");
 
 	/* 关闭回显 */
 	while(__esp8266_send_cmd(dev, "ATE0\r\n", "OK"))
-		delay_ms(500);
+		ESP8266_DELAY_MS(500);
     ESP8266_DEBUG("ATE0 OK\r\n");
     
 	/* AT测试 */
 	while(__esp8266_send_cmd(dev, "AT\r\n", "OK"))
-		delay_ms(500);
+		ESP8266_DELAY_MS(500);
     ESP8266_DEBUG("AT OK\r\n");
 	
 	/* 设置客户端模式 */
 	while(__esp8266_send_cmd(dev, "AT+CWMODE=1\r\n", "OK"))
-		delay_ms(500);
+		ESP8266_DELAY_MS(500);
     ESP8266_DEBUG("CWMODE OK\r\n");
 	
     /* 连接WiFi */
 	while(__esp8266_send_cmd(dev, ESP8266_WIFI_INFO, "GOT IP"))
-		delay_ms(500);
+		ESP8266_DELAY_MS(500);
     ESP8266_DEBUG("WiFi OK\r\n");
 	
 	ESP8266_DEBUG("ESP8266 Init OK\r\n");
@@ -85,10 +84,10 @@ int8_t esp8266_init(ESP8266Dev_t *dev)
 
 /******************************************************************************
  * @brief	ESP8266清空缓存
- * @param	dev	:	ESP8266Dev_t 结构体指针
+ * @param	dev	:	esp8266_dev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int8_t __esp8266_clear(ESP8266Dev_t *dev)
+static int8_t __esp8266_clear(esp8266_dev_t *dev)
 {
 	if (!dev || !dev->init_flag)
 		return -1;
@@ -105,7 +104,7 @@ static int8_t __esp8266_clear(ESP8266Dev_t *dev)
  * @param	res	:	需要检查的返回指令
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int8_t __esp8266_send_cmd(ESP8266Dev_t *dev, char *cmd, char *res)
+static int8_t __esp8266_send_cmd(esp8266_dev_t *dev, char *cmd, char *res)
 {
 	if (!dev || !dev->init_flag)
 		return -1;
@@ -134,7 +133,7 @@ static int8_t __esp8266_send_cmd(ESP8266Dev_t *dev, char *cmd, char *res)
 			}
 		}
 		
-		delay_ms(10);
+		ESP8266_DELAY_MS(10);
 	}
 	
 	return 1;
@@ -146,7 +145,7 @@ static int8_t __esp8266_send_cmd(ESP8266Dev_t *dev, char *cmd, char *res)
  * @param	len		:	长度
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int8_t __esp8266_send_data(ESP8266Dev_t *dev, unsigned char *data, unsigned short len)
+static int8_t __esp8266_send_data(esp8266_dev_t *dev, unsigned char *data, unsigned short len)
 {
 	if (!dev || !dev->init_flag)
 		return -1;
@@ -172,7 +171,7 @@ static int8_t __esp8266_send_data(ESP8266Dev_t *dev, unsigned char *data, unsign
  * @param	timeout	:	等待的时间(乘以10ms)
  * @return	平台返回的原始数据
  ******************************************************************************/
-static uint8_t *__esp8266_get_ipd(ESP8266Dev_t *dev, unsigned short timeout)
+static uint8_t *__esp8266_get_ipd(esp8266_dev_t *dev, unsigned short timeout)
 {
 	char *ipd = NULL;
 	
@@ -198,7 +197,7 @@ static uint8_t *__esp8266_get_ipd(ESP8266Dev_t *dev, unsigned short timeout)
 				
 			}
 		}
-		delay_ms(5);										// 延时等待
+		ESP8266_DELAY_MS(5);										// 延时等待
 	} while(timeout--);
 	
 	return NULL;	// 超时还未找到，返回空指针
@@ -206,7 +205,7 @@ static uint8_t *__esp8266_get_ipd(ESP8266Dev_t *dev, unsigned short timeout)
 
 /******************************************************************************
  * @brief	ESP8266获取北京时间
- * @param	dev		:  ESP8266Dev_t 结构体指针
+ * @param	dev		:  esp8266_dev_t 结构体指针
  * @param	year	:  年
  * @param	month	:  月
  * @param	day		:  日
@@ -215,7 +214,7 @@ static uint8_t *__esp8266_get_ipd(ESP8266Dev_t *dev, unsigned short timeout)
  * @param	second	:  秒
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int8_t __esp8266_get_beijing_time(	ESP8266Dev_t *dev, 
+static int8_t __esp8266_get_beijing_time(	esp8266_dev_t *dev, 
                                             uint16_t *year, 
                                             uint8_t *month, 
                                             uint8_t *day, 
@@ -226,52 +225,52 @@ static int8_t __esp8266_get_beijing_time(	ESP8266Dev_t *dev,
 	if (!dev || !dev->init_flag)
 		return -1;
 
-	Time_t time;
+	time_t time;
 	char time_str[50];
 
 	/* 恢复出厂设置 */
 	while(__esp8266_send_cmd(dev, "AT+RESTORE\r\n", "OK"))
-		delay_ms(500);
+		ESP8266_DELAY_MS(500);
     ESP8266_DEBUG("RESTORE OK\r\n");
 
 	/* 关闭回显 */
 	while(__esp8266_send_cmd(dev, "ATE0\r\n", "OK"))
-		delay_ms(500);
+		ESP8266_DELAY_MS(500);
     ESP8266_DEBUG("ATE0 OK\r\n");
     
 	/* AT测试 */
 	while(__esp8266_send_cmd(dev, "AT\r\n", "OK"))
-		delay_ms(500);
+		ESP8266_DELAY_MS(500);
     ESP8266_DEBUG("AT OK\r\n");
 	
 	/* 设置客户端模式 */
 	while(__esp8266_send_cmd(dev, "AT+CWMODE=1\r\n", "OK"))
-		delay_ms(500);
+		ESP8266_DELAY_MS(500);
     ESP8266_DEBUG("CWMODE OK\r\n");
 	
     /* 连接WiFi */
 	while(__esp8266_send_cmd(dev, ESP8266_WIFI_INFO, "GOT IP"))
-		delay_ms(500);
+		ESP8266_DELAY_MS(500);
     ESP8266_DEBUG("WiFi OK\r\n");
 
 	/* 设置透传模式 */
     while(__esp8266_send_cmd(dev, "AT+CIPMODE=1\r\n", "OK"))
-		delay_ms(500);
+		ESP8266_DELAY_MS(500);
     ESP8266_DEBUG("CIPMODE OK\r\n");
     
     /* 连接TCP服务器 */
     while(__esp8266_send_cmd(dev, "AT+CIPSTART=\"TCP\",\"www.beijing-time.org\",80\r\n", "OK"))
-		delay_ms(500);
+		ESP8266_DELAY_MS(500);
     ESP8266_DEBUG("CIPSTART OK\r\n");
 	
 	/* 开始透传 */
 	while(__esp8266_send_cmd(dev, "AT+CIPSEND\r\n", ">"))
-	delay_ms(500);
+	ESP8266_DELAY_MS(500);
 	ESP8266_DEBUG("CIPSEND OK\r\n");
 
 	/* 获取时间 */
 	while(__esp8266_send_cmd(dev, "1\r\n", "GMT"))
-	delay_ms(500);
+	ESP8266_DELAY_MS(500);
 	ESP8266_DEBUG("Time OK\r\n");
 
 	// ESP8266_DEBUG((char *)g_rx_buf);
@@ -293,11 +292,11 @@ static int8_t __esp8266_get_beijing_time(	ESP8266Dev_t *dev,
 
 	/* 退出透传 */
 	__esp8266_send_cmd(dev, "+++", NULL);
-	delay_ms(200);
+	ESP8266_DELAY_MS(200);
 
 	/* AT测试 */
 	while(__esp8266_send_cmd(dev, "AT\r\n", "OK"))
-	delay_ms(500);
+	ESP8266_DELAY_MS(500);
 	ESP8266_DEBUG("\r\nAT OK\r\n");
 
 	return 0;
@@ -305,68 +304,68 @@ static int8_t __esp8266_get_beijing_time(	ESP8266Dev_t *dev,
 
 /******************************************************************************
  * @brief	ESP8266获取天气
- * @param	dev   :  ESP8266Dev_t 结构体指针
+ * @param	dev   :  esp8266_dev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int8_t __esp8266_get_weather(ESP8266Dev_t *dev)
+static int8_t __esp8266_get_weather(esp8266_dev_t *dev)
 {
 	if (!dev || !dev->init_flag)
 		return -1;
 
 	/* 恢复出厂设置 */
 	while(__esp8266_send_cmd(dev, "AT+RESTORE\r\n", "OK"))
-		delay_ms(500);
+		ESP8266_DELAY_MS(500);
     ESP8266_DEBUG("RESTORE OK\r\n");
 
 	/* 关闭回显 */
 	while(__esp8266_send_cmd(dev, "ATE0\r\n", "OK"))
-		delay_ms(500);
+		ESP8266_DELAY_MS(500);
     ESP8266_DEBUG("ATE0 OK\r\n");
     
 	/* AT测试 */
 	while(__esp8266_send_cmd(dev, "AT\r\n", "OK"))
-		delay_ms(500);
+		ESP8266_DELAY_MS(500);
     ESP8266_DEBUG("AT OK\r\n");
 	
 	/* 设置客户端模式 */
 	while(__esp8266_send_cmd(dev, "AT+CWMODE=1\r\n", "OK"))
-		delay_ms(500);
+		ESP8266_DELAY_MS(500);
     ESP8266_DEBUG("CWMODE OK\r\n");
 	
     /* 连接WiFi */
 	while(__esp8266_send_cmd(dev, ESP8266_WIFI_INFO, "GOT IP"))
-		delay_ms(500);
+		ESP8266_DELAY_MS(500);
     ESP8266_DEBUG("WiFi OK\r\n");
 
 	/* 设置透传模式 */
     while(__esp8266_send_cmd(dev, "AT+CIPMODE=1\r\n", "OK"))
-		delay_ms(500);
+		ESP8266_DELAY_MS(500);
     ESP8266_DEBUG("CIPMODE OK\r\n");
     
     /* 连接TCP服务器 */
     while(__esp8266_send_cmd(dev, "AT+CIPSTART=\"TCP\",\"api.seniverse.com\",80\r\n", "OK"))
-		delay_ms(500);
+		ESP8266_DELAY_MS(500);
     ESP8266_DEBUG("CIPSTART OK\r\n");
 
 	/* 开始透传 */
 	while(__esp8266_send_cmd(dev, "AT+CIPSEND\r\n", ">"))
-	delay_ms(500);
+	ESP8266_DELAY_MS(500);
 	ESP8266_DEBUG("CIPSEND OK\r\n");
 
 	/* 获取天气 */
 	__esp8266_send_cmd(dev, "GET https://api.seniverse.com/v3/weather/now.json?key=SwmhHrSHKGC4OXf6v&location=shenyang&language=en&unit=c\r\n", NULL);
-	delay_ms(500);
+	ESP8266_DELAY_MS(500);
 	ESP8266_DEBUG("Weather OK\r\n");
 
 	ESP8266_DEBUG((char *)g_rx_buf);
 
 	/* 退出透传 */
 	__esp8266_send_cmd(dev, "+++", NULL);
-	delay_ms(200);
+	ESP8266_DELAY_MS(200);
 
 	/* AT测试 */
 	while(__esp8266_send_cmd(dev, "AT\r\n", "OK"))
-	delay_ms(500);
+	ESP8266_DELAY_MS(500);
 	ESP8266_DEBUG("\r\nAT OK\r\n");
 
 	return 0;
@@ -374,10 +373,10 @@ static int8_t __esp8266_get_weather(ESP8266Dev_t *dev)
 
 /******************************************************************************
  * @brief	去初始化ESP8266
- * @param	dev   :  ESP8266Dev_t 结构体指针
+ * @param	dev   :  esp8266_dev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int8_t __esp8266_deinit(ESP8266Dev_t *dev)
+static int8_t __esp8266_deinit(esp8266_dev_t *dev)
 {    
     if (!dev || !dev->init_flag)
         return -1;
@@ -513,10 +512,10 @@ static int8_t __esp8266_wait_recv(void)
 /******************************************************************************
  * @brief	从缓冲区中提取时间
  * @param	buf	:	缓存区
- * @param	time	:	时间，DateTime_t 结构体指针
+ * @param	time	:	时间，Datetime_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int8_t __extract_time_from_buf(uint8_t *buf, Time_t *time)
+static int8_t __extract_time_from_buf(uint8_t *buf, time_t *time)
 {
     const char *date_prefix = "Date:";
     const uint8_t days_in_month[12] = {

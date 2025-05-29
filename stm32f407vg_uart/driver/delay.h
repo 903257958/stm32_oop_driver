@@ -1,5 +1,5 @@
-#ifndef __DELAY_H
-#define __DELAY_H
+#ifndef DELAY_H
+#define DELAY_H
 
 #include <stdint.h>
 #include <stdbool.h>

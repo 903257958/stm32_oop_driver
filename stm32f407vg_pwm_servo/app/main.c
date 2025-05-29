@@ -1,14 +1,15 @@
 #include "main.h"
 
-ServoDev_t sg90 = {.config = {TIM4, 3, GPIOB, GPIO_Pin_8}};
+servo_dev_t sg90 = {.config = {TIM4, 3, GPIOB, GPIO_Pin_8}};
 
 int main(void)
 {
-    delay_init(168);
-    
-	servo_init(&sg90);
+    uint8_t i;
 
-    int i;
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
+
+    delay_init(168);
+	servo_init(&sg90);
     
 	while (1)
 	{

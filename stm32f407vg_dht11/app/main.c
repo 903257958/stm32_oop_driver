@@ -1,7 +1,7 @@
 #include "main.h"
 
-UARTDev_t debug = {.config = {USART1, 115200, GPIOA, GPIO_Pin_9, GPIOA, GPIO_Pin_10}};
-DHT11Dev_t dht11 = {.config = {GPIOA, GPIO_Pin_1}};
+uart_dev_t  debug = {.config = {USART1, 115200, GPIOA, GPIO_Pin_9, GPIOA, GPIO_Pin_10}};
+dht11_dev_t dht11 = {.config = {GPIOA, GPIO_Pin_1}};
 
 int main(void)
 {

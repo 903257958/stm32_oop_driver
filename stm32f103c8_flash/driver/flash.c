@@ -2,19 +2,19 @@
 
 /* 函数声明 */
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD) || defined (GD32F10X_MD) || defined (GD32F10X_HD)
-static int8_t __flash_page_erase(FlashDev_t *dev, uint16_t index, uint16_t num);
+static int8_t __flash_page_erase(flash_dev_t *dev, uint16_t index, uint16_t num);
 #elif defined(STM32F40_41xxx) || defined(STM32F429_439xx)
-static int8_t __flash_sector_erase(FlashDev_t *dev, uint8_t index);
+static int8_t __flash_sector_erase(flash_dev_t *dev, uint8_t index);
 #endif
-static int8_t __flash_write(FlashDev_t *dev, uint32_t addr, uint32_t *data, uint32_t num);
-static int8_t __flash_deinit(FlashDev_t *dev);
+static int8_t __flash_write(flash_dev_t *dev, uint32_t addr, uint32_t *data, uint32_t num);
+static int8_t __flash_deinit(flash_dev_t *dev);
 
 /******************************************************************************
  * @brief	初始化内部Flash
- * @param	dev	:	FlashDev_t结构体指针
+ * @param	dev	:	flash_dev_t结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-int8_t flash_init(FlashDev_t *dev)
+int8_t flash_init(flash_dev_t *dev)
 {
 	if (!dev)
 		return -1;
@@ -35,12 +35,12 @@ int8_t flash_init(FlashDev_t *dev)
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD) || defined (GD32F10X_MD) || defined (GD32F10X_HD)
 /******************************************************************************
  * @brief	内部Flash页擦除，对于GD32F10x_MD，Flash为64KB，闪存页大小为1KB，共64页
- * @param	dev		:  FlashDev_t 结构体指针
- * @param	index   :  从第几页开始擦除
- * @param	num		:  擦除页的数量
+ * @param	dev		:	flash_dev_t 结构体指针
+ * @param	index	:	从第几页开始擦除
+ * @param	num		:	擦除页的数量
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int8_t __flash_page_erase(FlashDev_t *dev, uint16_t index, uint16_t num)
+static int8_t __flash_page_erase(flash_dev_t *dev, uint16_t index, uint16_t num)
 {
 	if (!dev || !dev->init_flag)
 		return -1;
@@ -72,11 +72,11 @@ static int8_t __flash_page_erase(FlashDev_t *dev, uint16_t index, uint16_t num)
 #elif defined(STM32F40_41xxx) || defined(STM32F429_439xx)
 /******************************************************************************
  * @brief	内部Flash扇区擦除，对于STM32F407VG，Flash为1024KB，有0~11共12个扇区
- * @param	dev		:  FlashDev_t 结构体指针
- * @param	index   :  擦除第几个扇区
+ * @param	dev		:	flash_dev_t 结构体指针
+ * @param	index	:	擦除第几个扇区
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int8_t __flash_sector_erase(FlashDev_t *dev, uint8_t index)
+static int8_t __flash_sector_erase(flash_dev_t *dev, uint8_t index)
 {
 	if (!dev || !dev->init_flag)
 		return -1;
@@ -102,13 +102,13 @@ static int8_t __flash_sector_erase(FlashDev_t *dev, uint8_t index)
 
 /******************************************************************************
  * @brief	写内部Flash
- * @param	dev		:  FlashDev_t 结构体指针
- * @param	addr	:  起始地址
- * @param	data	:  要写入的数据（数组元素为字，4字节）
- * @param	num		:  写入数据的数量（单位：字节）
+ * @param	dev		:	flash_dev_t 结构体指针
+ * @param	addr	:	起始地址
+ * @param	data	:	要写入的数据（数组元素为字，4字节）
+ * @param	num		:	写入数据的数量（单位：字节）
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int8_t __flash_write(FlashDev_t *dev, uint32_t addr, uint32_t *data, uint32_t num)
+static int8_t __flash_write(flash_dev_t *dev, uint32_t addr, uint32_t *data, uint32_t num)
 {
 	if (!dev || !dev->init_flag)
 		return -1;
@@ -159,10 +159,10 @@ static int8_t __flash_write(FlashDev_t *dev, uint32_t addr, uint32_t *data, uint
 
 /******************************************************************************
  * @brief	去初始化内部Flash
- * @param	dev   :  FlashDev_t 结构体指针
+ * @param	dev	:	flash_dev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int8_t __flash_deinit(FlashDev_t *dev)
+static int8_t __flash_deinit(flash_dev_t *dev)
 {  
     if (!dev || !dev->init_flag)
 		return -1;

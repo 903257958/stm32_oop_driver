@@ -4,26 +4,26 @@
 
 #define TIMER_FREQ	72000000
 
-#define	__key_config_gpio_clock_enable(port)	{	if(port == GPIOA)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);} \
-													else if(port == GPIOB)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);} \
-													else if(port == GPIOC)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);} \
-													else if(port == GPIOD)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);} \
-													else if(port == GPIOE)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);} \
-													else if(port == GPIOF)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE);} \
-													else if(port == GPIOG)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, ENABLE);} \
-												}
+#define	__key_io_clock_enable(port)	{	if (port == GPIOA)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);} \
+										else if (port == GPIOB)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);} \
+										else if (port == GPIOC)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);} \
+										else if (port == GPIOD)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);} \
+										else if (port == GPIOE)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);} \
+										else if (port == GPIOF)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE);} \
+										else if (port == GPIOG)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, ENABLE);} \
+									}
 
 #define	__key_config_io_in_pd(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
 												GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD; \
 												GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; \
-												GPIO_InitStructure.GPIO_Pin = pin ; \
+												GPIO_InitStructure.GPIO_Pin = pin; \
 												GPIO_Init(port, &GPIO_InitStructure); \
 											}
 											
 #define	__key_config_io_in_pu(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
 												GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU; \
 												GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; \
-												GPIO_InitStructure.GPIO_Pin = pin ; \
+												GPIO_InitStructure.GPIO_Pin = pin; \
 												GPIO_Init(port, &GPIO_InitStructure); \
 											}
 
@@ -42,14 +42,14 @@
 	
 	#endif
 
-#define	__key_config_gpio_clock_enable(port)	{	if(port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);} \
-													else if(port == GPIOB)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);} \
-													else if(port == GPIOC)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);} \
-													else if(port == GPIOD)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);} \
-													else if(port == GPIOE)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);} \
-													else if(port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);} \
-													else if(port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);} \
-												}
+#define	__key_io_clock_enable(port)	{	if (port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);} \
+										else if (port == GPIOB)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);} \
+										else if (port == GPIOC)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);} \
+										else if (port == GPIOD)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);} \
+										else if (port == GPIOE)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);} \
+										else if (port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);} \
+										else if (port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);} \
+									}
 
 #define	__key_config_io_in_pd(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
 												GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN; \
@@ -79,48 +79,48 @@ typedef struct {
 	int val[BUF_LEN];
 	int read;
 	int write;
-}KeyBuf_t;
+} key_buf_t;
 
 #define MAX_KEY_NUM	10						// 最大按键数量
 
-static KeyDev_t *g_key_dev[MAX_KEY_NUM];	// 存储已注册按键设备，用于中断回调函数传参
+static key_dev_t *g_key_dev[MAX_KEY_NUM];	// 存储已注册按键设备，用于中断回调函数传参
 static uint8_t g_key_dev_num = 0; 			// 已注册按键设备数
-static TimerDev_t g_timer_key_tick;			// 用于提供tick的定时器设备
-static KeyBuf_t g_key_buf = {
+static timer_dev_t g_timer_key_tick;		// 用于提供tick的定时器设备
+static key_buf_t g_key_buf = {
 	.read = 0,
 	.write = 0
 };
 
 /* 函数声明 */			
-static int8_t __key_deinit(KeyDev_t *dev);
+static int8_t __key_deinit(key_dev_t *dev);
 
 /******************************************************************************
  * @brief	判断环形缓冲区空
- * @param	buf	:  KeyBuf_t 结构体指针
+ * @param	buf	:	key_buf_t 结构体指针
  * @return	true 表示空, false 表示不空
  ******************************************************************************/
-static bool __key_buf_is_empty(KeyBuf_t *buf)
+static bool __key_buf_is_empty(key_buf_t *buf)
 {
 	return (buf->read == buf->write);
 }
 
 /******************************************************************************
  * @brief	判断环形缓冲区满
- * @param	buf	:  KeyBuf_t 结构体指针
+ * @param	buf	:	key_buf_t 结构体指针
  * @return	true 表示满, false 表示不满
  ******************************************************************************/
-static bool __key_buf_is_full(KeyBuf_t *buf)
+static bool __key_buf_is_full(key_buf_t *buf)
 {
 	return (buf->read == NEXT_POS(buf->write));
 }
 
 /******************************************************************************
  * @brief	环形缓冲区写数据
- * @param	buf	:  KeyBuf_t 结构体指针
- * @param	val	:  按键数据
+ * @param	buf	:	key_buf_t 结构体指针
+ * @param	val	:	按键数据
  * @return	无
  ******************************************************************************/
-static void __key_buf_write(KeyBuf_t *buf, int val)
+static void __key_buf_write(key_buf_t *buf, int val)
 {
 	if (!__key_buf_is_full(buf))
 	{
@@ -131,11 +131,11 @@ static void __key_buf_write(KeyBuf_t *buf, int val)
 
 /******************************************************************************
  * @brief	环形缓冲区读数据
- * @param	buf	:  KeyBuf_t 结构体指针
- * @param	val	:  按键数据
+ * @param	buf	:	key_buf_t 结构体指针
+ * @param	val	:	按键数据
  * @return	读取到的按键值
  ******************************************************************************/
-static int __key_buf_read(KeyBuf_t *buf)
+static int __key_buf_read(key_buf_t *buf)
 {
 	int val = 0;
 
@@ -197,18 +197,18 @@ int key_get_val(void)
 										
 /******************************************************************************
  * @brief	初始化按键
- * @param	dev	:  KeyDev_t结构体指针
+ * @param	dev	:	key_dev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-int8_t key_init(KeyDev_t *dev)
+int8_t key_init(key_dev_t *dev)
 {
 	if (!dev || g_key_dev_num >= MAX_KEY_NUM)
 		return -1;
 	
 	/* 配置时钟与GPIO */
-	__key_config_gpio_clock_enable(dev->config.port);
+	__key_io_clock_enable(dev->config.port);
 	
-	if(dev->config.press_level == GPIO_LEVEL_HIGH)			// 根据press_level配置为上拉或下拉输入
+	if(dev->config.press_level == GPIO_LEVEL_HIGH)	// 根据press_level配置为上拉或下拉输入
 	{
 		__key_config_io_in_pd(dev->config.port, dev->config.pin);
 	}
@@ -235,10 +235,10 @@ int8_t key_init(KeyDev_t *dev)
 
 /******************************************************************************
  * @brief	去初始化按键
- * @param	dev   :  KeyDev_t结构体指针
+ * @param	dev	:	key_dev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int8_t __key_deinit(KeyDev_t *dev)
+static int8_t __key_deinit(key_dev_t *dev)
 {
 	if (!dev || !dev->init_flag)
 		return -1;

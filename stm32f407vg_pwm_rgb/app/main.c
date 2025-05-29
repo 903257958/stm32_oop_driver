@@ -1,6 +1,6 @@
 #include "main.h"
 
-RGBDev_t rgb = {.config = {
+rgb_dev_t rgb = {.config = {
     TIM3, 3, GPIOB, GPIO_Pin_0,
     TIM3, 4, GPIOB, GPIO_Pin_1,
     TIM4, 3, GPIOB, GPIO_Pin_8,
@@ -10,6 +10,8 @@ RGBDev_t rgb = {.config = {
 int main(void)
 {
     uint8_t r, g, b;
+
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
     delay_init(168);
 	rgb_init(&rgb);

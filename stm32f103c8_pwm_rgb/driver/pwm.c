@@ -2,44 +2,44 @@
 
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 
-#define	__pwm_config_timer_clock_enable(TIMx)	{	if(TIMx == TIM2)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);} \
-													else if(TIMx == TIM3)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);} \
-													else if(TIMx == TIM4)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);} \
-													else if(TIMx == TIM5)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5, ENABLE);} \
-												}
+#define	__pwm_timer_clock_enable(TIMx)	{	if (TIMx == TIM2)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);} \
+											else if (TIMx == TIM3)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);} \
+											else if (TIMx == TIM4)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);} \
+											else if (TIMx == TIM5)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5, ENABLE);} \
+										}
 
-#define	__pwm_config_gpio_clock_enable(port)	{	if(port == GPIOA)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);} \
-													else if(port == GPIOB)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);} \
-													else if(port == GPIOC)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);} \
-													else if(port == GPIOD)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);} \
-													else if(port == GPIOE)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);} \
-													else if(port == GPIOF)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE);} \
-													else if(port == GPIOG)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, ENABLE);} \
-												}
+#define	__pwm_io_clock_enable(port)	{	if (port == GPIOA)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);} \
+										else if (port == GPIOB)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);} \
+										else if (port == GPIOC)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);} \
+										else if (port == GPIOD)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);} \
+										else if (port == GPIOE)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);} \
+										else if (port == GPIOF)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE);} \
+										else if (port == GPIOG)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, ENABLE);} \
+									}
 
 #define	__pwm_config_io_af_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
 												GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP; \
 												GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; \
-												GPIO_InitStructure.GPIO_Pin = pin ; \
+												GPIO_InitStructure.GPIO_Pin = pin; \
 												GPIO_Init(port, &GPIO_InitStructure); \
 											}
 
 #elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 
-#define	__pwm_config_timer_clock_enable(TIMx)	{	if(TIMx == TIM2)		{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);} \
-													else if(TIMx == TIM3)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);} \
-													else if(TIMx == TIM4)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);} \
-													else if(TIMx == TIM5)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5, ENABLE);} \
-												}
+#define	__pwm_timer_clock_enable(TIMx)	{	if (TIMx == TIM2)		{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);} \
+											else if (TIMx == TIM3)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);} \
+											else if (TIMx == TIM4)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);} \
+											else if (TIMx == TIM5)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5, ENABLE);} \
+										}
 
-#define	__pwm_config_gpio_clock_enable(port)	{	if (port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);} \
-													else if (port == GPIOB)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);} \
-													else if (port == GPIOC)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);} \
-													else if (port == GPIOD)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);} \
-													else if (port == GPIOE)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);} \
-													else if (port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);} \
-													else if (port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);} \
-												}
+#define	__pwm_io_clock_enable(port)	{	if (port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);} \
+										else if (port == GPIOB)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);} \
+										else if (port == GPIOC)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);} \
+										else if (port == GPIOD)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);} \
+										else if (port == GPIOE)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);} \
+										else if (port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);} \
+										else if (port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);} \
+									}
 
 #define	__pwm_config_io_af_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
 												GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF; \
@@ -77,29 +77,29 @@
 #endif
 
 /* 函数声明 */									
-static void __pwm_set_psc(PWMDev_t *dev, uint16_t psc);
-static void __pwm_set_arr(PWMDev_t *dev, uint16_t arr);
-static void __pwm_set_compare(PWMDev_t *dev, uint16_t compare);
-static int8_t __pwm_deinit(PWMDev_t *dev);
+static void __pwm_set_psc(pwm_dev_t *dev, uint16_t psc);
+static void __pwm_set_arr(pwm_dev_t *dev, uint16_t arr);
+static void __pwm_set_compare(pwm_dev_t *dev, uint16_t compare);
+static int8_t __pwm_deinit(pwm_dev_t *dev);
 
 /******************************************************************************
  * @brief	初始化PWM
 			例如STM32F1主频72MHz，72M/PSC为计数频率，其倒数为计数周期
 			用作微秒级定时器时，PSC = 72 - 1，计数周期 = 1us，定时周期 = (ASC + 1)(us)，最大定时周期约为65.5ms
 			用作毫秒级定时器时，PSC = 7200 - 1，计数周期 = 0.1ms，定时周期 = ((ASC + 1)/10))(ms)，最大定时周期约为6.55s
- * @param	dev	:	PWMDev_t 结构体指针
+ * @param	dev	:	pwm_dev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-int8_t pwm_init(PWMDev_t *dev)
+int8_t pwm_init(pwm_dev_t *dev)
 {
 	if (!dev)
 		return -1;
 	
 	/* 配置时钟与GPIO */
-	__pwm_config_timer_clock_enable(dev->config.timx);
-	__pwm_config_gpio_clock_enable(dev->config.port);
+	__pwm_timer_clock_enable(dev->config.timx);
+	__pwm_io_clock_enable(dev->config.port);
 	
-	__pwm_config_io_af_pp(dev->config.port, dev->config.pin);					// 复用推挽输出
+	__pwm_config_io_af_pp(dev->config.port, dev->config.pin);				// 复用推挽输出
 
 	#if defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	GPIO_PinAFConfig(dev->config.port, __pwm_get_gpio_pin_source(dev->config.pin), __pwm_get_gpio_af(dev->config.timx));
@@ -156,11 +156,11 @@ int8_t pwm_init(PWMDev_t *dev)
 
 /******************************************************************************
  * @brief	PWM设置PSC的值
- * @param	dev	：	PWMDev_t 结构体指针
- * @param	psc		：	要写入的PSC的值
+ * @param	dev	:	pwm_dev_t 结构体指针
+ * @param	psc	:	要写入的PSC的值
  * @return	无
  ******************************************************************************/
-static void __pwm_set_psc(PWMDev_t *dev, uint16_t psc)
+static void __pwm_set_psc(pwm_dev_t *dev, uint16_t psc)
 {
     TIM_Cmd(dev->config.timx, DISABLE);
     dev->config.timx->PSC = psc;
@@ -170,11 +170,11 @@ static void __pwm_set_psc(PWMDev_t *dev, uint16_t psc)
 
 /******************************************************************************
  * @brief	PWM设置ARR的值
- * @param	dev	：	PWMDev_t 结构体指针
- * @param	arr		：	要写入的ARR的值
+ * @param	dev	:	pwm_dev_t 结构体指针
+ * @param	arr	:	要写入的ARR的值
  * @return	无
  ******************************************************************************/
-static void __pwm_set_arr(PWMDev_t *dev, uint16_t arr)
+static void __pwm_set_arr(pwm_dev_t *dev, uint16_t arr)
 {
     TIM_Cmd(dev->config.timx, DISABLE);
 	dev->config.timx->ARR = arr;
@@ -184,11 +184,11 @@ static void __pwm_set_arr(PWMDev_t *dev, uint16_t arr)
 
 /******************************************************************************
  * @brief	PWM设置CCR的值
- * @param	dev	：	PWMDev_t 结构体指针
- * @param	compare	：	要写入的CCR的值
+ * @param	dev		:	pwm_dev_t 结构体指针
+ * @param	compare	:	要写入的CCR的值
  * @return	无
  ******************************************************************************/
-static void __pwm_set_compare(PWMDev_t *dev, uint16_t compare)
+static void __pwm_set_compare(pwm_dev_t *dev, uint16_t compare)
 {
 	if(dev->config.oc_channel == 1)
 	{
@@ -210,10 +210,10 @@ static void __pwm_set_compare(PWMDev_t *dev, uint16_t compare)
 
 /******************************************************************************
  * @brief	去初始化PWM
- * @param	dev   :  PWMDev_t 结构体指针
+ * @param	dev	:	pwm_dev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int8_t __pwm_deinit(PWMDev_t *dev)
+static int8_t __pwm_deinit(pwm_dev_t *dev)
 {
 	if (!dev || !dev->init_flag)
 		return -1;

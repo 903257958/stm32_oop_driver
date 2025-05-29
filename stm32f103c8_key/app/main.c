@@ -1,20 +1,21 @@
 #include "main.h"
 
-UARTDev_t debug = {.config = {USART1, 115200, GPIOA, GPIO_Pin_9, GPIOA, GPIO_Pin_10}};
-
-KeyDev_t key1 = {.config = {GPIOB, GPIO_Pin_12, GPIO_LEVEL_LOW}};
-KeyDev_t key2 = {.config = {GPIOA, GPIO_Pin_8, GPIO_LEVEL_LOW}};
-KeyDev_t key3 = {.config = {GPIOB, GPIO_Pin_5, GPIO_LEVEL_LOW}};
+uart_dev_t debug = {.config = {USART1, 115200, GPIOA, GPIO_Pin_9, GPIOA, GPIO_Pin_10}};
+key_dev_t  key1  = {.config = {GPIOB, GPIO_Pin_12, GPIO_LEVEL_LOW}};
+key_dev_t  key2  = {.config = {GPIOA, GPIO_Pin_8, GPIO_LEVEL_LOW}};
+key_dev_t  key3  = {.config = {GPIOB, GPIO_Pin_5, GPIO_LEVEL_LOW}};
 
 int main(void)
 {
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
+
     delay_init(72);
 	uart_init(&debug);
 	key_init(&key1);
 	key_init(&key2);
     key_init(&key3);
 	
-	while(1)
+	while (1)
 	{
 		if(key1.is_press(&key1))
 		{

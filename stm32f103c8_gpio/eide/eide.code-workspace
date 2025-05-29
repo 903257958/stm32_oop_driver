@@ -19,7 +19,8 @@
             "*.cpp": "cpp",
             "*.cxx": "cpp",
             "*.cc": "cpp",
-            "cstdarg": "c"
+            "cstdarg": "c",
+            "type_traits": "c"
         },
         "[yaml]": {
             "editor.insertSpaces": true,

@@ -1,5 +1,5 @@
-#ifndef __KEY_H
-#define __KEY_H
+#ifndef KEY_H
+#define KEY_H
 
 #include <stdint.h>
 #include <stdio.h>
@@ -7,11 +7,13 @@
 
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 	#include "stm32f10x.h"
-	typedef GPIO_TypeDef*	KeyGPIOPort_t;
+	typedef GPIO_TypeDef*	key_gpio_port_t;
+	typedef uint32_t		key_gpio_pin_t;
 	
 #elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	#include "stm32f4xx.h"
-	typedef GPIO_TypeDef*	KeyGPIOPort_t;
+	typedef GPIO_TypeDef*	key_gpio_port_t;
+	typedef uint32_t		key_gpio_pin_t;
 
 #else
 	#error key.h: No processor defined!
@@ -26,18 +28,18 @@
 #endif
 
 typedef struct {
-	KeyGPIOPort_t port;						// 端口
-	uint32_t pin;							// 引脚
-	bool press_level;						// 按键按下的时候IO口的电平
-}KeyConfig_t;
+	key_gpio_port_t port;	// 端口
+	key_gpio_pin_t pin;		// 引脚
+	bool press_level;		// 按键按下的时候IO口的电平
+} key_config_t;
 
-typedef struct KeyDev {
-	KeyConfig_t config;
+typedef struct key_dev {
+	key_config_t config;
 	bool init_flag;								// 初始化标志
-	bool (*is_press)(struct KeyDev *dev);		// 判断按键是否按下
-	int8_t (*deinit)(struct KeyDev *dev);		// 去初始化
-}KeyDev_t;
+	bool (*is_press)(struct key_dev *dev);		// 判断按键是否按下
+	int8_t (*deinit)(struct key_dev *dev);		// 去初始化
+} key_dev_t;
 
-int8_t key_init(KeyDev_t *dev);
+int8_t key_init(key_dev_t *dev);
 
 #endif

@@ -1,5 +1,5 @@
-#ifndef __FLASH_H
-#define __FLASH_H
+#ifndef FLASH_H
+#define FLASH_H
 
 #include <stdint.h>
 #include <stdio.h>
@@ -18,15 +18,15 @@
     #error flash.h: No processor defined!
 #endif
 
-typedef struct FlashDev {
+typedef struct flash_dev {
 	bool init_flag;		// 初始化标志
 	void *priv_data;	// 私有数据指针
-	int8_t (*page_erase)(struct FlashDev *dev, uint16_t index, uint16_t num);
-	int8_t (*sector_erase)(struct FlashDev *dev, uint8_t index);
-	int8_t (*write)(struct FlashDev *dev, uint32_t addr, uint32_t *data, uint32_t num);
-	int8_t (*deinit)(struct FlashDev *dev);	// 去初始化
-}FlashDev_t;
+	int8_t (*page_erase)(struct flash_dev *dev, uint16_t index, uint16_t num);
+	int8_t (*sector_erase)(struct flash_dev *dev, uint8_t index);
+	int8_t (*write)(struct flash_dev *dev, uint32_t addr, uint32_t *data, uint32_t num);
+	int8_t (*deinit)(struct flash_dev *dev);	// 去初始化
+} flash_dev_t;
 
-int8_t flash_init(FlashDev_t *dev);
+int8_t flash_init(flash_dev_t *dev);
 
 #endif

@@ -16,29 +16,29 @@
 
 /* Servo私有数据结构体 */
 typedef struct {
-	PWMDev_t pwm;	// PWM
-}ServoPrivData_t;	
+	pwm_dev_t pwm;	// PWM
+} servo_priv_data_t;	
 
 /* 函数声明 */									
-static int8_t __servo_set_angle(ServoDev_t *dev, float angle);
-static int8_t __servo_deinit(ServoDev_t *dev);
+static int8_t __servo_set_angle(servo_dev_t *dev, float angle);
+static int8_t __servo_deinit(servo_dev_t *dev);
 
 /******************************************************************************
  * @brief	初始化Servo
- * @param	dev	:	ServoDev_t 结构体指针
+ * @param	dev	:	servo_dev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-int8_t servo_init(ServoDev_t *dev)
+int8_t servo_init(servo_dev_t *dev)
 {
 	if (!dev)
 		return -1;
 
 	/* 保存私有数据 */
-	dev->priv_data = (ServoPrivData_t *)malloc(sizeof(ServoPrivData_t));
+	dev->priv_data = (servo_priv_data_t *)malloc(sizeof(servo_priv_data_t));
 	if (!dev->priv_data)
 		return -1;
 	
-	ServoPrivData_t *priv_data = (ServoPrivData_t *)dev->priv_data;
+	servo_priv_data_t *priv_data = (servo_priv_data_t *)dev->priv_data;
 
 	priv_data->pwm.config.timx = dev->config.timx;
 	priv_data->pwm.config.oc_channel = dev->config.oc_channel;
@@ -60,16 +60,16 @@ int8_t servo_init(ServoDev_t *dev)
 
 /******************************************************************************
  * @brief	Servo设置角度
- * @param	dev		：	ServoDev_t 结构体指针
- * @param	angle	：	角度，范围0~180°
+ * @param	dev		:	servo_dev_t 结构体指针
+ * @param	angle	:	角度，范围0~180°
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int8_t __servo_set_angle(ServoDev_t *dev, float angle)
+static int8_t __servo_set_angle(servo_dev_t *dev, float angle)
 {
 	if (!dev || !dev->init_flag)
 		return -1;
 
-	ServoPrivData_t *priv_data = (ServoPrivData_t *)dev->priv_data;
+	servo_priv_data_t *priv_data = (servo_priv_data_t *)dev->priv_data;
 
 	priv_data->pwm.set_compare(&priv_data->pwm, angle / 180 * 2000 + 500);
 
@@ -78,15 +78,15 @@ static int8_t __servo_set_angle(ServoDev_t *dev, float angle)
 
 /******************************************************************************
  * @brief	去初始化Servo
- * @param	dev   :  ServoDev_t 结构体指针
+ * @param	dev	:	servo_dev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int8_t __servo_deinit(ServoDev_t *dev)
+static int8_t __servo_deinit(servo_dev_t *dev)
 {
 	if (!dev || !dev->init_flag)
 		return -1;
 
-	ServoPrivData_t *priv_data = (ServoPrivData_t *)dev->priv_data;
+	servo_priv_data_t *priv_data = (servo_priv_data_t *)dev->priv_data;
 
 	/* 去初始化PWM */
 	priv_data->pwm.deinit(&priv_data->pwm);

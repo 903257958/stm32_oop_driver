@@ -3,7 +3,7 @@
 /* AP3216C私有数据结构体 */
 typedef struct {
 	i2c_soft_dev_t i2c;		// I2C设备
-}ap3216c_priv_data_t;	
+} ap3216c_priv_data_t;	
 
 /* 函数声明 */
 static int8_t __ap3216c_get_data(ap3216c_dev_t *dev);

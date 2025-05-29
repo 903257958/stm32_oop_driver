@@ -1,17 +1,16 @@
-#include "delay.h"
 #include "lcd.h"
 #include "lcd_data.h"
 
 #if defined(STM32F40_41xxx)
 
-#define	__lcd_config_gpio_clock_enable(port)	{	if(port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);} \
-													else if(port == GPIOB)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);} \
-													else if(port == GPIOC)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);} \
-													else if(port == GPIOD)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);} \
-													else if(port == GPIOE)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);} \
-													else if(port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);} \
-													else if(port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);} \
-												}
+#define	__lcd_io_clock_enable(port)	{	if (port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);} \
+										else if (port == GPIOB)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);} \
+										else if (port == GPIOC)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);} \
+										else if (port == GPIOD)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);} \
+										else if (port == GPIOE)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);} \
+										else if (port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);} \
+										else if (port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);} \
+									}
 
 #define	__lcd_config_io_out_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
 												GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT; \
@@ -49,68 +48,68 @@
 											pin == GPIO_Pin_15 ? GPIO_PinSource15 : \
 											(int) 0	)
 
-#define __lcd_io_set(port, pin)				port->BSRRL = pin
+#define __lcd_io_set(port, pin)		port->BSRRL = pin
 
-#define __lcd_io_reset(port, pin)			port->BSRRH = pin
+#define __lcd_io_reset(port, pin)	port->BSRRH = pin
 
 #endif
 
 /* LCD数据端口与引脚数组 */
-LCDGPIOPort_t gLCDDataPorts[] = {	GPIOD, GPIOD, GPIOD, GPIOD, 
-                                	GPIOE, GPIOE, GPIOE, GPIOE,
-                                	GPIOE, GPIOE, GPIOE, GPIOE, 
-									GPIOE, GPIOD, GPIOD, GPIOD	};
+lcd_gpio_port_t g_lcd_data_ports[] = {	GPIOD, GPIOD, GPIOD, GPIOD, 
+										GPIOE, GPIOE, GPIOE, GPIOE,
+										GPIOE, GPIOE, GPIOE, GPIOE, 
+										GPIOE, GPIOD, GPIOD, GPIOD	};
 
-uint32_t gLCDDataPins[] = {	GPIO_Pin_14, GPIO_Pin_15, GPIO_Pin_0, GPIO_Pin_1, 
-                            GPIO_Pin_7, GPIO_Pin_8, GPIO_Pin_9, GPIO_Pin_10,
-                            GPIO_Pin_11, GPIO_Pin_12, GPIO_Pin_13, GPIO_Pin_14, 
-							GPIO_Pin_15, GPIO_Pin_8, GPIO_Pin_9, GPIO_Pin_10	};
+lcd_gpio_pin_t g_lcd_data_pins[] = {	GPIO_Pin_14, GPIO_Pin_15, GPIO_Pin_0, GPIO_Pin_1, 
+										GPIO_Pin_7, GPIO_Pin_8, GPIO_Pin_9, GPIO_Pin_10,
+										GPIO_Pin_11, GPIO_Pin_12, GPIO_Pin_13, GPIO_Pin_14, 
+										GPIO_Pin_15, GPIO_Pin_8, GPIO_Pin_9, GPIO_Pin_10	};
 							
 /* LCD地址结构体 */
 typedef struct {
 	uint16_t reg;
 	uint16_t ram;
-}LCDAddr_t;
+} lcd_addr_t;
 
 #define LCD_BASE	((uint32_t)(0x6001FFFE))
-#define LCD_ADDR	((LCDAddr_t *)LCD_BASE)
+#define LCD_ADDR	((lcd_addr_t *)LCD_BASE)
 
 /* LCD私有数据结构体 */
 typedef struct {
-	LCDGPIOPort_t	bl_port;	// 背光端口
-	uint32_t		bl_pin;		// 背光引脚
-	LCDGPIOPort_t	cs_port;	// 片选端口
-	uint32_t		cs_pin;		// 片选引脚
-	LCDGPIOPort_t	rs_port;	// 1数据/0命令端口
-	uint32_t		rs_pin;		// 1数据/0命令引脚
-	LCDGPIOPort_t	wr_port;	// 写信号端口
-	uint32_t		wr_pin;		// 写信号引脚
-	LCDGPIOPort_t	rd_port;	// 读信号端口
-	uint32_t		rd_pin;		// 读信号引脚
+	lcd_gpio_port_t	bl_port;	// 背光端口
+	lcd_gpio_pin_t	bl_pin;		// 背光引脚
+	lcd_gpio_port_t	cs_port;	// 片选端口
+	lcd_gpio_pin_t	cs_pin;		// 片选引脚
+	lcd_gpio_port_t	rs_port;	// 1数据/0命令端口
+	lcd_gpio_pin_t	rs_pin;		// 1数据/0命令引脚
+	lcd_gpio_port_t	wr_port;	// 写信号端口
+	lcd_gpio_pin_t	wr_pin;		// 写信号引脚
+	lcd_gpio_port_t	rd_port;	// 读信号端口
+	lcd_gpio_pin_t	rd_pin;		// 读信号引脚
 	uint16_t		id;			// ID
 	uint8_t			dir;		// 横屏还是竖屏控制：0竖屏/1横屏
 	uint16_t		wramcmd;	// 开始写gram指令
 	uint16_t		setxcmd;	// 设置x坐标指令
 	uint16_t		setycmd;	// 设置y坐标指令
-}LCDPrivData_t;
+} lcd_priv_data_t;
 
 /* 函数声明 */
-static void __lcd_clear(LCDDev_t *dev, uint16_t color);
-static void __lcd_fill(LCDDev_t *dev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color);
-static void __lcd_color_fill(LCDDev_t *dev, uint16_t sx, uint16_t sy, uint16_t ex, uint16_t ey, uint16_t *color);
-static void __lcd_show_char(LCDDev_t *dev, uint16_t x, uint16_t y, uint8_t chr, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
-static void __lcd_show_string(LCDDev_t *dev, uint16_t x, uint16_t y, char *str, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
-static void __lcd_show_num(LCDDev_t *dev, uint16_t x, uint16_t y, uint32_t num, uint8_t len, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
-static void __lcd_show_hex_num(LCDDev_t *dev, uint16_t x, uint16_t y, uint32_t num, uint8_t len, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
-static void __lcd_show_float_num(LCDDev_t *dev, uint16_t x, uint16_t y, float num, uint8_t len, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
-static void __lcd_show_chinese(LCDDev_t *dev, uint16_t x, uint16_t y, char *Chinese, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
-static void __lcd_show_image(LCDDev_t *dev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, const uint8_t pic[]);
-static void __lcd_draw_point(LCDDev_t *dev, uint16_t x, uint16_t y, uint16_t color);
-static uint16_t __lcd_read_point(LCDDev_t *dev, uint16_t x, uint16_t y);
-static void __lcd_draw_line(LCDDev_t *dev, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color);
-static void __lcd_draw_rectangle(LCDDev_t *dev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color);
-static void __lcd_draw_circle(LCDDev_t *dev, uint16_t x, uint16_t y, uint16_t r, uint16_t color);
-static int8_t __lcd_deinit(LCDDev_t *dev);
+static void __lcd_clear(lcd_dev_t *dev, uint16_t color);
+static void __lcd_fill(lcd_dev_t *dev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color);
+static void __lcd_color_fill(lcd_dev_t *dev, uint16_t sx, uint16_t sy, uint16_t ex, uint16_t ey, uint16_t *color);
+static void __lcd_show_char(lcd_dev_t *dev, uint16_t x, uint16_t y, uint8_t chr, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
+static void __lcd_show_string(lcd_dev_t *dev, uint16_t x, uint16_t y, char *str, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
+static void __lcd_show_num(lcd_dev_t *dev, uint16_t x, uint16_t y, uint32_t num, uint8_t len, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
+static void __lcd_show_hex_num(lcd_dev_t *dev, uint16_t x, uint16_t y, uint32_t num, uint8_t len, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
+static void __lcd_show_float_num(lcd_dev_t *dev, uint16_t x, uint16_t y, float num, uint8_t len, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
+static void __lcd_show_chinese(lcd_dev_t *dev, uint16_t x, uint16_t y, char *Chinese, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode);
+static void __lcd_show_image(lcd_dev_t *dev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, const uint8_t pic[]);
+static void __lcd_draw_point(lcd_dev_t *dev, uint16_t x, uint16_t y, uint16_t color);
+static uint16_t __lcd_read_point(lcd_dev_t *dev, uint16_t x, uint16_t y);
+static void __lcd_draw_line(lcd_dev_t *dev, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color);
+static void __lcd_draw_rectangle(lcd_dev_t *dev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color);
+static void __lcd_draw_circle(lcd_dev_t *dev, uint16_t x, uint16_t y, uint16_t r, uint16_t color);
+static int8_t __lcd_deinit(lcd_dev_t *dev);
 
 /*读写接口函数******************************************************************/
 
@@ -166,22 +165,24 @@ static uint16_t __lcd_read_data(void)
 
 /******************************************************************************
  * @brief	初始化LCD
- * @param	dev	:  LCDDev_t 结构体指针
+ * @param	dev	:  lcd_dev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-int8_t lcd_init(LCDDev_t *dev)
+int8_t lcd_init(lcd_dev_t *dev)
 {
 	if (!dev)
 		return -1;
 
+	dev->init_flag = true;
+
 	uint16_t reg_val;
 	
 	/* 初始化私有数据 */
-	dev->priv_data = (LCDPrivData_t *)malloc(sizeof(LCDPrivData_t));
+	dev->priv_data = (lcd_priv_data_t *)malloc(sizeof(lcd_priv_data_t));
 	if (!dev->priv_data)
 		return -1;
 	
-	LCDPrivData_t *priv_data = (LCDPrivData_t *)dev->priv_data;
+	lcd_priv_data_t *priv_data = (lcd_priv_data_t *)dev->priv_data;
 
 	priv_data->dir = LCD_DIRECTION;
 	priv_data->wramcmd = 0X2C;
@@ -205,13 +206,13 @@ int8_t lcd_init(LCDDev_t *dev)
 
 	/* 开启时钟 */
 	RCC_AHB3PeriphClockCmd(RCC_AHB3Periph_FSMC,ENABLE);
-	__lcd_config_gpio_clock_enable(priv_data->cs_port);
-	__lcd_config_gpio_clock_enable(priv_data->rs_port);
-	__lcd_config_gpio_clock_enable(priv_data->wr_port);
-	__lcd_config_gpio_clock_enable(priv_data->rd_port);
-	__lcd_config_gpio_clock_enable(priv_data->bl_port);
+	__lcd_io_clock_enable(priv_data->cs_port);
+	__lcd_io_clock_enable(priv_data->rs_port);
+	__lcd_io_clock_enable(priv_data->wr_port);
+	__lcd_io_clock_enable(priv_data->rd_port);
+	__lcd_io_clock_enable(priv_data->bl_port);
 	for (uint8_t i = 0; i < 16; i++)
-		__lcd_config_gpio_clock_enable(gLCDDataPorts[i]);
+		__lcd_io_clock_enable(g_lcd_data_ports[i]);
 
 	/* 配置为复用推挽输出 */
 	__lcd_config_io_af_pp(priv_data->cs_port, priv_data->cs_pin);
@@ -220,7 +221,7 @@ int8_t lcd_init(LCDDev_t *dev)
 	__lcd_config_io_af_pp(priv_data->rd_port, priv_data->rd_pin);
 	__lcd_config_io_out_pp(priv_data->bl_port, priv_data->bl_pin);
 	for (uint8_t i = 0; i < 16; i++)
-		__lcd_config_io_af_pp(gLCDDataPorts[i], gLCDDataPins[i]);
+		__lcd_config_io_af_pp(g_lcd_data_ports[i], g_lcd_data_pins[i]);
 
 	GPIO_PinAFConfig(priv_data->cs_port, __lcd_get_gpio_pin_sourse(priv_data->cs_pin), GPIO_AF_FSMC);
 	GPIO_PinAFConfig(priv_data->rs_port, __lcd_get_gpio_pin_sourse(priv_data->rs_pin), GPIO_AF_FSMC);
@@ -250,7 +251,7 @@ int8_t lcd_init(LCDDev_t *dev)
 	__lcd_io_set(priv_data->cs_port, priv_data->cs_pin);
 	__lcd_io_set(priv_data->rs_port, priv_data->rs_pin);
 	for (uint8_t i = 0; i < 16; i++)
-		__lcd_io_set(gLCDDataPorts[i], gLCDDataPins[i]);
+		__lcd_io_set(g_lcd_data_ports[i], g_lcd_data_pins[i]);
 
 	/* 读写时序 */
 	FSMC_NORSRAMTimingInitTypeDef  readWriteTiming; 
@@ -295,7 +296,7 @@ int8_t lcd_init(LCDDev_t *dev)
 	/* 使能BANK1 */
 	FSMC_NORSRAMCmd(FSMC_Bank1_NORSRAM1, ENABLE);
 	
- 	delay_ms(50);
+ 	LCD_DELAY_MS(50);
 	
 	/* 读取ID：0x9341 */
 	__lcd_write_cmd(0xD3);
@@ -415,7 +416,7 @@ int8_t lcd_init(LCDDev_t *dev)
 		__lcd_write_data(0x00);
 		__lcd_write_data(0xef);	 
 		__lcd_write_cmd(0x11);		// Exit Sleep
-		delay_ms(120);
+		LCD_DELAY_MS(120);
 		__lcd_write_cmd(0x29);		// display on
 	}
 
@@ -481,32 +482,31 @@ int8_t lcd_init(LCDDev_t *dev)
 	dev->draw_circle = __lcd_draw_circle;
 	dev->deinit = __lcd_deinit;
 	
-	dev->init_flag = true;
 	return 0;
 }
 
 /******************************************************************************
  * @brief	LCD准备写GRAM
- * @param	dev	:  LCDDev_t 结构体指针
+ * @param	dev	:  lcd_dev_t 结构体指针
  * @return	无
  ******************************************************************************/
-static void __lcd_write_ram_prepare(LCDDev_t *dev)
+static void __lcd_write_ram_prepare(lcd_dev_t *dev)
 {
-	LCDPrivData_t *priv_data = (LCDPrivData_t *)dev->priv_data;
+	lcd_priv_data_t *priv_data = (lcd_priv_data_t *)dev->priv_data;
 	
 	LCD_ADDR->reg = priv_data->wramcmd;
 }
 
 /******************************************************************************
  * @brief	LCD设置光标位置
- * @param	dev	:  LCDDev_t 结构体指针
+ * @param	dev	:  lcd_dev_t 结构体指针
  * @param	x		:  x坐标
  * @param	y		:  y坐标
  * @return	无
  ******************************************************************************/
-static void __lcd_set_cursor(LCDDev_t *dev, uint16_t x, uint16_t y)
+static void __lcd_set_cursor(lcd_dev_t *dev, uint16_t x, uint16_t y)
 {
-	LCDPrivData_t *priv_data = (LCDPrivData_t *)dev->priv_data;
+	lcd_priv_data_t *priv_data = (lcd_priv_data_t *)dev->priv_data;
 
 	__lcd_write_cmd(priv_data->setxcmd);
 	__lcd_write_data(x >> 8);
@@ -519,11 +519,11 @@ static void __lcd_set_cursor(LCDDev_t *dev, uint16_t x, uint16_t y)
 
 /******************************************************************************
  * @brief	LCD清屏
- * @param	dev	:  LCDDev_t 结构体指针
+ * @param	dev	:  lcd_dev_t 结构体指针
  * @param	color	:  清屏的填充颜色
  * @return	无
  ******************************************************************************/
-static void __lcd_clear(LCDDev_t *dev, uint16_t color)
+static void __lcd_clear(lcd_dev_t *dev, uint16_t color)
 {
 	uint32_t index = 0;
     uint32_t totalpoint = dev->width;
@@ -541,7 +541,7 @@ static void __lcd_clear(LCDDev_t *dev, uint16_t color)
 
 /******************************************************************************
  * @brief	LCD在指定区域填充颜色
- * @param	dev	:  LCDDev_t 结构体指针
+ * @param	dev	:  lcd_dev_t 结构体指针
  * @param	x		:  x坐标
  * @param	y		:  y坐标
  * @param	width	:  填充宽度
@@ -549,7 +549,7 @@ static void __lcd_clear(LCDDev_t *dev, uint16_t color)
  * @param	color	:  颜色
  * @return	无
  ******************************************************************************/
-static void __lcd_fill(LCDDev_t *dev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color)
+static void __lcd_fill(lcd_dev_t *dev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color)
 {
     uint16_t i, j;
 
@@ -572,7 +572,7 @@ static void __lcd_fill(LCDDev_t *dev, uint16_t x, uint16_t y, uint16_t width, ui
 
 /******************************************************************************
  * @brief	LCD在指定区域填充颜色块，颜色可以不同
- * @param	dev	:  LCDDev_t 结构体指针
+ * @param	dev	:  lcd_dev_t 结构体指针
  * @param	x		:  x坐标
  * @param	y		:  y坐标
  * @param	width	:  填充宽度
@@ -580,7 +580,7 @@ static void __lcd_fill(LCDDev_t *dev, uint16_t x, uint16_t y, uint16_t width, ui
  * @param	color	:  颜色
  * @return	无
  ******************************************************************************/
-static void __lcd_color_fill(LCDDev_t *dev, uint16_t sx, uint16_t sy, uint16_t ex, uint16_t ey, uint16_t *color)
+static void __lcd_color_fill(lcd_dev_t *dev, uint16_t sx, uint16_t sy, uint16_t ex, uint16_t ey, uint16_t *color)
 {
     uint16_t height, width;
     uint16_t i, j;
@@ -601,7 +601,7 @@ static void __lcd_color_fill(LCDDev_t *dev, uint16_t sx, uint16_t sy, uint16_t e
 
 /******************************************************************************
  * @brief	LCD显示单个字符
- * @param	dev	:	LCDDev_t 结构体指针
+ * @param	dev	:	lcd_dev_t 结构体指针
  * @param	x		:	x坐标
  * @param	y		:	y坐标
  * @param	chr		:	要显示的字符
@@ -611,7 +611,7 @@ static void __lcd_color_fill(LCDDev_t *dev, uint16_t sx, uint16_t sy, uint16_t e
  * @param	mode	:	模式：0非叠加/1叠加
  * @return	无
  ******************************************************************************/
-static void __lcd_show_char(LCDDev_t *dev, uint16_t x, uint16_t y, uint8_t chr, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode)
+static void __lcd_show_char(lcd_dev_t *dev, uint16_t x, uint16_t y, uint8_t chr, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode)
 {
 	uint8_t temp, i, j;
 	uint16_t y0 = y;		// 记录y的初始坐标
@@ -644,7 +644,7 @@ static void __lcd_show_char(LCDDev_t *dev, uint16_t x, uint16_t y, uint8_t chr, 
 
 /******************************************************************************
  * @brief	LCD显示字符串
- * @param	dev	:	LCDDev_t 结构体指针
+ * @param	dev	:	lcd_dev_t 结构体指针
  * @param	x		:	x坐标
  * @param	y		:	y坐标
  * @param	str		:	要显示的字符
@@ -654,7 +654,7 @@ static void __lcd_show_char(LCDDev_t *dev, uint16_t x, uint16_t y, uint8_t chr, 
  * @param	mode	:	模式：0非叠加/1叠加
  * @return	无
  ******************************************************************************/
-static void __lcd_show_string(LCDDev_t *dev, uint16_t x, uint16_t y, char *str, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode)
+static void __lcd_show_string(lcd_dev_t *dev, uint16_t x, uint16_t y, char *str, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode)
 {         
 	while (*str != '\0')
 	{       
@@ -682,7 +682,7 @@ static uint32_t __lcd_pow(uint32_t x, uint32_t y)
 
 /******************************************************************************
  * @brief	LCD显示整数变量
- * @param	dev	:	LCDDev_t 结构体指针
+ * @param	dev	:	lcd_dev_t 结构体指针
  * @param	x		:	x坐标
  * @param	y		:	y坐标
  * @param	num		:	要显示整数变量
@@ -693,7 +693,7 @@ static uint32_t __lcd_pow(uint32_t x, uint32_t y)
  * @param	mode	:	模式：0非叠加/1叠加
  * @return	无
  ******************************************************************************/
-static void __lcd_show_num(LCDDev_t *dev, uint16_t x, uint16_t y, uint32_t num, uint8_t len, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode)
+static void __lcd_show_num(lcd_dev_t *dev, uint16_t x, uint16_t y, uint32_t num, uint8_t len, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode)
 {         	
 	u8 t, temp;
     u8 enshow = 0;
@@ -718,7 +718,7 @@ static void __lcd_show_num(LCDDev_t *dev, uint16_t x, uint16_t y, uint32_t num, 
 
 /******************************************************************************
  * @brief	LCD显示十六进制数
- * @param	dev	:	LCDDev_t 结构体指针
+ * @param	dev	:	lcd_dev_t 结构体指针
  * @param	x		:	x坐标
  * @param	y		:	y坐标
  * @param	num		:	指定要显示的数字，范围：0x00000000~0xFFFFFFFF
@@ -729,7 +729,7 @@ static void __lcd_show_num(LCDDev_t *dev, uint16_t x, uint16_t y, uint32_t num, 
  * @param	mode	:	模式：0非叠加/1叠加
  * @return	无
  ******************************************************************************/
-static void __lcd_show_hex_num(LCDDev_t *dev, uint16_t x, uint16_t y, uint32_t num, uint8_t len, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode)
+static void __lcd_show_hex_num(lcd_dev_t *dev, uint16_t x, uint16_t y, uint32_t num, uint8_t len, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode)
 {
 	uint8_t i, single_num;
 
@@ -755,7 +755,7 @@ static void __lcd_show_hex_num(LCDDev_t *dev, uint16_t x, uint16_t y, uint32_t n
 
 /******************************************************************************
  * @brief	LCD显示两位小数变量
- * @param	dev		:	LCDDev_t 结构体指针
+ * @param	dev		:	lcd_dev_t 结构体指针
  * @param	x		:	x坐标
  * @param	y		:	y坐标
  * @param	num		:	要显示整数变量
@@ -767,7 +767,7 @@ static void __lcd_show_hex_num(LCDDev_t *dev, uint16_t x, uint16_t y, uint32_t n
  * @return	无
  ******************************************************************************/
 
-static void __lcd_show_float_num(LCDDev_t *dev, uint16_t x, uint16_t y, float num, uint8_t len, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode)
+static void __lcd_show_float_num(lcd_dev_t *dev, uint16_t x, uint16_t y, float num, uint8_t len, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode)
 {
     uint8_t t, temp, sizex;
     uint32_t num1;
@@ -797,7 +797,7 @@ static void __lcd_show_float_num(LCDDev_t *dev, uint16_t x, uint16_t y, float nu
 
 /******************************************************************************
  * @brief	LCD显示单个12x12汉字
- * @param	dev	:	LCDDev_t 结构体指针
+ * @param	dev	:	lcd_dev_t 结构体指针
  * @param	x		:	x坐标
  * @param	y		:	y坐标
  * @param	Chinese	:	要显示的汉字
@@ -806,7 +806,7 @@ static void __lcd_show_float_num(LCDDev_t *dev, uint16_t x, uint16_t y, float nu
  * @param	mode	:	模式：0非叠加/1叠加
  * @return	无
  ******************************************************************************/
-static void __lcd_show_chinese12x12(LCDDev_t *dev, uint16_t x, uint16_t y, char *Chinese, uint16_t fc, uint16_t bc, uint8_t mode)
+static void __lcd_show_chinese12x12(lcd_dev_t *dev, uint16_t x, uint16_t y, char *Chinese, uint16_t fc, uint16_t bc, uint8_t mode)
 {
 	uint8_t i, j;
 	uint16_t k;
@@ -843,7 +843,7 @@ static void __lcd_show_chinese12x12(LCDDev_t *dev, uint16_t x, uint16_t y, char 
 
 /******************************************************************************
  * @brief	LCD显示单个16x16汉字
- * @param	dev	:	LCDDev_t 结构体指针
+ * @param	dev	:	lcd_dev_t 结构体指针
  * @param	x		:	x坐标
  * @param	y		:	y坐标
  * @param	Chinese	:	要显示的汉字
@@ -852,7 +852,7 @@ static void __lcd_show_chinese12x12(LCDDev_t *dev, uint16_t x, uint16_t y, char 
  * @param	mode	:	模式：0非叠加/1叠加
  * @return	无
  ******************************************************************************/
-static void __lcd_show_chinese16x16(LCDDev_t *dev, uint16_t x, uint16_t y, char *Chinese, uint16_t fc, uint16_t bc, uint8_t mode)
+static void __lcd_show_chinese16x16(lcd_dev_t *dev, uint16_t x, uint16_t y, char *Chinese, uint16_t fc, uint16_t bc, uint8_t mode)
 {
 	uint8_t i, j;
 	uint16_t k;
@@ -889,7 +889,7 @@ static void __lcd_show_chinese16x16(LCDDev_t *dev, uint16_t x, uint16_t y, char 
 
 /******************************************************************************
  * @brief	LCD显示单个24x24汉字
- * @param	dev	:	LCDDev_t 结构体指针
+ * @param	dev	:	lcd_dev_t 结构体指针
  * @param	x		:	x坐标
  * @param	y		:	y坐标
  * @param	Chinese	:	要显示的汉字
@@ -898,7 +898,7 @@ static void __lcd_show_chinese16x16(LCDDev_t *dev, uint16_t x, uint16_t y, char 
  * @param	mode	:	模式：0非叠加/1叠加
  * @return	无
  ******************************************************************************/
-static void __lcd_show_chinese24x24(LCDDev_t *dev, uint16_t x, uint16_t y, char *Chinese, uint16_t fc, uint16_t bc, uint8_t mode)
+static void __lcd_show_chinese24x24(lcd_dev_t *dev, uint16_t x, uint16_t y, char *Chinese, uint16_t fc, uint16_t bc, uint8_t mode)
 {
 	uint8_t i, j;
 	uint16_t k;
@@ -935,7 +935,7 @@ static void __lcd_show_chinese24x24(LCDDev_t *dev, uint16_t x, uint16_t y, char 
 
 /******************************************************************************
  * @brief	LCD显示单个32x32汉字
- * @param	dev	:	LCDDev_t 结构体指针
+ * @param	dev	:	lcd_dev_t 结构体指针
  * @param	x		:	x坐标
  * @param	y		:	y坐标
  * @param	Chinese	:	要显示的汉字
@@ -944,7 +944,7 @@ static void __lcd_show_chinese24x24(LCDDev_t *dev, uint16_t x, uint16_t y, char 
  * @param	mode	:	模式：0非叠加/1叠加
  * @return	无
  ******************************************************************************/
-static void __lcd_show_chinese32x32(LCDDev_t *dev, uint16_t x, uint16_t y, char *Chinese, uint16_t fc, uint16_t bc, uint8_t mode)
+static void __lcd_show_chinese32x32(lcd_dev_t *dev, uint16_t x, uint16_t y, char *Chinese, uint16_t fc, uint16_t bc, uint8_t mode)
 {
 	uint8_t i, j;
 	uint16_t k;
@@ -981,7 +981,7 @@ static void __lcd_show_chinese32x32(LCDDev_t *dev, uint16_t x, uint16_t y, char 
 
 /******************************************************************************
  * @brief	LCD显示汉字串
- * @param	dev	:	LCDDev_t 结构体指针
+ * @param	dev	:	lcd_dev_t 结构体指针
  * @param	x		:	x坐标
  * @param	y		:	y坐标
  * @param	Chinese	:	要显示的汉字串
@@ -991,7 +991,7 @@ static void __lcd_show_chinese32x32(LCDDev_t *dev, uint16_t x, uint16_t y, char 
  * @param	mode	:	模式：0非叠加/1叠加
  * @return	无
  ******************************************************************************/
-static void __lcd_show_chinese(LCDDev_t *dev, uint16_t x, uint16_t y, char *Chinese, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode)
+static void __lcd_show_chinese(lcd_dev_t *dev, uint16_t x, uint16_t y, char *Chinese, uint16_t fc, uint16_t bc, uint8_t size, uint8_t mode)
 {
 	while(*Chinese != 0)
 	{
@@ -1008,7 +1008,7 @@ static void __lcd_show_chinese(LCDDev_t *dev, uint16_t x, uint16_t y, char *Chin
 
 /******************************************************************************
  * @brief	LCD显示图片
- * @param	dev	:	LCDDev_t 结构体指针
+ * @param	dev	:	lcd_dev_t 结构体指针
  * @param	x		:	图片左上角x坐标
  * @param	y		:	图片左上角y坐标
  * @param	width	:	图片宽度
@@ -1016,7 +1016,7 @@ static void __lcd_show_chinese(LCDDev_t *dev, uint16_t x, uint16_t y, char *Chin
  * @param	pic[]	:	图片数组
  * @return	无
  ******************************************************************************/
-static void __lcd_show_image(LCDDev_t *dev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, const uint8_t pic[])
+static void __lcd_show_image(lcd_dev_t *dev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, const uint8_t pic[])
 {
 	for (uint16_t i = 0; i < height; i++)           // 一行一行地显示
     {
@@ -1037,13 +1037,13 @@ static void __lcd_show_image(LCDDev_t *dev, uint16_t x, uint16_t y, uint16_t wid
 
 /******************************************************************************
  * @brief	LCD画点
- * @param	dev	:  LCDDev_t 结构体指针
+ * @param	dev	:  lcd_dev_t 结构体指针
  * @param	x		:  x坐标
  * @param	y		:  y坐标
  * @param	color	:  颜色
  * @return	无
  ******************************************************************************/
-static void __lcd_draw_point(LCDDev_t *dev, uint16_t x, uint16_t y, uint16_t color)
+static void __lcd_draw_point(lcd_dev_t *dev, uint16_t x, uint16_t y, uint16_t color)
 {
 	__lcd_set_cursor(dev, x, y);	// 设置光标位置
 	__lcd_write_ram_prepare(dev);	// 准备写GRAM
@@ -1052,12 +1052,12 @@ static void __lcd_draw_point(LCDDev_t *dev, uint16_t x, uint16_t y, uint16_t col
 
 /******************************************************************************
  * @brief	LCD读点
- * @param	dev	:  LCDDev_t 结构体指针
+ * @param	dev	:  lcd_dev_t 结构体指针
  * @param	x		:  x坐标
  * @param	y		:  y坐标
  * @return	要读的点的16位颜色数据
  ******************************************************************************/
-static uint16_t __lcd_read_point(LCDDev_t *dev, uint16_t x, uint16_t y)
+static uint16_t __lcd_read_point(lcd_dev_t *dev, uint16_t x, uint16_t y)
 {
 	uint16_t r = 0, g = 0, b = 0;
 	__lcd_set_cursor(dev, x, y);	// 设置光标位置
@@ -1072,7 +1072,7 @@ static uint16_t __lcd_read_point(LCDDev_t *dev, uint16_t x, uint16_t y)
 
 /******************************************************************************
  * @brief	LCD画线
- * @param	dev	:  LCDDev_t 结构体指针
+ * @param	dev	:  lcd_dev_t 结构体指针
  * @param	x1		:  起始x坐标
  * @param	y1		:  起始y坐标
  * @param	x2		:  终点x坐标
@@ -1080,7 +1080,7 @@ static uint16_t __lcd_read_point(LCDDev_t *dev, uint16_t x, uint16_t y)
  * @param	color	:  颜色
  * @return	无
  ******************************************************************************/
-static void __lcd_draw_line(LCDDev_t *dev, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color)
+static void __lcd_draw_line(lcd_dev_t *dev, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color)
 {
     uint16_t t;
     int xerr = 0, yerr = 0, delta_x, delta_y, distance;
@@ -1131,7 +1131,7 @@ static void __lcd_draw_line(LCDDev_t *dev, uint16_t x1, uint16_t y1, uint16_t x2
 
 /******************************************************************************
  * @brief	LCD画矩形
- * @param	dev	:  LCDDev_t 结构体指针
+ * @param	dev	:  lcd_dev_t 结构体指针
  * @param	x		:  矩形左上角x坐标
  * @param	y		:  矩形左上角y坐标
  * @param	width	:  矩形宽度
@@ -1139,7 +1139,7 @@ static void __lcd_draw_line(LCDDev_t *dev, uint16_t x1, uint16_t y1, uint16_t x2
  * @param	color	:  颜色
  * @return	无
  ******************************************************************************/
-static void __lcd_draw_rectangle(LCDDev_t *dev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color)
+static void __lcd_draw_rectangle(lcd_dev_t *dev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color)
 {
 	uint16_t x_end = x + width - 1;
     uint16_t y_end = y + height - 1;
@@ -1152,14 +1152,14 @@ static void __lcd_draw_rectangle(LCDDev_t *dev, uint16_t x, uint16_t y, uint16_t
 
 /******************************************************************************
  * @brief	LCD画圆
- * @param	dev	:  LCDDev_t 结构体指针
+ * @param	dev	:  lcd_dev_t 结构体指针
  * @param	x		:  x坐标
  * @param	y		:  y坐标
  * @param	r		:  半径
  * @param	color	:  颜色
  * @return	无
  ******************************************************************************/
-static void __lcd_draw_circle(LCDDev_t *dev, uint16_t x, uint16_t y, uint16_t r, uint16_t color)
+static void __lcd_draw_circle(lcd_dev_t *dev, uint16_t x, uint16_t y, uint16_t r, uint16_t color)
 {
     int a, b;
 	a = 0;
@@ -1185,10 +1185,10 @@ static void __lcd_draw_circle(LCDDev_t *dev, uint16_t x, uint16_t y, uint16_t r,
 
 /******************************************************************************
  * @brief	去初始化LCD
- * @param	dev   :  LCDDev_t 结构体指针
+ * @param	dev   :  lcd_dev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int8_t __lcd_deinit(LCDDev_t *dev)
+static int8_t __lcd_deinit(lcd_dev_t *dev)
 {
 	if (!dev || !dev->init_flag)
 		return -1;

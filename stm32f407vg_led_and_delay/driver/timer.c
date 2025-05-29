@@ -16,10 +16,10 @@
 									TIMx == TIM4 ? 2 : \
 									(int)-1	)
 										
-#define	__timer_config_clock_enable(TIMx)	{	if(TIMx == TIM2)		{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);} \
-												else if(TIMx == TIM3)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);} \
-												else if(TIMx == TIM4)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);} \
-											}
+#define	__timer_clock_enable(TIMx)	{	if (TIMx == TIM2)		{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);} \
+										else if (TIMx == TIM3)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);} \
+										else if (TIMx == TIM4)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);} \
+									}
                                             
 #elif defined(STM32F10X_HD)
 
@@ -43,13 +43,13 @@
 									TIMx == TIM7 ? 5 : \
 									(int)-1	)
 										
-#define	__timer_config_clock_enable(TIMx)	{	if(TIMx == TIM2)		{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);} \
-												else if(TIMx == TIM3)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);} \
-												else if(TIMx == TIM4)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);} \
-												else if(TIMx == TIM5)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5, ENABLE);} \
-												else if(TIMx == TIM6)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6, ENABLE);} \
-												else if(TIMx == TIM7)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM7, ENABLE);} \
-											}
+#define	__timer_clock_enable(TIMx)	{	if (TIMx == TIM2)		{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);} \
+										else if (TIMx == TIM3)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);} \
+										else if (TIMx == TIM4)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);} \
+										else if (TIMx == TIM5)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5, ENABLE);} \
+										else if (TIMx == TIM6)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6, ENABLE);} \
+										else if (TIMx == TIM7)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM7, ENABLE);} \
+									}
 
 #elif defined(STM32F40_41xxx)
 
@@ -73,13 +73,13 @@
 									TIMx == TIM7 ? 5 : \
 									(int)-1	)
 										
-#define	__timer_config_clock_enable(TIMx)	{	if(TIMx == TIM2)		{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);} \
-												else if(TIMx == TIM3)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);} \
-												else if(TIMx == TIM4)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);} \
-												else if(TIMx == TIM5)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5, ENABLE);} \
-												else if(TIMx == TIM6)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6, ENABLE);} \
-												else if(TIMx == TIM7)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM7, ENABLE);} \
-											}
+#define	__timer_clock_enable(TIMx)	{	if (TIMx == TIM2)		{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);} \
+										else if (TIMx == TIM3)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);} \
+										else if (TIMx == TIM4)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);} \
+										else if (TIMx == TIM5)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5, ENABLE);} \
+										else if (TIMx == TIM6)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6, ENABLE);} \
+										else if (TIMx == TIM7)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM7, ENABLE);} \
+									}
 
 #elif defined(STM32F429_439xx)
 
@@ -103,13 +103,13 @@
 									TIMx == TIM7 ? 5 : \
 									(int)-1	)
 										
-#define	__timer_config_clock_enable(TIMx)	{	if(TIMx == TIM2)		{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);} \
-												else if(TIMx == TIM3)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);} \
-												else if(TIMx == TIM4)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);} \
-												else if(TIMx == TIM5)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5, ENABLE);} \
-                                                else if(TIMx == TIM6)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6, ENABLE);} \
-												else if(TIMx == TIM7)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM7, ENABLE);} \
-											}
+#define	__timer_clock_enable(TIMx)	{	if (TIMx == TIM2)		{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);} \
+										else if (TIMx == TIM3)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);} \
+										else if (TIMx == TIM4)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);} \
+										else if (TIMx == TIM5)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5, ENABLE);} \
+										else if (TIMx == TIM6)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6, ENABLE);} \
+										else if (TIMx == TIM7)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM7, ENABLE);} \
+									}
 
 #elif defined(STM32F40_41xxx)
 
@@ -133,55 +133,55 @@
 									TIMx == TIM7 ? 5 : \
 									(int)-1	)
 										
-#define	__timer_config_clock_enable(TIMx)	{	if(TIMx == TIM2)		{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);} \
-												else if(TIMx == TIM3)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);} \
-												else if(TIMx == TIM4)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);} \
-												else if(TIMx == TIM5)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5, ENABLE);} \
-												else if(TIMx == TIM6)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6, ENABLE);} \
-												else if(TIMx == TIM7)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM7, ENABLE);} \
-											}
+#define	__timer_clock_enable(TIMx)	{	if (TIMx == TIM2)		{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);} \
+										else if (TIMx == TIM3)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);} \
+										else if (TIMx == TIM4)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);} \
+										else if (TIMx == TIM5)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5, ENABLE);} \
+										else if (TIMx == TIM6)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6, ENABLE);} \
+										else if (TIMx == TIM7)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM7, ENABLE);} \
+									}
                                             
 #endif
 
 /* 定时器私有数据结构体 */
-typedef struct{
-	uint32_t irqn;			// 中断号
-	uint8_t index;			// 索引
-}TimerPrivData_t;
+typedef struct {
+	uint32_t irqn;	// 中断号
+	uint8_t index;	// 索引
+} timer_priv_data_t;
 
 /* 全局变量用于保存回调函数 */
 static void (*g_irq_callback[MAX_TIMER_NUM])(void);
 
 /* 函数声明 */
-static int __timer_delay_us(TimerDev_t *dev, uint32_t us);
-static int __timer_delay_ms(TimerDev_t *dev, uint32_t ms);
-static int8_t __timer_deinit(TimerDev_t *dev);
+static int __timer_delay_us(timer_dev_t *dev, uint32_t us);
+static int __timer_delay_ms(timer_dev_t *dev, uint32_t ms);
+static int8_t __timer_deinit(timer_dev_t *dev);
 
 /******************************************************************************
  * @brief	初始化定时器并配置中断
 			以STM32F1为例，定时器时钟72MHz，72M/PSC为计数频率，其倒数为计数周期
 			用作微秒级定时器时，PSC = 72 - 1，计数周期 = 1us，定时周期 = (ASC + 1)(us)，最大定时周期约为65.5ms
 			用作毫秒级定时器时，PSC = 7200 - 1，计数周期 = 0.1ms，定时周期 = ((ASC + 1)/10))(ms)，最大定时周期约为6.55s
- * @param	dev	:	TimerDev_t结构体指针
+ * @param	dev	:	timer_dev_t结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-int8_t timer_init(TimerDev_t *dev)
+int8_t timer_init(timer_dev_t *dev)
 {
 	if (!dev)
 		return -1;
 	
 	/* 初始化私有数据 */
-	dev->priv_data = (TimerPrivData_t *)malloc(sizeof(TimerPrivData_t));
+	dev->priv_data = (timer_priv_data_t *)malloc(sizeof(timer_priv_data_t));
 	if (!dev->priv_data)
 		return -1;
 	
-	TimerPrivData_t *priv_data = (TimerPrivData_t *)dev->priv_data;
+	timer_priv_data_t *priv_data = (timer_priv_data_t *)dev->priv_data;
 	
 	priv_data->irqn = __timer_get_irqn_channel(dev->config.timx);
 	priv_data->index =__timer_get_index(dev->config.timx);
 	
 	/* 配置时钟 */
-	__timer_config_clock_enable(dev->config.timx);
+	__timer_clock_enable(dev->config.timx);
 	
 	/* 配置时钟源 */
 	TIM_InternalClockConfig(dev->config.timx);
@@ -226,11 +226,11 @@ int8_t timer_init(TimerDev_t *dev)
 
 /******************************************************************************
  * @brief	TIM实现微秒级延时，需要正确配置PSC寄存器
- * @param	dev	：	TimerDev_t结构体指针
- * @param	us		：	要延时的微秒数
+ * @param	dev	:	timer_dev_t结构体指针
+ * @param	us	:	要延时的微秒数
  * @return	延时成功返回us数，延时失败则返回-1
  ******************************************************************************/
-static int __timer_delay_us(TimerDev_t *dev, uint32_t us)
+static int __timer_delay_us(timer_dev_t *dev, uint32_t us)
 {
 	if (TIM_GetPrescaler(dev->config.timx) != TIMER_FREQ / 1000000 - 1)	// 判断PSC配置
 		return -1;
@@ -244,11 +244,11 @@ static int __timer_delay_us(TimerDev_t *dev, uint32_t us)
 
 /******************************************************************************
  * @brief	TIM实现毫秒级延时，需要正确配置PSC寄存器
- * @param	dev	：	TimerDev_t结构体指针
- * @param	us		：	要延时的毫秒数
+ * @param	dev	:	timer_dev_t结构体指针
+ * @param	us	:	要延时的毫秒数
  * @return	延时成功返回ms数，延时失败则返回-1
  ******************************************************************************/
-static int __timer_delay_ms(TimerDev_t *dev, uint32_t ms)
+static int __timer_delay_ms(timer_dev_t *dev, uint32_t ms)
 {
 	if (TIM_GetPrescaler(dev->config.timx) != TIMER_FREQ / 1000000 - 1)	// 判断PSC配置
 		return -1;
@@ -263,10 +263,10 @@ static int __timer_delay_ms(TimerDev_t *dev, uint32_t ms)
 
 /******************************************************************************
  * @brief	去初始化定时器
- * @param	dev   :  TimerDev_t结构体指针
+ * @param	dev	:	timer_dev_t结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int8_t __timer_deinit(TimerDev_t *dev)
+static int8_t __timer_deinit(timer_dev_t *dev)
 {
 	if (!dev || !dev->init_flag)
 		return -1;

@@ -3,14 +3,14 @@
 /*************************** STM32F1系列 ***************************/
 #if defined(STM32F10X_MD) || defined(STM32F10X_HD)
 
-#define	__uart_config_gpio_clock_enable(port)	{	if (port == GPIOA)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);} \
-													else if (port == GPIOB)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);} \
-													else if (port == GPIOC)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);} \
-													else if (port == GPIOD)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);} \
-													else if (port == GPIOE)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);} \
-													else if (port == GPIOF)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE);} \
-													else if (port == GPIOG)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, ENABLE);} \
-												}
+#define	__uart_io_clock_enable(port)	{	if (port == GPIOA)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);} \
+											else if (port == GPIOB)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);} \
+											else if (port == GPIOC)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);} \
+											else if (port == GPIOD)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);} \
+											else if (port == GPIOE)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);} \
+											else if (port == GPIOF)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE);} \
+											else if (port == GPIOG)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, ENABLE);} \
+										}
 
 #define	__uart_config_io_af_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
 												GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP; \
@@ -29,15 +29,15 @@
 	/*************************** STM32F1系列：UART1、2、3可用 ***************************/
 	#if defined(STM32F10X_MD)
 
-	#define	__uart_config_clock_enable(uartx)	{	if (uartx == USART1)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);} \
-													else if (uartx == USART2)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);} \
-													else if (uartx == USART3)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);} \
-												}
+	#define	__uart_clock_enable(uartx)	{	if (uartx == USART1)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);} \
+											else if (uartx == USART2)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);} \
+											else if (uartx == USART3)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);} \
+										}
 
-	#define	__uart_config_dma_clock_enable(uartx)	{	if (uartx == USART1)		{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);} \
-														else if (uartx == USART2)	{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);} \
-														else if (uartx == USART3)	{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);} \
-													}
+	#define	__uart_dma_clock_enable(uartx)	{	if (uartx == USART1)		{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);} \
+												else if (uartx == USART2)	{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);} \
+												else if (uartx == USART3)	{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);} \
+											}
 
 	#define __uart_get_irqn(uartx)	(	uartx == USART1 ? USART1_IRQn : \
 										uartx == USART2 ? USART2_IRQn : \
@@ -52,17 +52,17 @@
 	/*************************** STM32F1系列：UART1、2、3、4可用 ***************************/											
 	#elif defined(STM32F10X_HD)
 										
-	#define	__uart_config_clock_enable(uartx)	{	if (uartx == USART1)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);} \
-													else if (uartx == USART2)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);} \
-													else if (uartx == USART3)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);} \
-													else if (uartx == UART4)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART4, ENABLE);} \
-												}
+	#define	__uart_clock_enable(uartx)	{	if (uartx == USART1)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);} \
+											else if (uartx == USART2)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);} \
+											else if (uartx == USART3)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);} \
+											else if (uartx == UART4)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART4, ENABLE);} \
+										}
 
-	#define	__uart_config_dma_clock_enable(uartx)	{	if (uartx == USART1)		{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);} \
-														else if (uartx == USART2)	{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);} \
-														else if (uartx == USART3)	{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);} \
-														else if (uartx == UART4)	{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA2, ENABLE);} \
-													}
+	#define	__uart_dma_clock_enable(uartx)	{	if (uartx == USART1)		{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);} \
+												else if (uartx == USART2)	{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);} \
+												else if (uartx == USART3)	{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);} \
+												else if (uartx == UART4)	{RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA2, ENABLE);} \
+											}
 
 	#define __uart_get_irqn(uartx)	(	uartx == USART1 ? USART1_IRQn : \
 										uartx == USART2 ? USART2_IRQn : \
@@ -82,14 +82,14 @@
 /*************************** STM32F4系列 ***************************/
 #if defined(STM32F40_41xxx) || defined(STM32F429_439xx) || defined(STM32F411xE)
 
-#define	__uart_config_gpio_clock_enable(port)	{	if (port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);} \
-													else if (port == GPIOB)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);} \
-													else if (port == GPIOC)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);} \
-													else if (port == GPIOD)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);} \
-													else if (port == GPIOE)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);} \
-													else if (port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);} \
-													else if (port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);} \
-												}
+#define	__uart_io_clock_enable(port)	{	if (port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);} \
+											else if (port == GPIOB)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);} \
+											else if (port == GPIOC)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);} \
+											else if (port == GPIOD)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);} \
+											else if (port == GPIOE)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);} \
+											else if (port == GPIOF)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);} \
+											else if (port == GPIOG)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);} \
+										}
 
 #define	__uart_config_io_af_pp(port, pin)	{	GPIO_InitTypeDef GPIO_InitStructure; \
 												GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF; \
@@ -121,21 +121,21 @@
 	/*************************** STM32F4系列：UART1、2、3、4、5、6可用 ***************************/
 	#if defined(STM32F40_41xxx) || defined(STM32F429_439xx)
 
-	#define	__uart_config_clock_enable(uartx)	{	if (uartx == USART1)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);} \
-													else if (uartx == USART2)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);} \
-													else if (uartx == USART3)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);} \
-													else if (uartx == UART4)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART4, ENABLE);} \
-													else if (uartx == UART5)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART5, ENABLE);} \
-													else if (uartx == USART6)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART6, ENABLE);} \
-												}
+	#define	__uart_clock_enable(uartx)	{	if (uartx == USART1)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);} \
+											else if (uartx == USART2)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);} \
+											else if (uartx == USART3)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);} \
+											else if (uartx == UART4)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART4, ENABLE);} \
+											else if (uartx == UART5)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART5, ENABLE);} \
+											else if (uartx == USART6)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART6, ENABLE);} \
+										}
 
-	#define	__uart_config_dma_clock_enable(uartx)	{	if (uartx == USART1)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);} \
-														else if (uartx == USART2)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);} \
-														else if (uartx == USART3)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);} \
-														else if (uartx == UART4)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);} \
-														else if (uartx == UART5)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);} \
-														else if (uartx == USART6)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);} \
-													}
+	#define	__uart_dma_clock_enable(uartx)	{	if (uartx == USART1)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);} \
+												else if (uartx == USART2)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);} \
+												else if (uartx == USART3)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);} \
+												else if (uartx == UART4)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);} \
+												else if (uartx == UART5)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);} \
+												else if (uartx == USART6)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);} \
+											}
 
 	#define __uart_get_irqn(uartx)	(	uartx == USART1 ? USART1_IRQn : \
 										uartx == USART2 ? USART2_IRQn : \
@@ -164,15 +164,15 @@
 	/*************************** STM32F4系列：UART1、2、6可用 ***************************/
 	#elif defined(STM32F411xE)
 
-	#define	__uart_config_clock_enable(uartx)	{	if (uartx == USART1)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);} \
-													else if (uartx == USART2)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);} \
-													else if (uartx == USART6)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART6, ENABLE);} \
-												}
+	#define	__uart_clock_enable(uartx)	{	if (uartx == USART1)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);} \
+											else if (uartx == USART2)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);} \
+											else if (uartx == USART6)	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART6, ENABLE);} \
+										}
 
-	#define	__uart_config_dma_clock_enable(uartx)	{	if (uartx == USART1)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);} \
-														else if (uartx == USART2)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);} \
-														else if (uartx == USART6)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);} \
-													}
+	#define	__uart_dma_clock_enable(uartx)	{	if (uartx == USART1)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);} \
+												else if (uartx == USART2)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);} \
+												else if (uartx == USART6)	{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);} \
+											}
 
 	#define __uart_get_irqn(uartx)	(	uartx == USART1 ? USART1_IRQn : \
 										uartx == USART2 ? USART2_IRQn : \
@@ -196,37 +196,37 @@
 #if UART1_ENABLE
 uint8_t uart1_tx_buf[UART1_TX_SIZE];
 uint8_t uart1_rx_buf[UART1_RX_SIZE];
-UARTRXControlBlock_t uart1_rx_cb;
+uart_rx_cb_t uart1_rx_cb;
 #endif
 #if UART2_ENABLE
 uint8_t uart2_tx_buf[UART2_TX_SIZE];
 uint8_t uart2_rx_buf[UART2_RX_SIZE];
-UARTRXControlBlock_t uart2_rx_cb;
+uart_rx_cb_t uart2_rx_cb;
 #endif
 #if UART3_ENABLE
 uint8_t uart3_tx_buf[UART3_TX_SIZE];
 uint8_t uart3_rx_buf[UART3_RX_SIZE];
-UARTRXControlBlock_t uart3_rx_cb;
+uart_rx_cb_t uart3_rx_cb;
 #endif
 #if UART4_ENABLE
 uint8_t uart4_tx_buf[UART4_TX_SIZE];
 uint8_t uart4_rx_buf[UART4_RX_SIZE];
-UARTRXControlBlock_t uart4_rx_cb;
+uart_rx_cb_t uart4_rx_cb;
 #endif
 #if UART5_ENABLE
 uint8_t uart5_tx_buf[UART5_TX_SIZE];
 uint8_t uart5_rx_buf[UART5_RX_SIZE];
-UARTRXControlBlock_t uart5_rx_cb;
+uart_rx_cb_t uart5_rx_cb;
 #endif
 #if UART6_ENABLE
 uint8_t uart6_tx_buf[UART6_TX_SIZE];
 uint8_t uart6_rx_buf[UART6_RX_SIZE];
-UARTRXControlBlock_t uart6_rx_cb;
+uart_rx_cb_t uart6_rx_cb;
 #endif
 
 /* 函数声明 */
-static void __uart_dma_init(UARTDev_t *dev);
-static void __uart_control_block_init(UARTDev_t *dev);
+static void __uart_dma_init(uart_dev_t *dev);
+static void __uart_control_block_init(uart_dev_t *dev);
 #if UART1_ENABLE
 static void __uart1_printf(char *format, ...);
 static void __uart1_send(uint8_t *data, uint32_t len);
@@ -257,22 +257,22 @@ static void __uart6_printf(char *format, ...);
 static void __uart6_send(uint8_t *data, uint32_t len);
 static char *__uart6_recv(void);
 #endif
-static int8_t __uart_deinit(UARTDev_t *dev);
+static int8_t __uart_deinit(uart_dev_t *dev);
 
 /******************************************************************************
  * @brief	初始化UART，只能配置支持DMA的串口
- * @param	dev	:  UARTDev_t 结构体指针
+ * @param	dev	:  uart_dev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/											
-int8_t uart_init(UARTDev_t *dev)
+int8_t uart_init(uart_dev_t *dev)
 {
 	if (!dev)
 		return -1;
 
 	/* 开启时钟 */
-	__uart_config_clock_enable(dev->config.uartx);
-	__uart_config_gpio_clock_enable(dev->config.tx_port);
-	__uart_config_gpio_clock_enable(dev->config.rx_port);
+	__uart_clock_enable(dev->config.uartx);
+	__uart_io_clock_enable(dev->config.tx_port);
+	__uart_io_clock_enable(dev->config.rx_port);
 
 	/* 配置GPIO */
     #if defined(STM32F10X_MD) || defined(STM32F10X_HD)
@@ -359,13 +359,13 @@ int8_t uart_init(UARTDev_t *dev)
 
 /******************************************************************************
  * @brief	UART配置为DMA接收数据
- * @param	dev	:  UARTDev_t结构体指针
+ * @param	dev	:  uart_dev_t结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/											
-static void __uart_dma_init(UARTDev_t *dev)
+static void __uart_dma_init(uart_dev_t *dev)
 {
 	/* 开启DMA时钟 */
-	__uart_config_dma_clock_enable(dev->config.uartx);
+	__uart_dma_clock_enable(dev->config.uartx);
 
 	/* 配置DMA */
 	#if defined(STM32F10X_HD) || defined(STM32F10X_MD)
@@ -486,7 +486,7 @@ static void __uart_dma_init(UARTDev_t *dev)
  * @param	无
  * @return	无
  ******************************************************************************/
-static void __uart_control_block_init(UARTDev_t *dev)
+static void __uart_control_block_init(uart_dev_t *dev)
 {
 	#if UART1_ENABLE
 	if (dev->config.uartx == USART1)
@@ -1045,10 +1045,10 @@ static char *__uart6_recv(void)
 
 /******************************************************************************
  * @brief	去初始化UART
- * @param	dev   :  UARTDev_t 结构体指针
+ * @param	dev   :  uart_dev_t 结构体指针
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static int8_t __uart_deinit(UARTDev_t *dev)
+static int8_t __uart_deinit(uart_dev_t *dev)
 {
 	if (!dev || !dev->init_flag)
 		return -1;

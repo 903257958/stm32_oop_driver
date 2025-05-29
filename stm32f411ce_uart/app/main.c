@@ -1,8 +1,8 @@
 #include "main.h"
 
-UARTDev_t uart1 = {.config = {USART1, 115200, GPIOA, GPIO_Pin_9, GPIOA, GPIO_Pin_10}};
-UARTDev_t uart2 = {.config = {USART2, 115200, GPIOA, GPIO_Pin_2, GPIOA, GPIO_Pin_3}};
-UARTDev_t uart6 = {.config = {USART6, 115200, GPIOA, GPIO_Pin_11, GPIOA, GPIO_Pin_12}};
+uart_dev_t uart1 = {.config = {USART1, 115200, GPIOA, GPIO_Pin_9, GPIOA, GPIO_Pin_10}};
+uart_dev_t uart2 = {.config = {USART2, 115200, GPIOA, GPIO_Pin_2, GPIOA, GPIO_Pin_3}};
+uart_dev_t uart6 = {.config = {USART6, 115200, GPIOA, GPIO_Pin_11, GPIOA, GPIO_Pin_12}};
 
 char *uart1_rx_data;
 char *uart2_rx_data;
@@ -12,8 +12,7 @@ int main(void)
 {
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
-	delay_init(72);
-	
+	delay_init(100);
 	uart_init(&uart1);
 	uart_init(&uart2);
     uart_init(&uart6);
@@ -23,7 +22,7 @@ int main(void)
 	uart2.printf("\r\nThis is UART2!\r\n");
     uart6.printf("\r\nThis is UART6!\r\n");
 	
-	while(1)
+	while (1)
 	{
 		/* 串口接收测试 */
 		uart1_rx_data = uart1.recv();
