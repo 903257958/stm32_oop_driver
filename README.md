@@ -25,14 +25,15 @@
 | `xxx_adc`                 | 多通道ADC采集 |
 | `xxx_uart`                | 串口发送 + 空闲中断 + DMA 接收 |
 | `xxx_esp8266`             | （待优化）ESP8266通过AT指令获取时间、天气等信息 |
-| `xxx_i2c_sw_bmp280`       | 软件I2C驱动BMP280获取温度与气压值 |
-| `xxx_i2c_sw_eeprom`       | 软件I2C读写EEPROM（AT24C02） |
-| `xxx_i2c_sw_mpu6050`      | 软件I2C驱动MPU6050获取陀螺仪数据 |
-| `xxx_i2c_sw_max30102`     | 软件I2C驱动MAX30102获取心率血氧 |
-| `xxx_i2c_sw_ssd1306`      | 软件I2C驱动0.96寸OLED（SSD1306，128×64）|
-| `xxx_spi_hw_w25qx`        | 硬件SPI读写外部Flash |
-| `xxx_spi_hw_dma_ssd1306`  | 硬件SPI + DMA驱动0.96寸OLED（SSD1306，128×64）|
-| `xxx_spi_hw_dma_st7735`   | 硬件SPI + DMA驱动1.8寸LCD（ST7735，128×160）|
+| `xxx_i2c_soft_ap3216c`    | 软件I2C驱动AP3216C获取光照、距离与红外值 |
+| `xxx_i2c_soft_bmp280`     | 软件I2C驱动BMP280获取温度与气压值 |
+| `xxx_i2c_soft_eeprom`     | 软件I2C读写EEPROM（AT24C02） |
+| `xxx_i2c_soft_mpu6050`    | 软件I2C驱动MPU6050获取陀螺仪数据 |
+| `xxx_i2c_soft_max30102`   | 软件I2C驱动MAX30102获取心率血氧 |
+| `xxx_i2c_soft_ssd1306`    | 软件I2C驱动0.96寸OLED（SSD1306，128×64）|
+| `xxx_spi_hard_w25qx`      | 硬件SPI读写外部Flash |
+| `xxx_spi_hard_dma_ssd1306`| 硬件SPI + DMA驱动0.96寸OLED（SSD1306，128×64）|
+| `xxx_spi_hard_dma_st7735` | 硬件SPI + DMA驱动1.8寸LCD（ST7735，128×160）|
 | `xxx_fsmc_ili9341`        | FSMC驱动2.8寸LCD（ILI9341，240×320）|
 | `xxx_flash`               | 读写内部Flash |
 | `xxx_rtc`                 | RTC实时时钟 |
