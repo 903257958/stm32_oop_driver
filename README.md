@@ -34,7 +34,7 @@
 | `xxx_spi_hw_dma_ssd1306`  | 硬件SPI + DMA驱动0.96寸OLED（SSD1306，128×64）|
 | `xxx_spi_hw_dma_st7735`   | 硬件SPI + DMA驱动1.8寸LCD（ST7735，128×160）|
 | `xxx_fsmc_ili9341`        | FSMC驱动2.8寸LCD（ILI9341，240×320）|
-| `xxx_fmc`                 | 内部Flash读写 |
+| `xxx_flash`               | 读写内部Flash |
 | `xxx_rtc`                 | RTC实时时钟 |
 | `xxx_dht11`               | DHT11测量温湿度 |
 | `xxx_ds18b20`             | DS18B20测量温度 |
