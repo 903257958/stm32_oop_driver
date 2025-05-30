@@ -17,6 +17,12 @@
           },
           {
             "path": "../app/main.h"
+          },
+          {
+            "path": "../app/wifi.c"
+          },
+          {
+            "path": "../app/wifi.h"
           }
         ],
         "folders": []
@@ -25,22 +31,22 @@
         "name": "driver",
         "files": [
           {
+            "path": "../driver/delay.h"
+          },
+          {
             "path": "../driver/delay.c"
           },
           {
-            "path": "../driver/delay.h"
+            "path": "../driver/uart.h"
+          },
+          {
+            "path": "../driver/uart.c"
           },
           {
             "path": "../driver/esp8266.c"
           },
           {
             "path": "../driver/esp8266.h"
-          },
-          {
-            "path": "../driver/uart.c"
-          },
-          {
-            "path": "../driver/uart.h"
           }
         ],
         "folders": []
@@ -209,6 +215,24 @@
           }
         ],
         "folders": []
+      },
+      {
+        "name": "third_lib",
+        "files": [],
+        "folders": [
+          {
+            "name": "cjson",
+            "files": [
+              {
+                "path": "../third_lib/cjson/cJSON.h"
+              },
+              {
+                "path": "../third_lib/cjson/cJSON.c"
+              }
+            ],
+            "folders": []
+          }
+        ]
       }
     ]
   },
@@ -216,7 +240,7 @@
   "deviceName": null,
   "packDir": null,
   "miscInfo": {
-    "uid": "ec6e2bc138743516c8ef95483b4dda95"
+    "uid": "552443ed8adb8091545e90fec7a85f4a"
   },
   "targets": {
     "Target 1": {
@@ -365,6 +389,7 @@
           "../firmware/driver/inc",
           "../third_lib/freertos/include",
           "../third_lib/freertos/portable/RVDS/ARM_CM4F",
+          "../third_lib/cjson",
           ".cmsis/include",
           "../mdk/RTE/_Target 1",
           ".eide/deps"

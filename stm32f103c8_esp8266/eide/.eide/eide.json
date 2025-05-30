@@ -17,6 +17,12 @@
           },
           {
             "path": "../app/main.h"
+          },
+          {
+            "path": "../app/wifi.c"
+          },
+          {
+            "path": "../app/wifi.h"
           }
         ],
         "folders": []
@@ -146,6 +152,24 @@
           }
         ],
         "folders": []
+      },
+      {
+        "name": "third_lib",
+        "files": [],
+        "folders": [
+          {
+            "name": "cjson",
+            "files": [
+              {
+                "path": "../third_lib/cjson/cJSON.c"
+              },
+              {
+                "path": "../third_lib/cjson/cJSON.h"
+              }
+            ],
+            "folders": []
+          }
+        ]
       }
     ]
   },
@@ -153,7 +177,7 @@
   "deviceName": null,
   "packDir": null,
   "miscInfo": {
-    "uid": "f0d991e643dda7125867ce609531f363"
+    "uid": "103da64b651c06e3470d43902a495d75"
   },
   "targets": {
     "Target 1": {
@@ -302,6 +326,7 @@
           "../firmware/driver/inc",
           "../third_lib/freertos/include",
           "../third_lib/freertos/portable/RVDS/ARM_CM4F",
+          "../third_lib/cjson",
           ".cmsis/include",
           "../mdk/RTE/_Target 1",
           ".eide/deps"

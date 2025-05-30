@@ -25,7 +25,7 @@
 
 /* 串口使能配置 */
 #define UART1_ENABLE	1
-#define UART2_ENABLE	0
+#define UART2_ENABLE	1
 #define UART3_ENABLE	0
 #define UART4_ENABLE	0
 #define UART5_ENABLE	0
@@ -47,7 +47,7 @@
 
 /* 单次接收最大长度 */
 #define UART1_RX_MAX	512
-#define UART2_RX_MAX	512
+#define UART2_RX_MAX	1024
 #define UART3_RX_MAX	512
 #define UART4_RX_MAX	512
 #define UART5_RX_MAX	512

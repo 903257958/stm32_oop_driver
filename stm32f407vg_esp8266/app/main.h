@@ -13,4 +13,7 @@
 #include "uart.h"
 #include "esp8266.h"
 
+/* 应用层头文件 */
+#include "wifi.h"
+
 #endif
