@@ -25,6 +25,7 @@
 | `xxx_adc`                 | 多通道ADC采集 |
 | `xxx_uart`                | 串口发送 + 空闲中断 + DMA 接收 |
 | `xxx_esp8266`             | ESP8266通过AT指令获取时间、天气信息 |
+| `xxx_i2c_soft_aht21`      | 软件I2C驱动AHT21测量温湿度 |
 | `xxx_i2c_soft_ap3216c`    | 软件I2C驱动AP3216C获取光照、距离与红外值 |
 | `xxx_i2c_soft_bmp280`     | 软件I2C驱动BMP280获取温度与气压值 |
 | `xxx_i2c_soft_eeprom`     | 软件I2C读写EEPROM（AT24C02） |
@@ -41,3 +42,4 @@
 | `xxx_dht11`               | DHT11测量温湿度 |
 | `xxx_ds18b20`             | DS18B20测量温度 |
 | `xxx_stepper_motor`       | 步进电机 |
+| `xxx_vibration_motor`     | 振动马达 |
