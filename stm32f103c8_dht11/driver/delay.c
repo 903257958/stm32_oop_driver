@@ -5,7 +5,7 @@ static bool init_flag = false;
 #if !USE_FREERTOS
 static uint16_t g_sysclk_mhz = 0; // 系统主频，单位为 MHz
 #else
-static TimerDev_t g_timer_delay;
+static timer_dev_t g_timer_delay;
 #endif
 
 #if !USE_FREERTOS
@@ -48,10 +48,10 @@ void delay_us(uint32_t us)
 
 /******************************************************************************
  * @brief	初始化延时
- * @param	timer	:  TimerDev_t 结构体指针
+ * @param	timer	:  timer_dev_t 结构体指针
  * @return	无
  ******************************************************************************/
-void delay_init(TimerDev_t *timer)
+void delay_init(timer_dev_t *timer)
 {
     /* 保存传入的定时器设备 */
     g_timer_delay = *timer;

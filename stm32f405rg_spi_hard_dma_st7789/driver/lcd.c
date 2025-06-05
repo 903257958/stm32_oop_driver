@@ -370,7 +370,7 @@ void lcd_dma_init(lcd_dev_t *dev, uint32_t mem_base_addr)
 /******************************************************************************
  * @brief	LCD背光控制
  * @param	dev		:	lcd_dev_t 结构体指针
- * @param	value	:	背光调节系数，范围：0~99
+ * @param	value	:	背光调节系数，范围：0~100
  * @return	无
  ******************************************************************************/
 static void __lcd_backlight_ctrl(struct lcd_dev *dev, uint16_t val)
@@ -378,11 +378,11 @@ static void __lcd_backlight_ctrl(struct lcd_dev *dev, uint16_t val)
 	lcd_priv_data_t *priv_data = (lcd_priv_data_t *)dev->priv_data;
 
 	uint16_t compare = val * 10;
-	if (compare > 999)
+	if (compare > 1000)
 	{
-		compare = 999;
+		compare = 1000;
 	}
-	compare = 999 - compare;
+	compare = 1000 - compare;
 
 	priv_data->pwm.set_compare(&priv_data->pwm, compare);
 }

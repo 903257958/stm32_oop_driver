@@ -1,5 +1,5 @@
-#ifndef __DELAY_H
-#define __DELAY_H
+#ifndef DELAY_H
+#define DELAY_H
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -12,6 +12,9 @@
     defined(STM32F401xx) || defined(STM32F410xx) || defined(STM32F411xE) || defined(STM32F412xG) || \
     defined(STM32F413_423xx) || defined(STM32F446xx) || defined(STM32F469_479xx)
 	#include "stm32f4xx.h"
+    
+#elif defined (GD32F10X_MD) || defined (GD32F10X_HD) || defined (GD32F10X_XD) || defined (GD32F10X_CL)
+    #include "gd32f10x.h"
 
 #else
     #error delay.h: No processor defined!
@@ -25,7 +28,7 @@
 void delay_init(uint16_t sysclk_mhz);
 #else
 #include "timer.h"
-void delay_init(TimerDev_t *timer);
+void delay_init(timer_dev_t *timer);
 #endif
 void delay_us(uint32_t us);
 void delay_ms(uint32_t ms);

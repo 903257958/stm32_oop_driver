@@ -28,7 +28,7 @@
 void delay_init(uint16_t sysclk_mhz);
 #else
 #include "timer.h"
-void delay_init(TimerDev_t *timer);
+void delay_init(timer_dev_t *timer);
 #endif
 void delay_us(uint32_t us);
 void delay_ms(uint32_t ms);
