@@ -18,8 +18,9 @@
 | `xxx_gpio`                | 基本GPIO输入输出操作 |
 | `xxx_led_and_delay`       | LED 控制 + 基于SysTick/定时器的延时函数 |
 | `xxx_timer_irq`           | 定时器中断 |
-| `xxx_key`                 | 按键输入 + 延时消抖 |
-| `xxx_key_fifo`            | 按键 + 环形缓冲区 + 定时器中断扫描 + 定时器消抖 |
+| `xxx_key`                 | 按键 |
+| `xxx_key_fifo`            | 按键 + 环形缓冲区 + 定时器中断扫描消抖 |
+| `xxx_key_fifo_event`      | xxx_key_fifo 的基础上添加事件处理，支持双击、长按等复杂操作 |
 | `xxx_pwm_servo`           | PWM驱动舵机 |
 | `xxx_pwm_rgb`             | PWM驱动RGB灯 |
 | `xxx_adc`                 | 多通道ADC采集 |

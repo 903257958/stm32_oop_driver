@@ -242,22 +242,8 @@ static int8_t __key_deinit(key_dev_t *dev)
 {
 	if (!dev || !dev->init_flag)
 		return -1;
-
-	uint8_t i;
 	
-	g_timer_key_tick.deinit(&g_timer_key_tick);
-
 	dev->init_flag = false;	// 修改初始化标志
 
-	/* 从按键设备数组中移除该设备 */
-    for (i = 0; i < g_key_dev_num; i++)
-    {
-        if (g_key_dev[i] == dev)
-        {
-            g_key_dev[i] = NULL;
-            break;
-        }
-    }
-	
 	return 0;
 }
