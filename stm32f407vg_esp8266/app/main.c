@@ -1,14 +1,22 @@
 #include "main.h"
 
-uart_dev_t    debug   = {.config = {USART1, 115200, GPIOA, GPIO_Pin_9, GPIOA, GPIO_Pin_10}};
-esp8266_dev_t esp8266 = {.config = {USART2, GPIOA, GPIO_Pin_2, GPIOA, GPIO_Pin_3, "AT+CWJAP=\"shouji\",\"thxd156369\"\r\n"}};
+uart_dev_t debug = {
+    .config = {USART1, 115200, GPIOA, GPIO_Pin_9, GPIOA, GPIO_Pin_10}
+};
+
+esp8266_dev_t esp8266 = {
+    .config = {USART2, GPIOA, GPIO_Pin_2, GPIOA, GPIO_Pin_3, "AT+CWJAP=\"shouji\",\"thxd156369\"\r\n"}
+};
 
 int main(void)
 {
     /* 注意：需要增加startup_stm32f40_41xxx.s中的栈大小！ */
+
     uint8_t i;
     wifi_time_info_t time;
     wifi_weather_info_t weather;
+    char tcp_recv_buf[128];
+    int16_t tcp_recv_len;
 
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
@@ -35,8 +43,22 @@ int main(void)
             weather.daily[i].date, weather.daily[i].weather, weather.daily[i].temp_high, weather.daily[i].temp_low);
     }
 
+    /* 设置TCP透传 */
+    esp8266.set_tcp_transparent(&esp8266, "10.70.6.178", 8088);
+
+    /* TCP透传发送数据 */
+    esp8266.tcp_send_data(&esp8266, "Hello\r\n");
+
+    /* 退出TCP透传 */
+    // esp8266.exit_tcp_transparent(&esp8266);
+
 	while (1)
 	{
-
+        /* TCP透传接收数据 */
+        tcp_recv_len = esp8266.tcp_recv_data(&esp8266, tcp_recv_buf, sizeof(tcp_recv_buf));
+        if (tcp_recv_len > 0)
+        {
+            debug.printf("TCP transparent received %d bytes: %s\r\n", tcp_recv_len, tcp_recv_buf);
+        }
 	}
 }

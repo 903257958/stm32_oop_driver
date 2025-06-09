@@ -45,23 +45,20 @@
 	#define ESP8266_DEBUG(fmt, ...)
 	#endif
 #endif
-#ifndef	ESP9266_SEND_DEBUG
+#ifndef	ESP8266_SEND_DEBUG
 	#if 0
-	#define ESP9266_SEND_DEBUG(send)	ESP8266_DEBUG("ESP8266 send: %s\r\n", send)
+	#define ESP8266_SEND_DEBUG(send)	ESP8266_DEBUG("ESP8266 send: %s\r\n", send)
 	#else
-	#define ESP9266_SEND_DEBUG(send)
+	#define ESP8266_SEND_DEBUG(send)
 	#endif
 #endif
-#ifndef	ESP9266_RECV_DEBUG
+#ifndef	ESP8266_RECV_DEBUG
 	#if 0
-	#define ESP9266_RECV_DEBUG(recv)	ESP8266_DEBUG("ESP8266 recv: %s\r\n", recv)
+	#define ESP8266_RECV_DEBUG(recv)	ESP8266_DEBUG("ESP8266 recv: %s\r\n", recv)
 	#else
-	#define ESP9266_RECV_DEBUG(recv)
+	#define ESP8266_RECV_DEBUG(recv)
 	#endif
 #endif
-
-/* ESP8266串口设备 */
-extern uart_dev_t uart_esp8266;
 
 typedef struct {
 	uart_periph_t uartx;			// 串口外设
@@ -76,8 +73,11 @@ typedef struct esp8266_dev {
 	esp8266_config_t config;
 	bool init_flag;								// 初始化标志
 	void *priv_data;							// 私有数据指针
-    int8_t (*clear)(struct esp8266_dev *dev, uart_rx_cb_t *uart_rx_cb);
     int8_t (*send_cmd)(struct esp8266_dev *dev, char *cmd, char *res, char *recv_data);
+	int8_t (*set_tcp_transparent)(struct esp8266_dev *dev, const char *ip, uint16_t port);
+	int8_t (*exit_tcp_transparent)(struct esp8266_dev *dev);
+    int8_t (*tcp_send_data)(struct esp8266_dev *dev, char *send_data);
+    int16_t (*tcp_recv_data)(struct esp8266_dev *dev, char *recv_data, uint16_t len);
 	int8_t (*deinit)(struct esp8266_dev *dev);  // 去初始化
 } esp8266_dev_t;
 

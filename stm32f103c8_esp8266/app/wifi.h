@@ -29,8 +29,6 @@ typedef struct {
 /* 天气预报天数 */
 #define WEATHER_FORECAST_DAY_NUM    3
 
-/* Sunny Cloudy Overcast Heavy rain Thundershower */
-
 /* 每日天气信息结构体 */
 typedef struct {
     char date[16];      // 日期

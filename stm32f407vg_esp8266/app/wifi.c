@@ -16,74 +16,123 @@ int8_t esp8266_get_time(esp8266_dev_t *dev, wifi_time_info_t *time)
 	if (!dev || !dev->init_flag)
 		return -1;
 	
+	uint8_t retry_cnt;
 	char recv_data[512];
 
     ESP8266_DEBUG("\r\nESP8266 is obtaining Beijing time...\r\n");
 
 	/* 1. 设置单连接 */
     ESP8266_DEBUG("\r\n1. Set single connection\r\n");
-    while (dev->send_cmd(dev, "AT+CIPMUX=0\r\n", "OK", NULL) != 0)
+    for (retry_cnt = 0; retry_cnt < 3; retry_cnt++)
 	{
+		if (dev->send_cmd(dev, "AT+CIPMUX=0\r\n", "OK", NULL) == 0) break;
 		ESP8266_DEBUG("retrying...\r\n");
 		ESP8266_DELAY_MS(500);
+		if (retry_cnt == 2)
+		{
+			ESP8266_DEBUG("Setting as single connection failed!\r\n");
+			return -2;
+		}
 	}
     
     /* 2. 连接TCP服务器 */
     ESP8266_DEBUG("\r\n2. Connect to TCP server\r\n");
-    while (dev->send_cmd(dev, "AT+CIPSTART=\"TCP\",\"www.beijing-time.org\",80\r\n", "OK", NULL) != 0)
+    for (retry_cnt = 0; retry_cnt < 3; retry_cnt++)
 	{
+		if (dev->send_cmd(dev, "AT+CIPSTART=\"TCP\",\"www.beijing-time.org\",80\r\n", "OK", NULL) == 0)
+			break;
+
 		ESP8266_DEBUG("retrying...\r\n");
 		ESP8266_DELAY_MS(500);
+		if (retry_cnt == 2)
+		{
+			ESP8266_DEBUG("Failed to connect to TCP server!\r\n");
+			return -3;
+		}
 	}
 
 	/* 3. 设置透传模式 */
     ESP8266_DEBUG("\r\n3. Set transparent transmission mode\r\n");
-    while (dev->send_cmd(dev, "AT+CIPMODE=1\r\n", "OK", NULL) != 0)
+    for (retry_cnt = 0; retry_cnt < 3; retry_cnt++)
 	{
+		if (dev->send_cmd(dev, "AT+CIPMODE=1\r\n", "OK", NULL) == 0) break;
 		ESP8266_DEBUG("retrying...\r\n");
 		ESP8266_DELAY_MS(500);
+		if (retry_cnt == 2)
+		{
+			ESP8266_DEBUG("Failed to set transparent transmission mode!\r\n");
+			return -4;
+		}
 	}
 	
 	/* 4. 开始透传 */
 	ESP8266_DEBUG("\r\n4. Start transparent transmission\r\n");
-	while (dev->send_cmd(dev, "AT+CIPSEND\r\n", ">", NULL) != 0)
+    for (retry_cnt = 0; retry_cnt < 3; retry_cnt++)
 	{
+		if (dev->send_cmd(dev, "AT+CIPSEND\r\n", ">", NULL) == 0) break;
 		ESP8266_DEBUG("retrying...\r\n");
 		ESP8266_DELAY_MS(500);
+		if (retry_cnt == 2)
+		{
+			ESP8266_DEBUG("Starting transparent transmission failed!\r\n");
+			return -5;
+		}
 	}
 
 	/* 5. 获取时间数据 */
 	ESP8266_DEBUG("\r\n5. Obtain time data\r\n");
-	while (dev->send_cmd(dev, "1\r\n", "GMT", recv_data) != 0)
+    for (retry_cnt = 0; retry_cnt < 3; retry_cnt++)
 	{
+		if (dev->send_cmd(dev, "1\r\n", "GMT", recv_data) == 0) break;
 		ESP8266_DEBUG("retrying...\r\n");
 		ESP8266_DELAY_MS(500);
+		if (retry_cnt == 2)
+		{
+			ESP8266_DEBUG("Failed to obtain time data!\r\n");
+			return -6;
+		}
 	}
 
 	/* 6. 提取时间数据 */
 	ESP8266_DEBUG("\r\n6. Extract time data\r\n");
-	__extract_time_data((uint8_t *)recv_data, time);
+	if (__extract_time_data((uint8_t *)recv_data, time) != 0)
+    {
+        ESP8266_DEBUG("Extracting time data failed!\r\n");
+		return -7;
+    }
+    ESP8266_DELAY_MS(1000);
 
 	/* 7. 退出透传 */
 	ESP8266_DEBUG("\r\n7. Exit transparent transmission\r\n");
 	dev->send_cmd(dev, "+++", NULL, NULL);
 	ESP8266_DELAY_MS(1000);
 
-	/* 8. AT测试 */
-	ESP8266_DEBUG("\r\n8. AT test\r\n");
-	while (dev->send_cmd(dev, "AT\r\n", "OK", NULL))
+	/* 8. 断开TCP连接 */
+	ESP8266_DEBUG("\r\n8. Close TCP connection\r\n");
+    for (retry_cnt = 0; retry_cnt < 3; retry_cnt++)
 	{
+		if (dev->send_cmd(dev, "AT+CIPCLOSE\r\n", "OK", NULL) == 0) break;
 		ESP8266_DEBUG("retrying...\r\n");
 		ESP8266_DELAY_MS(500);
+		if (retry_cnt == 2)
+		{
+			ESP8266_DEBUG("Failed to disconnect TCP connection!\r\n");
+			return -8;
+		}
 	}
-	ESP8266_DELAY_MS(500);
 
-	/* 9. 断开TCP连接 */
-	ESP8266_DEBUG("\r\n9. Close TCP connection\r\n");
-	while (dev->send_cmd(dev, "AT+CIPCLOSE\r\n", "OK", NULL))
+    /* 9. AT测试 */
+	ESP8266_DEBUG("\r\n9. AT test\r\n");
+    for (retry_cnt = 0; retry_cnt < 3; retry_cnt++)
 	{
+		if (dev->send_cmd(dev, "AT\r\n", "OK", NULL) == 0) break;
 		ESP8266_DEBUG("retrying...\r\n");
 		ESP8266_DELAY_MS(500);
+		if (retry_cnt == 2)
+		{
+			ESP8266_DEBUG("AT test failed!\r\n");
+			return -9;
+		}
 	}
 
     ESP8266_DEBUG("\r\nESP8266 successfully obtained Beijing time!\r\n");
@@ -103,6 +152,7 @@ int8_t esp8266_get_weather(esp8266_dev_t *dev, const char *city, wifi_weather_in
 	if (!dev || !dev->init_flag)
 		return -1;
 
+    uint8_t retry_cnt;
 	char current_weather_buf[512];
 	char weather_forecast_buf[1024];
     char now_query[256];
@@ -112,34 +162,60 @@ int8_t esp8266_get_weather(esp8266_dev_t *dev, const char *city, wifi_weather_in
 
 	/* 1. 设置单连接 */
     ESP8266_DEBUG("\r\n1. Set single connection\r\n");
-    while (dev->send_cmd(dev, "AT+CIPMUX=0\r\n", "OK", NULL) != 0)
+    for (retry_cnt = 0; retry_cnt < 3; retry_cnt++)
 	{
+		if (dev->send_cmd(dev, "AT+CIPMUX=0\r\n", "OK", NULL) == 0) break;
 		ESP8266_DEBUG("retrying...\r\n");
 		ESP8266_DELAY_MS(500);
+		if (retry_cnt == 2)
+		{
+			ESP8266_DEBUG("Setting as single connection failed!\r\n");
+			return -2;
+		}
 	}
     
     /* 2. 连接TCP服务器 */
     ESP8266_DEBUG("\r\n2. Connect to TCP server\r\n");
-    while (dev->send_cmd(dev, "AT+CIPSTART=\"TCP\",\"api.seniverse.com\",80\r\n", "OK", NULL) != 0)
+    for (retry_cnt = 0; retry_cnt < 3; retry_cnt++)
 	{
+		if (dev->send_cmd(dev, "AT+CIPSTART=\"TCP\",\"api.seniverse.com\",80\r\n", "OK", NULL) == 0)
+			break;
+
 		ESP8266_DEBUG("retrying...\r\n");
 		ESP8266_DELAY_MS(500);
+		if (retry_cnt == 2)
+		{
+			ESP8266_DEBUG("Failed to connect to TCP server!\r\n");
+			return -3;
+		}
 	}
 
 	/* 3. 设置透传模式 */
     ESP8266_DEBUG("\r\n3. Set transparent transmission mode\r\n");
-    while (dev->send_cmd(dev, "AT+CIPMODE=1\r\n", "OK", NULL) != 0)
+    for (retry_cnt = 0; retry_cnt < 3; retry_cnt++)
 	{
+		if (dev->send_cmd(dev, "AT+CIPMODE=1\r\n", "OK", NULL) == 0) break;
 		ESP8266_DEBUG("retrying...\r\n");
 		ESP8266_DELAY_MS(500);
+		if (retry_cnt == 2)
+		{
+			ESP8266_DEBUG("Failed to set transparent transmission mode!\r\n");
+			return -4;
+		}
 	}
 	
 	/* 4. 开始透传 */
 	ESP8266_DEBUG("\r\n4. Start transparent transmission\r\n");
-	while (dev->send_cmd(dev, "AT+CIPSEND\r\n", ">", NULL) != 0)
+	for (retry_cnt = 0; retry_cnt < 3; retry_cnt++)
 	{
+		if (dev->send_cmd(dev, "AT+CIPSEND\r\n", ">", NULL) == 0) break;
 		ESP8266_DEBUG("retrying...\r\n");
 		ESP8266_DELAY_MS(500);
+		if (retry_cnt == 2)
+		{
+			ESP8266_DEBUG("Starting transparent transmission failed!\r\n");
+			return -5;
+		}
 	}
 
 	/* 5. 获取当前天气 */
@@ -148,15 +224,25 @@ int8_t esp8266_get_weather(esp8266_dev_t *dev, const char *city, wifi_weather_in
              "GET https://api.seniverse.com/v3/weather/now.json?key=SwmhHrSHKGC4OXf6v&location=%s&language=en&unit=c\r\n",
              city);
              
-    while (dev->send_cmd(dev, now_query, "results", current_weather_buf) != 0)  
-    {
-        ESP8266_DEBUG("retrying...\r\n");
-        ESP8266_DELAY_MS(500);
-    }
+    for (retry_cnt = 0; retry_cnt < 3; retry_cnt++)
+	{
+		if (dev->send_cmd(dev, now_query, "results", current_weather_buf) == 0) break;
+		ESP8266_DEBUG("retrying...\r\n");
+		ESP8266_DELAY_MS(500);
+		if (retry_cnt == 2)
+		{
+			ESP8266_DEBUG("Failed to retrieve the current weather!\r\n");
+			return -6;
+		}
+	}
 
     /* 6. 提取当前天气数据 */
 	ESP8266_DEBUG("\r\n6. Extract current weather data\r\n");
-	__extract_current_weather_data((const char *)current_weather_buf, weather);
+    if (__extract_current_weather_data((const char *)current_weather_buf, weather) != 0)
+    {
+        ESP8266_DEBUG("Extracting current weather data failed!\r\n");
+		return -7;
+    }
 	ESP8266_DELAY_MS(500);
 
     /* 7. 获取天气预报 */
@@ -165,37 +251,58 @@ int8_t esp8266_get_weather(esp8266_dev_t *dev, const char *city, wifi_weather_in
              "GET https://api.seniverse.com/v3/weather/daily.json?key=SwmhHrSHKGC4OXf6v&location=%s&language=en&unit=c&start=0&days=5\r\n",
              city);
 
-    while (dev->send_cmd(dev, forecast_query, "results", weather_forecast_buf) != 0)  
-    {
-        ESP8266_DEBUG("retrying...\r\n");
-        ESP8266_DELAY_MS(500);
-    }
+    for (retry_cnt = 0; retry_cnt < 3; retry_cnt++)
+	{
+		if (dev->send_cmd(dev, forecast_query, "results", weather_forecast_buf) == 0) break;
+		ESP8266_DEBUG("retrying...\r\n");
+		ESP8266_DELAY_MS(500);
+		if (retry_cnt == 2)
+		{
+			ESP8266_DEBUG("Failed to obtain weather forecast!\r\n");
+			return -8;
+		}
+	}
 
     /* 8. 提取天气预报数据 */
 	ESP8266_DEBUG("\r\n8. Extract weather forecast data\r\n");
-	__extract_weather_forecast_data((const char *)weather_forecast_buf, weather);
-    ESP8266_DELAY_MS(500);
+    if (__extract_weather_forecast_data((const char *)weather_forecast_buf, weather) != 0)
+    {
+        ESP8266_DEBUG("Extracting weather forecast data failed!\r\n");
+		return -9;
+    }
+    ESP8266_DELAY_MS(1000);
 
 	/* 9. 退出透传 */
 	ESP8266_DEBUG("\r\n9. Exit transparent transmission\r\n");
 	dev->send_cmd(dev, "+++", NULL, NULL);
 	ESP8266_DELAY_MS(1000);
-
-	/* 10. AT测试 */
-	ESP8266_DEBUG("\r\n10. AT test\r\n");
-	while (dev->send_cmd(dev, "AT\r\n", "OK", NULL))
-	{
-		ESP8266_DEBUG("retrying...\r\n");
-		ESP8266_DELAY_MS(500);
-	}
-	ESP8266_DELAY_MS(500);
 	
-	/* 11. 断开TCP连接 */
-	ESP8266_DEBUG("\r\n11. Close TCP connection\r\n");
-	while (dev->send_cmd(dev, "AT+CIPCLOSE\r\n", "OK", NULL))
+	/* 10. 断开TCP连接 */
+	ESP8266_DEBUG("\r\n10. Close TCP connection\r\n");
+	for (retry_cnt = 0; retry_cnt < 3; retry_cnt++)
 	{
+		if (dev->send_cmd(dev, "AT+CIPCLOSE\r\n", "OK", NULL) == 0) break;
 		ESP8266_DEBUG("retrying...\r\n");
 		ESP8266_DELAY_MS(500);
+		if (retry_cnt == 2)
+		{
+			ESP8266_DEBUG("Failed to disconnect TCP connection!\r\n");
+			return -10;
+		}
+	}
+
+    /* 11. AT测试 */
+	ESP8266_DEBUG("\r\n11. AT test\r\n");
+	for (retry_cnt = 0; retry_cnt < 3; retry_cnt++)
+	{
+		if (dev->send_cmd(dev, "AT\r\n", "OK", NULL) == 0) break;
+		ESP8266_DEBUG("retrying...\r\n");
+		ESP8266_DELAY_MS(500);
+		if (retry_cnt == 2)
+		{
+			ESP8266_DEBUG("AT test failed!\r\n");
+			return -11;
+		}
 	}
 
     ESP8266_DEBUG("\r\nESP8266 successfully obtained weather information!\r\n");
