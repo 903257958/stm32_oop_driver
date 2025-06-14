@@ -200,10 +200,6 @@ int8_t lcd_init(lcd_dev_t *dev)
 	__lcd_dc_write(dev, 1);
 	__lcd_res_write(dev, 1);
 	
-	/* 配置背光 */
-	pwm_init(&priv_data->pwm);
-	priv_data->pwm.set_compare(&priv_data->pwm, 100);
-	
 	/* 配置LCD */
 	__lcd_reset(dev);			// 复位
 
@@ -302,6 +298,10 @@ int8_t lcd_init(lcd_dev_t *dev)
 	
 	/* 屏幕初始化为黑色 */
 	__lcd_clear(dev, BLACK);
+    
+    /* 配置背光 */
+	pwm_init(&priv_data->pwm);
+    priv_data->pwm.set_compare(&priv_data->pwm, 100);
 	
 	return 0;
 }
