@@ -20,12 +20,13 @@
 | `xxx_exti`                | 外部中断 |
 | `xxx_exti_encoder`        | 外部中断驱动旋转编码器 |
 | `xxx_timer_irq`           | 定时器中断 |
+| `xxx_timer_oc_pwm_servo`  | 定时器输出比较配置PWM驱动舵机 |
+| `xxx_timer_oc_pwm_tb6612` | 定时器输出比较配置PWM驱动TB6612控制直流电机 |
+| `xxx_timer_oc_pwm_rgb`    | 定时器输出比较配置PWM驱动RGB灯 |
+| `xxx_timer_ic_sr04`       | 定时器输入捕获驱动SR04超声波测距 |
 | `xxx_key`                 | 按键 + 延时消抖 |
 | `xxx_key_fifo`            | 按键 + 环形缓冲区 + 定时器中断扫描消抖 |
 | `xxx_key_fifo_event`      | xxx_key_fifo 的基础上添加事件处理，支持双击、长按等复杂操作 |
-| `xxx_pwm_servo`           | PWM驱动舵机 |
-| `xxx_pwm_rgb`             | PWM驱动RGB灯 |
-| `xxx_pwm_tb6612`          | PWM驱动TB6612控制直流电机 |
 | `xxx_adc`                 | 多通道ADC采集 |
 | `xxx_uart`                | 串口发送 + 空闲中断 + DMA 接收 |
 | `xxx_esp8266`             | ESP8266通过AT指令获取时间天气信息、TCP透传 |
