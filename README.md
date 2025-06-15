@@ -23,6 +23,7 @@
 | `xxx_key_fifo_event`      | xxx_key_fifo 的基础上添加事件处理，支持双击、长按等复杂操作 |
 | `xxx_pwm_servo`           | PWM驱动舵机 |
 | `xxx_pwm_rgb`             | PWM驱动RGB灯 |
+| `xxx_pwm_tb6612`          | PWM驱动TB6612控制直流电机 |
 | `xxx_adc`                 | 多通道ADC采集 |
 | `xxx_uart`                | 串口发送 + 空闲中断 + DMA 接收 |
 | `xxx_esp8266`             | ESP8266通过AT指令获取时间天气信息、TCP透传 |
