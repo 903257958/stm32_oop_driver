@@ -41,7 +41,7 @@
 | `xxx_spi_hard_w25qx`          | 硬件SPI读写外部Flash（W25QX） |
 | `xxx_spi_hard_dma_ssd1306`    | 硬件SPI+DMA驱动0.96寸OLED（SSD1306, 128×64） |
 | `xxx_spi_hard_dma_st7735`     | 硬件SPI+DMA驱动1.8寸LCD（ST7735, 128×160） |
-| `xxx_spi_hard_dma_st7789`     | 硬件SPI+DMA驱动1.69寸LCD（ST7789, 240×280）<br>+软件I2C驱动CST816T触摸屏 |
+| `xxx_spi_hard_dma_st7789`     | 硬件SPI+DMA驱动1.69寸LCD（ST7789, 240×280）<br>（+软件I2C驱动CST816T触摸屏） |
 | `xxx_fsmc_ili9341`            | FSMC驱动2.8寸LCD（ILI9341, 240×320） |
 | `xxx_flash`                   | 内部Flash读写 |
 | `xxx_rtc`                     | RTC实时时钟 |

@@ -1,9 +1,13 @@
 #include "encoder.h"
 
+#ifdef USE_STDPERIPH_DRIVER
+
 #if defined(STM32F10X_MD) || defined(STM32F10X_HD) || \
 	defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 
 #define __exti_read_io_in_bit(port, pin)	GPIO_ReadInputDataBit(port, pin)
+
+#endif
 
 #endif
 

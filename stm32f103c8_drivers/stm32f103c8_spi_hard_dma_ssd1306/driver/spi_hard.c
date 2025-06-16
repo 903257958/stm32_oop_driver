@@ -1,5 +1,7 @@
 #include "spi_hard.h"
 
+#ifdef USE_STDPERIPH_DRIVER
+
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 
 #define	__spi_clock_enable(SPIx)		{	if (SPIx == SPI1)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);} \
@@ -155,7 +157,9 @@
 											prescaler == 128 ? SPI_PSC_128 : \
 											prescaler == 256 ? SPI_PSC_256 : \
 											(int)0	)
-#endif					
+#endif
+
+#endif
 										
 /* 引脚配置层 */
 static void __spi_cs_write(spi_hard_dev_t *dev, uint8_t bit_val);

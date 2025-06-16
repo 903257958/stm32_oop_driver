@@ -6,18 +6,22 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+#ifdef USE_STDPERIPH_DRIVER
+
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 	#include "stm32f10x.h"
-	typedef GPIO_TypeDef*	cst816t_gpio_port_t;
-	typedef uint32_t		cst816t_gpio_pin_t;
+	typedef GPIO_TypeDef*	gpio_port_t;
+	typedef uint32_t		gpio_pin_t;
 	
 #elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	#include "stm32f4xx.h"
-	typedef GPIO_TypeDef*	cst816t_gpio_port_t;
-	typedef uint32_t		cst816t_gpio_pin_t;
+	typedef GPIO_TypeDef*	gpio_port_t;
+	typedef uint32_t		gpio_pin_t;
 	
 #else
 	#error cst816t.h: No processor defined!
+#endif
+
 #endif
 
 #include "i2c_soft.h"
@@ -72,13 +76,13 @@
 #define GESTURE_RIGHT		4
 
 typedef struct {
-    cst816t_gpio_port_t scl_port;		// SCL端口
-	cst816t_gpio_pin_t scl_pin;			// SCL引脚
-	cst816t_gpio_port_t sda_port;		// SDA端口
-	cst816t_gpio_pin_t sda_pin;			// SDA引脚
-    cst816t_gpio_port_t rst_port;		// RST端口
-	cst816t_gpio_pin_t rst_pin;			// RST引脚
-	uint8_t dir;						// 显示方向
+    gpio_port_t scl_port;	// SCL端口
+	gpio_pin_t scl_pin;		// SCL引脚
+	gpio_port_t sda_port;	// SDA端口
+	gpio_pin_t sda_pin;		// SDA引脚
+    gpio_port_t rst_port;	// RST端口
+	gpio_pin_t rst_pin;		// RST引脚
+	uint8_t dir;			// 显示方向
 } cst816t_config_t;
 
 typedef struct {

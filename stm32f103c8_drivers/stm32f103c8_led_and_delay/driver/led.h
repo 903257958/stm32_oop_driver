@@ -6,18 +6,22 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+#ifdef USE_STDPERIPH_DRIVER
+
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 	#include "stm32f10x.h"
-	typedef GPIO_TypeDef*	led_gpio_port_t;
-	typedef uint32_t		led_gpio_pin_t;
+	typedef GPIO_TypeDef*	gpio_port_t;
+	typedef uint32_t		gpio_pin_t;
 	
 #elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	#include "stm32f4xx.h"
-	typedef GPIO_TypeDef*	led_gpio_port_t;
-	typedef uint32_t		led_gpio_pin_t;
+	typedef GPIO_TypeDef*	gpio_port_t;
+	typedef uint32_t		gpio_pin_t;
 
 #else
     #error led.h: No processor defined!
+#endif
+
 #endif
 
 #ifndef GPIO_LEVEL_HIGH
@@ -29,9 +33,9 @@
 #endif
 
 typedef struct {
-	led_gpio_port_t port;	// 端口
-	led_gpio_pin_t pin;		// 引脚
-	bool off_level;			// LED灭时IO口的电平
+	gpio_port_t port;	// 端口
+	gpio_pin_t pin;		// 引脚
+	bool off_level;     // LED灭时IO口的电平
 } led_config_t;
 
 typedef struct led_dev {

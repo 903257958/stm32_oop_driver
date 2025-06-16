@@ -1,5 +1,7 @@
 #include "key.h"
 
+#ifdef USE_STDPERIPH_DRIVER
+
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 
 #define TIMER_FREQ	72000000
@@ -69,6 +71,8 @@
 
 #define __key_io_read(port, pin)	GPIO_ReadInputDataBit(port, pin)
 
+#endif
+                                            
 #endif
 
 /* 环形缓冲区 */
@@ -150,10 +154,10 @@ static int __key_buf_read(key_buf_t *buf)
 
 /******************************************************************************
  * @brief	按键定时器中断回调函数，扫描已注册的按键，若有按键按下，放入环形缓冲区
- * @param	无
+ * @param	param
  * @return	无
  ******************************************************************************/
-static void __key_tick(void) 
+static void __key_tick(void *param)
 { 
     static uint8_t cnt = 0; 
     static int8_t prev_state[MAX_KEY_NUM] = {0};
@@ -222,6 +226,9 @@ int8_t key_init(key_dev_t *dev)
 	g_timer_key_tick.config.psc = TIMER_FREQ / 1000000 - 1;	// 计数周期1us
 	g_timer_key_tick.config.arr = 999;						// 定时周期1ms
 	g_timer_key_tick.config.irq_callback = __key_tick;		// 注册回调函数
+    g_timer_key_tick.config.irq_callback_param = NULL;
+    g_timer_key_tick.config.preemption_priority = 0;
+    g_timer_key_tick.config.sub_priority = 0;
 	timer_init(&g_timer_key_tick);
 
 	/* 函数指针赋值 */

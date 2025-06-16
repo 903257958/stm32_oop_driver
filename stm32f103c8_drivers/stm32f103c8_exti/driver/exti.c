@@ -3,33 +3,6 @@
 #ifdef USE_STDPERIPH_DRIVER
 
 #if defined(STM32F10X_MD) || defined(STM32F10X_HD) || defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
-
-#define	__exti_get_gpio_port_source(port)	(	port == GPIOA ? GPIO_PortSourceGPIOA : \
-												port == GPIOB ? GPIO_PortSourceGPIOB : \
-												port == GPIOC ? GPIO_PortSourceGPIOC : \
-												port == GPIOD ? GPIO_PortSourceGPIOD : \
-												port == GPIOE ? GPIO_PortSourceGPIOE : \
-												port == GPIOF ? GPIO_PortSourceGPIOF : \
-												port == GPIOG ? GPIO_PortSourceGPIOG : \
-												(int)-1	)
-															
-#define	__exti_get_gpio_pin_source(pin)	(	pin == GPIO_Pin_0 ? GPIO_PinSource0 : \
-											pin == GPIO_Pin_1 ? GPIO_PinSource1 : \
-											pin == GPIO_Pin_2 ? GPIO_PinSource2 : \
-											pin == GPIO_Pin_3 ? GPIO_PinSource3 : \
-											pin == GPIO_Pin_4 ? GPIO_PinSource4 : \
-											pin == GPIO_Pin_5 ? GPIO_PinSource5 : \
-											pin == GPIO_Pin_6 ? GPIO_PinSource6 : \
-											pin == GPIO_Pin_7 ? GPIO_PinSource7 : \
-											pin == GPIO_Pin_8 ? GPIO_PinSource8 : \
-											pin == GPIO_Pin_9 ? GPIO_PinSource9 : \
-											pin == GPIO_Pin_10 ? GPIO_PinSource10 : \
-											pin == GPIO_Pin_11 ? GPIO_PinSource11 : \
-											pin == GPIO_Pin_12 ? GPIO_PinSource12 : \
-											pin == GPIO_Pin_13 ? GPIO_PinSource13 : \
-											pin == GPIO_Pin_14 ? GPIO_PinSource14 : \
-											pin == GPIO_Pin_15 ? GPIO_PinSource15 : \
-											(int)-1	)
 												
 #define	__exti_nvic_get_irq_channel(pin)	(	pin == GPIO_Pin_0 ? EXTI0_IRQn : \
 												pin == GPIO_Pin_1 ? EXTI1_IRQn : \
@@ -119,6 +92,33 @@
 
 	#define __exti_read_io_in_bit(port, pin)	GPIO_ReadInputDataBit(port, pin)
 
+	#define	__exti_get_gpio_port_source(port)	(	port == GPIOA ? GPIO_PortSourceGPIOA : \
+													port == GPIOB ? GPIO_PortSourceGPIOB : \
+													port == GPIOC ? GPIO_PortSourceGPIOC : \
+													port == GPIOD ? GPIO_PortSourceGPIOD : \
+													port == GPIOE ? GPIO_PortSourceGPIOE : \
+													port == GPIOF ? GPIO_PortSourceGPIOF : \
+													port == GPIOG ? GPIO_PortSourceGPIOG : \
+													(int)-1	)
+
+	#define	__exti_get_gpio_pin_source(pin)	(	pin == GPIO_Pin_0 ? GPIO_PinSource0 : \
+												pin == GPIO_Pin_1 ? GPIO_PinSource1 : \
+												pin == GPIO_Pin_2 ? GPIO_PinSource2 : \
+												pin == GPIO_Pin_3 ? GPIO_PinSource3 : \
+												pin == GPIO_Pin_4 ? GPIO_PinSource4 : \
+												pin == GPIO_Pin_5 ? GPIO_PinSource5 : \
+												pin == GPIO_Pin_6 ? GPIO_PinSource6 : \
+												pin == GPIO_Pin_7 ? GPIO_PinSource7 : \
+												pin == GPIO_Pin_8 ? GPIO_PinSource8 : \
+												pin == GPIO_Pin_9 ? GPIO_PinSource9 : \
+												pin == GPIO_Pin_10 ? GPIO_PinSource10 : \
+												pin == GPIO_Pin_11 ? GPIO_PinSource11 : \
+												pin == GPIO_Pin_12 ? GPIO_PinSource12 : \
+												pin == GPIO_Pin_13 ? GPIO_PinSource13 : \
+												pin == GPIO_Pin_14 ? GPIO_PinSource14 : \
+												pin == GPIO_Pin_15 ? GPIO_PinSource15 : \
+												(int)-1	)
+
 	#elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 
 	#define	__exti_io_clock_enable(port)	{	if (port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);} \
@@ -155,6 +155,33 @@
 												}
 
 	#define __exti_read_io_in_bit(port, pin)	GPIO_ReadInputDataBit(port, pin)
+
+	#define	__exti_get_gpio_port_source(port)	(	port == GPIOA ? EXTI_PortSourceGPIOA : \
+													port == GPIOB ? EXTI_PortSourceGPIOB : \
+													port == GPIOC ? EXTI_PortSourceGPIOC : \
+													port == GPIOD ? EXTI_PortSourceGPIOD : \
+													port == GPIOE ? EXTI_PortSourceGPIOE : \
+													port == GPIOF ? EXTI_PortSourceGPIOF : \
+													port == GPIOG ? EXTI_PortSourceGPIOG : \
+													(int)-1	)
+
+	#define	__exti_get_gpio_pin_source(pin)	(	pin == GPIO_Pin_0 ? EXTI_PinSource0 : \
+												pin == GPIO_Pin_1 ? EXTI_PinSource1 : \
+												pin == GPIO_Pin_2 ? EXTI_PinSource2 : \
+												pin == GPIO_Pin_3 ? EXTI_PinSource3 : \
+												pin == GPIO_Pin_4 ? EXTI_PinSource4 : \
+												pin == GPIO_Pin_5 ? EXTI_PinSource5 : \
+												pin == GPIO_Pin_6 ? EXTI_PinSource6 : \
+												pin == GPIO_Pin_7 ? EXTI_PinSource7 : \
+												pin == GPIO_Pin_8 ? EXTI_PinSource8 : \
+												pin == GPIO_Pin_9 ? EXTI_PinSource9 : \
+												pin == GPIO_Pin_10 ? EXTI_PinSource10 : \
+												pin == GPIO_Pin_11 ? EXTI_PinSource11 : \
+												pin == GPIO_Pin_12 ? EXTI_PinSource12 : \
+												pin == GPIO_Pin_13 ? EXTI_PinSource13 : \
+												pin == GPIO_Pin_14 ? EXTI_PinSource14 : \
+												pin == GPIO_Pin_15 ? EXTI_PinSource15 : \
+												(int)-1	)
 
 	#endif
 

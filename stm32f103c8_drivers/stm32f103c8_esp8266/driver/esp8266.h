@@ -7,26 +7,30 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef USE_STDPERIPH_DRIVER
+
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 	#include "stm32f10x.h"
 	typedef USART_TypeDef*	uart_periph_t;
-	typedef GPIO_TypeDef*	esp8266_gpio_port_t;
-	typedef uint32_t		esp8266_gpio_pin_t;
+	typedef GPIO_TypeDef*	gpio_port_t;
+	typedef uint32_t		gpio_pin_t;
 	
 #elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	#include "stm32f4xx.h"
 	typedef USART_TypeDef*	uart_periph_t;
-	typedef GPIO_TypeDef*	esp8266_gpio_port_t;
-	typedef uint32_t		esp8266_gpio_pin_t;
+	typedef GPIO_TypeDef*	gpio_port_t;
+	typedef uint32_t		gpio_pin_t;
 
 #elif defined (GD32F10X_MD) || defined (GD32F10X_HD)
    #include "gd32f10x.h"
 	typedef uint32_t	uart_periph_t;
-	typedef uint32_t	esp8266_gpio_port_t;
-	typedef uint32_t	esp8266_gpio_pin_t;
+	typedef uint32_t	gpio_port_t;
+	typedef uint32_t	gpio_pin_t;
 
 #else
     #error esp8266.h: No processor defined!
+#endif
+
 #endif
 
 #include "uart.h"
@@ -61,12 +65,12 @@
 #endif
 
 typedef struct {
-	uart_periph_t uartx;			// 串口外设
-	esp8266_gpio_port_t rx_port;	// 接收端口（串口发送端口）
-	esp8266_gpio_pin_t rx_pin;		// 接收引脚（串口发送引脚）
-	esp8266_gpio_port_t tx_port;	// 发送端口（串口接收端口）
-	esp8266_gpio_pin_t tx_pin;		// 发送引脚（串口接收引脚）
-	char *wifi_inf0;				// WiFi信息
+	uart_periph_t uartx;    // 串口外设
+	gpio_port_t rx_port;	// 接收端口（串口发送端口）
+	gpio_pin_t rx_pin;		// 接收引脚（串口发送引脚）
+	gpio_port_t tx_port;	// 发送端口（串口接收端口）
+	gpio_pin_t tx_pin;		// 发送引脚（串口接收引脚）
+	char *wifi_info;        // WiFi信息
 } esp8266_config_t;
 
 typedef struct esp8266_dev {

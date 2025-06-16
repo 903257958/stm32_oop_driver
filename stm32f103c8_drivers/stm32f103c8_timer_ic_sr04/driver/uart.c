@@ -1,5 +1,7 @@
 #include "uart.h"
 
+#ifdef USE_STDPERIPH_DRIVER
+
 /*************************** STM32F1系列 ***************************/
 #if defined(STM32F10X_MD) || defined(STM32F10X_HD)
 
@@ -233,6 +235,8 @@
 										uartx == USART6 ? 5 : \
 										(int)-1)
 	#endif
+
+#endif
 
 #endif
 

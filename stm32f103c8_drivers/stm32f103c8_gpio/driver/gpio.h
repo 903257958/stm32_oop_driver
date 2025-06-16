@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+#ifdef USE_STDPERIPH_DRIVER
+
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 	#include "stm32f10x.h"
 	typedef GPIO_TypeDef*	gpio_port_t;
@@ -17,6 +19,8 @@
 
 #else
     #error gpio.h: No processor defined!
+#endif
+
 #endif
 
 #ifndef GPIO_LEVEL_HIGH

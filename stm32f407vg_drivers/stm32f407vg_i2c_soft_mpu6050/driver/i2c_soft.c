@@ -1,5 +1,7 @@
 #include "i2c_soft.h"
 
+#ifdef USE_STDPERIPH_DRIVER
+
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 	
 #define	__i2c_soft_io_clock_enable(port)	{	if(port == GPIOA)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);} \
@@ -62,6 +64,8 @@
 #define	__i2c_soft_io_write(port, pin, value)	gpio_bit_write(port, pin, (bit_status)value)
 												
 #define __i2c_soft_io_read(port, pin)	gpio_input_bit_get(port, pin)
+
+#endif
 
 #endif
 		

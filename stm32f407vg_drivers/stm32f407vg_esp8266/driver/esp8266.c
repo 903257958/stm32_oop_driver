@@ -114,7 +114,7 @@ int8_t esp8266_init(esp8266_dev_t *dev)
     ESP8266_DEBUG("\r\n5. Connect WiFi\r\n");
 	for (retry_cnt = 0; retry_cnt < 3; retry_cnt++)
 	{
-		if (__esp8266_send_cmd(dev, dev->config.wifi_inf0, "GOT IP", NULL) == 0) break;
+		if (__esp8266_send_cmd(dev, dev->config.wifi_info, "GOT IP", NULL) == 0) break;
 		ESP8266_DEBUG("retrying...\r\n");
 		ESP8266_DELAY_MS(500);
 		if (retry_cnt == 2)

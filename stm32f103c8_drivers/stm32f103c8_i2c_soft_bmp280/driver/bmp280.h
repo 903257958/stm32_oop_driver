@@ -7,18 +7,22 @@
 #include <stdlib.h>
 #include <math.h>
 
+#ifdef USE_STDPERIPH_DRIVER
+
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 	#include "stm32f10x.h"
-	typedef GPIO_TypeDef*	bmp280_gpio_port_t;
-	typedef uint32_t		bmp280_gpio_pin_t;
+	typedef GPIO_TypeDef*	gpio_port_t;
+	typedef uint32_t		gpio_pin_t;
 	
 #elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	#include "stm32f4xx.h"
-	typedef GPIO_TypeDef*	bmp280_gpio_port_t;
-	typedef uint32_t		bmp280_gpio_pin_t;
+	typedef GPIO_TypeDef*	gpio_port_t;
+	typedef uint32_t		gpio_pin_t;
 	
 #else
 	#error bmp280.h: No processor defined!
+#endif
+
 #endif
 
 #include "i2c_soft.h"
@@ -112,10 +116,10 @@ typedef struct {
 } bmp280_setting_t;
 
 typedef struct {
-    bmp280_gpio_port_t scl_port;	// SCL端口
-	bmp280_gpio_pin_t scl_pin;		// SCL引脚
-	bmp280_gpio_port_t sda_port;	// SDA端口
-	bmp280_gpio_pin_t sda_pin;		// SDA引脚
+    gpio_port_t scl_port;	// SCL端口
+	gpio_pin_t scl_pin;		// SCL引脚
+	gpio_port_t sda_port;	// SDA端口
+	gpio_pin_t sda_pin;		// SDA引脚
 } bmp280_config_t;
 
 typedef struct {

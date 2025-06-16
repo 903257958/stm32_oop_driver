@@ -1,5 +1,7 @@
 #include "uart.h"
 
+#ifdef USE_STDPERIPH_DRIVER
+
 /*************************** STM32F1系列 ***************************/
 #if defined(STM32F10X_MD) || defined(STM32F10X_HD)
 
@@ -233,6 +235,8 @@
 										uartx == USART6 ? 5 : \
 										(int)-1)
 	#endif
+
+#endif
 
 #endif
 
@@ -1092,7 +1096,7 @@ void UART4_IRQHandler(void)
 
 #ifdef UART5_AVAILABLE
 /******************************************************************************
-* @brief	UART5中断函数
+ * @brief	UART5中断函数
  * @param	无
  * @return	无
  ******************************************************************************/
@@ -1162,7 +1166,7 @@ void UART5_IRQHandler(void)
 
 #ifdef UART6_AVAILABLE
 /******************************************************************************
-* @brief	UART6中断函数
+ * @brief	UART6中断函数
  * @param	无
  * @return	无
  ******************************************************************************/

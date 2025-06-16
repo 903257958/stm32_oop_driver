@@ -5,23 +5,27 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+#ifdef USE_STDPERIPH_DRIVER
+
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 	#include "stm32f10x.h"
-	typedef GPIO_TypeDef*	i2c_soft_port_t;
-	typedef uint32_t		i2c_soft_pin_t;
+	typedef GPIO_TypeDef*	gpio_port_t;
+	typedef uint32_t		gpio_pin_t;
 	
 #elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	#include "stm32f4xx.h"
-	typedef GPIO_TypeDef*	i2c_soft_port_t;
-	typedef uint32_t		i2c_soft_pin_t;
+	typedef GPIO_TypeDef*	gpio_port_t;
+	typedef uint32_t		gpio_pin_t;
     
 #elif defined (GD32F10X_MD) || defined (GD32F10X_HD)
     #include "gd32f10x.h"
-    typedef uint32_t	i2c_soft_port_t;
-	typedef uint32_t	i2c_soft_pin_t;
+    typedef uint32_t	gpio_port_t;
+	typedef uint32_t	gpio_pin_t;
 	
 #else
 	#error i2c.h: No processor defined!
+#endif
+
 #endif
 
 #include "delay.h"
@@ -31,10 +35,10 @@
 #endif
 
 typedef struct {
-	i2c_soft_port_t scl_port;	// SCL端口
-	i2c_soft_pin_t scl_pin;		// SCL引脚
-	i2c_soft_port_t sda_port;	// SDA端口
-	i2c_soft_pin_t sda_pin;		// SDA引脚
+	gpio_port_t scl_port;	// SCL端口
+	gpio_pin_t scl_pin;	    // SCL引脚
+	gpio_port_t sda_port;	// SDA端口
+	gpio_pin_t sda_pin;	    // SDA引脚
 } i2c_soft_config_t;
 
 typedef struct i2c_soft_dev {

@@ -1,6 +1,8 @@
 #include "lcd.h"
 #include "lcd_data.h"
 
+#ifdef USE_STDPERIPH_DRIVER
+
 #if defined(STM32F40_41xxx)
 
 #define	__lcd_io_clock_enable(port)	{	if (port == GPIOA)		{RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);} \
@@ -54,16 +56,18 @@
 
 #endif
 
-/* LCD数据端口与引脚数组 */
-lcd_gpio_port_t g_lcd_data_ports[] = {	GPIOD, GPIOD, GPIOD, GPIOD, 
-										GPIOE, GPIOE, GPIOE, GPIOE,
-										GPIOE, GPIOE, GPIOE, GPIOE, 
-										GPIOE, GPIOD, GPIOD, GPIOD	};
+#endif
 
-lcd_gpio_pin_t g_lcd_data_pins[] = {	GPIO_Pin_14, GPIO_Pin_15, GPIO_Pin_0, GPIO_Pin_1, 
-										GPIO_Pin_7, GPIO_Pin_8, GPIO_Pin_9, GPIO_Pin_10,
-										GPIO_Pin_11, GPIO_Pin_12, GPIO_Pin_13, GPIO_Pin_14, 
-										GPIO_Pin_15, GPIO_Pin_8, GPIO_Pin_9, GPIO_Pin_10	};
+/* LCD数据端口与引脚数组 */
+gpio_port_t g_lcd_data_ports[] = {	GPIOD, GPIOD, GPIOD, GPIOD, 
+                                    GPIOE, GPIOE, GPIOE, GPIOE,
+                                    GPIOE, GPIOE, GPIOE, GPIOE, 
+                                    GPIOE, GPIOD, GPIOD, GPIOD	};
+
+gpio_pin_t g_lcd_data_pins[] = {	GPIO_Pin_14, GPIO_Pin_15, GPIO_Pin_0, GPIO_Pin_1, 
+                                    GPIO_Pin_7, GPIO_Pin_8, GPIO_Pin_9, GPIO_Pin_10,
+                                    GPIO_Pin_11, GPIO_Pin_12, GPIO_Pin_13, GPIO_Pin_14, 
+                                    GPIO_Pin_15, GPIO_Pin_8, GPIO_Pin_9, GPIO_Pin_10	};
 							
 /* LCD地址结构体 */
 typedef struct {
@@ -76,21 +80,21 @@ typedef struct {
 
 /* LCD私有数据结构体 */
 typedef struct {
-	lcd_gpio_port_t	bl_port;	// 背光端口
-	lcd_gpio_pin_t	bl_pin;		// 背光引脚
-	lcd_gpio_port_t	cs_port;	// 片选端口
-	lcd_gpio_pin_t	cs_pin;		// 片选引脚
-	lcd_gpio_port_t	rs_port;	// 1数据/0命令端口
-	lcd_gpio_pin_t	rs_pin;		// 1数据/0命令引脚
-	lcd_gpio_port_t	wr_port;	// 写信号端口
-	lcd_gpio_pin_t	wr_pin;		// 写信号引脚
-	lcd_gpio_port_t	rd_port;	// 读信号端口
-	lcd_gpio_pin_t	rd_pin;		// 读信号引脚
+	gpio_port_t	bl_port;	    // 背光端口
+	gpio_pin_t	bl_pin;		    // 背光引脚
+	gpio_port_t	cs_port;	    // 片选端口
+	gpio_pin_t	cs_pin;		    // 片选引脚
+	gpio_port_t	rs_port;	    // 1数据/0命令端口
+	gpio_pin_t	rs_pin;		    // 1数据/0命令引脚
+	gpio_port_t	wr_port;	    // 写信号端口
+	gpio_pin_t	wr_pin;		    // 写信号引脚
+	gpio_port_t	rd_port;	    // 读信号端口
+	gpio_pin_t	rd_pin;		    // 读信号引脚
 	uint16_t		id;			// ID
 	uint8_t			dir;		// 横屏还是竖屏控制：0竖屏/1横屏
 	uint16_t		wramcmd;	// 开始写gram指令
 	uint16_t		setxcmd;	// 设置x坐标指令
-	uint16_t		setycmd;	// 设置y坐标指令
+	uint16_t		setycmd;    // 设置y坐标指令
 } lcd_priv_data_t;
 
 /* 函数声明 */

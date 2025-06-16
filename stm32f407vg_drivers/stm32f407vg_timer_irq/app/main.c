@@ -18,27 +18,36 @@ uart_dev_t debug = {
     }
 };
 
-void timer2_irq_callback(void)
+void timer3_irq_callback(void *param)
 {
-	debug.printf("timer2 irq 500ms!\r\n");
+    const char *name = (const char *)param;
+
+	debug.printf("%s 500ms interrupt!\r\n", name);
 }
 
-timer_dev_t timer1 = {.config = {TIM2, 83, 49999, NULL}};			        // 计数周期1us，定时周期50ms
-timer_dev_t timer2 = {.config = {TIM3, 8399, 4999, timer2_irq_callback}};    // 计数周期100us，定时周期500ms
+timer_dev_t timer2 = {
+    .config = {TIM2, 83, 49999, NULL, NULL, NULL, NULL}                 // 计数周期1us，定时周期50ms
+};
 
+timer_dev_t timer3 = {
+    .config = {TIM3, 8399, 4999, timer3_irq_callback, "timer3", 0, 0}   // 计数周期100us，定时周期500ms
+};
+
+/* 测试：TIM2延时500ms打印，TIM3中断500ms打印 */
 int main(void)
 {
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 	
 	delay_init(168);
     uart_init(&debug);
-	
-	timer_init(&timer1);
 	timer_init(&timer2);
+	timer_init(&timer3);
 	
+    debug.printf("\r\n\r\n");
+    
 	while (1)
 	{
-		timer1.delay_ms(&timer1, 500);
-        debug.printf("timer1 delay 500ms!\r\n");
+		timer2.delay_ms(&timer2, 500);
+        debug.printf("timer2 500ms delay!\r\n");
 	}
 }

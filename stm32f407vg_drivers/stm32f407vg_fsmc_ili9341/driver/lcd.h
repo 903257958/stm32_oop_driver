@@ -5,14 +5,18 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
-	
+
+#ifdef USE_STDPERIPH_DRIVER
+
 #if defined(STM32F40_41xxx)
 	#include "stm32f4xx.h"
-	typedef GPIO_TypeDef*	lcd_gpio_port_t;
-	typedef uint32_t		lcd_gpio_pin_t;
+	typedef GPIO_TypeDef*	gpio_port_t;
+	typedef uint32_t		gpio_pin_t;
 
 #else
     #error lcd.h: No processor defined!
+#endif
+
 #endif
 
 #include "delay.h"

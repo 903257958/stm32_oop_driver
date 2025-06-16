@@ -1,5 +1,7 @@
 #include "pwm.h"
 
+#ifdef USE_STDPERIPH_DRIVER
+
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 
 #define	__pwm_timer_clock_enable(TIMx)	{	if (TIMx == TIM2)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);} \
@@ -73,6 +75,8 @@
 									TIMx == TIM4 ? GPIO_AF_TIM4 : \
 									TIMx == TIM5 ? GPIO_AF_TIM5 : \
 									(int)0	)
+
+#endif
 
 #endif
 

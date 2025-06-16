@@ -1,5 +1,7 @@
 #include "servo.h"
 
+#ifdef USE_STDPERIPH_DRIVER
+
 #if defined(STM32F10X_MD) || defined(STM32F10X_HD)
 
 #define TIMER_FREQ	72000000
@@ -11,6 +13,8 @@
 #elif defined(STM32F429_439xx)
 
 #define TIMER_FREQ	90000000
+
+#endif
 
 #endif
 

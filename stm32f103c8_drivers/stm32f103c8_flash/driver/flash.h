@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+#ifdef USE_STDPERIPH_DRIVER
+
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
     #include "stm32f10x.h"
 	
@@ -16,6 +18,8 @@
 	
 #else
     #error flash.h: No processor defined!
+#endif
+
 #endif
 
 typedef struct flash_dev {

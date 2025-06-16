@@ -9,23 +9,27 @@
 #include <string.h>
 #include <math.h>
 
+#ifdef USE_STDPERIPH_DRIVER
+
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
     #include "stm32f10x.h"
-    typedef GPIO_TypeDef*	ap3216c_gpio_port_t;
-    typedef uint32_t    	ap3216c_gpio_pin_t;
+    typedef GPIO_TypeDef*	gpio_port_t;
+    typedef uint32_t    	gpio_pin_t;
 	
 #elif defined(STM32F40_41xxx)
 	#include "stm32f4xx.h"
-	typedef GPIO_TypeDef*	ap3216c_gpio_port_t;
-    typedef uint32_t    	ap3216c_gpio_pin_t;
+	typedef GPIO_TypeDef*	gpio_port_t;
+    typedef uint32_t    	gpio_pin_t;
     
 #elif defined (GD32F10X_MD) || defined (GD32F10X_HD)
     #include "gd32f10x.h"
-    typedef uint32_t    ap3216c_gpio_port_t;
-    typedef uint32_t    ap3216c_gpio_pin_t;
+    typedef uint32_t    gpio_port_t;
+    typedef uint32_t    gpio_pin_t;
 	
 #else
     #error ap3216c.h: No processor defined!
+#endif
+
 #endif
 
 #include "i2c_soft.h"
@@ -39,10 +43,10 @@
 #define AP3216C_ADDRESS	0x1E
 
 typedef struct {
-	ap3216c_gpio_port_t scl_port;	// SCL端口
-	ap3216c_gpio_pin_t scl_pin;		// SCL引脚
-	ap3216c_gpio_port_t sda_port;	// SDA端口
-	ap3216c_gpio_pin_t sda_pin;		// SDA引脚
+	gpio_port_t scl_port;	// SCL端口
+	gpio_pin_t scl_pin;		// SCL引脚
+	gpio_port_t sda_port;	// SDA端口
+	gpio_pin_t sda_pin;		// SDA引脚
 } ap3216c_config_t;
 
 typedef struct {

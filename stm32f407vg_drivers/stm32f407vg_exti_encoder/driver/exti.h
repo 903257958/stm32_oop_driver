@@ -10,14 +10,14 @@
 
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 	#include "stm32f10x.h"
-	typedef GPIO_TypeDef*		exti_gpio_port_t;
-	typedef uint32_t			exti_gpio_pin_t;
+	typedef GPIO_TypeDef*		gpio_port_t;
+	typedef uint32_t			gpio_pin_t;
 	typedef EXTITrigger_TypeDef	exti_trigger_t;
 
 #elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	#include "stm32f4xx.h"
-	typedef GPIO_TypeDef*		exti_gpio_port_t;
-	typedef uint32_t			exti_gpio_pin_t;
+	typedef GPIO_TypeDef*		gpio_port_t;
+	typedef uint32_t			gpio_pin_t;
 	typedef EXTITrigger_TypeDef	exti_trigger_t;
 
 #else
@@ -39,8 +39,8 @@ typedef void (*irq_handler_t)(void);
 
 /* EXTI配置结构体 */
 typedef struct {
-	exti_gpio_port_t port;			    // 外部中断端口
-	exti_gpio_pin_t pin;			    // 外部中断引脚
+	gpio_port_t port;			        // 外部中断端口
+	gpio_pin_t pin;			            // 外部中断引脚
 	exti_trigger_t trigger;			    // 外部中断触发方式
 	uint8_t preemption_priority;	    // 抢占优先级
 	uint8_t sub_priority;			    // 响应优先级

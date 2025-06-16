@@ -1,8 +1,8 @@
 #include "main.h"
 
-static uint8_t uart1_tx_buf[2048];
-static uint8_t uart1_rx_buf[2048];
-uart_dev_t uart1 = {
+static uint8_t uart1_tx_buf[256];
+static uint8_t uart1_rx_buf[256];
+uart_dev_t debug = {
     .config = {
         .uartx          = USART1,
         .baud           = 115200,
@@ -13,8 +13,8 @@ uart_dev_t uart1 = {
         .tx_buf         = uart1_tx_buf,
         .rx_buf         = uart1_rx_buf,
         .tx_buf_size    = sizeof(uart1_tx_buf),
-        .rx_buf_size    = sizeof(uart1_rx_buf),
-        .rx_single_max  = 512
+        .rx_buf_size    = sizeof(uart1_tx_buf),
+        .rx_single_max  = 64
     }
 };
 adc_dev_t  adc1_4 = {.config = {ADC1, ADC_Channel_4, GPIOA, GPIO_Pin_4}};
@@ -27,7 +27,7 @@ int main(void)
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
 	delay_init(72);
-	uart_init(&uart1);
+	uart_init(&debug);
     adc_init(&adc1_4);
 	adc_init(&adc1_5);
 	
@@ -36,7 +36,7 @@ int main(void)
         adc1_4.get_val(&adc1_4, &adc1_4_val);
         adc1_5.get_val(&adc1_5, &adc1_5_val);
 
-		uart1.printf("adc1_4: %d, adc1_5: %d\r\n", adc1_4_val, adc1_5_val);
+		debug.printf("adc1_4: %d, adc1_5: %d\r\n", adc1_4_val, adc1_5_val);
 
 		delay_ms(500);
 	}

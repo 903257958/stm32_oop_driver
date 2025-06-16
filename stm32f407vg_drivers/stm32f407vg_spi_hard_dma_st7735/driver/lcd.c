@@ -1,6 +1,8 @@
 #include "lcd.h"
 #include "lcd_data.h"
 
+#ifdef USE_STDPERIPH_DRIVER
+
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 	
 #define	__lcd_io_clock_enable(port)	{	if (port == GPIOA)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);} \
@@ -78,7 +80,9 @@
 											spix == SPI3 ? DMA_FLAG_TCIF5 : \
 											(int)0)
 
-#endif		
+#endif	
+
+#endif                                            
 
 /**
   * LCD显存数组

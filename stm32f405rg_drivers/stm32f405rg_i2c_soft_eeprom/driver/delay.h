@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#ifdef USE_STDPERIPH_DRIVER
+
 #if defined (STM32F10X_LD) || defined (STM32F10X_LD_VL) || defined (STM32F10X_MD) || defined (STM32F10X_MD_VL) || \
     defined (STM32F10X_HD) || defined (STM32F10X_HD_VL) || defined (STM32F10X_XL) || defined (STM32F10X_CL) 
 	#include "stm32f10x.h"
@@ -18,6 +20,8 @@
 
 #else
     #error delay.h: No processor defined!
+#endif
+
 #endif
 
 #ifndef USE_FREERTOS

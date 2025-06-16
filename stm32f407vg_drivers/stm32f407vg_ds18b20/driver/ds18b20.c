@@ -1,5 +1,7 @@
 #include "ds18b20.h"
 
+#ifdef USE_STDPERIPH_DRIVER
+
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 	
 #define	__ds18b20_io_clock_enable(port)		{	if(port == GPIOA)     	{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);} \
@@ -67,6 +69,8 @@
 	
 #endif
 
+#endif
+                                                
 /* 函数声明 */
 static int8_t __ds18b20_get_temperature(ds18b20_dev_t *dev);
 static int8_t __ds18b20_deinit(ds18b20_dev_t *dev);

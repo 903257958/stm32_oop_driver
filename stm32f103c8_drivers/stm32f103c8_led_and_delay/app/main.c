@@ -1,7 +1,7 @@
 #include "main.h"
 
 #if !USE_FREERTOS
-led_dev_t led = {.config = {GPIOC, GPIO_Pin_13, GPIO_LEVEL_LOW}};
+led_dev_t led = {.config = {GPIOC, GPIO_Pin_13, GPIO_LEVEL_HIGH}};
 
 int main(void)
 {

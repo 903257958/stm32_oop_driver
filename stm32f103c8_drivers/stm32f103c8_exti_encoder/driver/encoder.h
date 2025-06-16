@@ -10,13 +10,13 @@
 
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 	#include "stm32f10x.h"
-	typedef GPIO_TypeDef*		encoder_gpio_port_t;
-	typedef uint32_t			encoder_gpio_pin_t;
+	typedef GPIO_TypeDef*   gpio_port_t;
+	typedef uint32_t        gpio_pin_t;
 
 #elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	#include "stm32f4xx.h"
-	typedef GPIO_TypeDef*		encoder_gpio_port_t;
-	typedef uint32_t			encoder_gpio_pin_t;
+	typedef GPIO_TypeDef*   gpio_port_t;
+	typedef uint32_t        gpio_pin_t;
 
 #else
 	#error encoder.h: No processor defined!
@@ -42,10 +42,10 @@ typedef void (*encoder_callback_t)(void *param);
 
 /* 旋转编码器配置结构体 */
 typedef struct {
-	encoder_gpio_port_t s1_port;			// S1端口
-	encoder_gpio_pin_t s1_pin;				// S1引脚
-	encoder_gpio_port_t s2_port;			// S2端口
-	encoder_gpio_pin_t s2_pin;				// S2引脚
+	gpio_port_t s1_port;			        // S1端口
+	gpio_pin_t s1_pin;				        // S1引脚
+	gpio_port_t s2_port;			        // S2端口
+	gpio_pin_t s2_pin;				        // S2引脚
 	encoder_callback_t forward_callback;	// 正转回调函数
 	void *forward_callback_param;			// 正转回调函数参数
     encoder_callback_t reverse_callback;	// 反转回调函数

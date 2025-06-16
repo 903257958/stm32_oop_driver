@@ -5,18 +5,22 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+#ifdef USE_STDPERIPH_DRIVER
+
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 	#include "stm32f10x.h"
-	typedef GPIO_TypeDef*	stepper_motor_gpio_port_t;
-	typedef uint32_t		stepper_motor_gpio_pin_t;
+	typedef GPIO_TypeDef*	gpio_port_t;
+	typedef uint32_t		gpio_pin_t;
 	
 #elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	#include "stm32f4xx.h"
-	typedef GPIO_TypeDef*	stepper_motor_gpio_port_t;
-	typedef uint32_t		stepper_motor_gpio_pin_t;
+	typedef GPIO_TypeDef*	gpio_port_t;
+	typedef uint32_t		gpio_pin_t;
 
 #else
     #error stepper_motor.h: No processor defined!
+#endif
+
 #endif
 
 #include "delay.h"
@@ -34,14 +38,14 @@
 #endif
 
 typedef struct {
-	stepper_motor_gpio_port_t in1_port;	// IN1端口
-	stepper_motor_gpio_pin_t in1_pin;	// IN1引脚
-	stepper_motor_gpio_port_t in2_port;	// IN2端口
-	stepper_motor_gpio_pin_t in2_pin;	// IN2引脚
-	stepper_motor_gpio_port_t in3_port;	// IN3端口
-	stepper_motor_gpio_pin_t in3_pin;	// IN3引脚
-	stepper_motor_gpio_port_t in4_port;	// IN4端口
-	stepper_motor_gpio_pin_t in4_pin;	// IN4引脚
+	gpio_port_t in1_port;	// IN1端口
+	gpio_pin_t in1_pin;	    // IN1引脚
+	gpio_port_t in2_port;	// IN2端口
+	gpio_pin_t in2_pin;	    // IN2引脚
+	gpio_port_t in3_port;	// IN3端口
+	gpio_pin_t in3_pin;	    // IN3引脚
+	gpio_port_t in4_port;	// IN4端口
+	gpio_pin_t in4_pin;	    // IN4引脚
 } stepper_motor_config_t;
 
 typedef struct stepper_motor_dev {

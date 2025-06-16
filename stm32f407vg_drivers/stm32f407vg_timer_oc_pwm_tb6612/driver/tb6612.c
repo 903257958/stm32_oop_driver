@@ -68,8 +68,8 @@ typedef struct {
 } tb6612_priv_data_t;	
 
 /* 函数声明 */				
-static void __tb6612_motor_control(	tb6612_gpio_port_t in1_port, tb6612_gpio_pin_t in1_pin,
-									tb6612_gpio_port_t in2_port, tb6612_gpio_pin_t in2_pin,
+static void __tb6612_motor_control(	gpio_port_t in1_port, gpio_pin_t in1_pin,
+									gpio_port_t in2_port, gpio_pin_t in2_pin,
 									pwm_dev_t *pwm, int8_t speed);					
 static int8_t __tb6612_set_speed(tb6612_dev_t *dev, motor_id_t motor_id, int8_t speed);
 static int8_t __tb6612_deinit(tb6612_dev_t *dev);
@@ -146,8 +146,8 @@ int8_t tb6612_init(tb6612_dev_t *dev)
  * @param	speed		:	速度，范围-100~100
  * @return	0, 表示成功, 其他值表示失败
  ******************************************************************************/
-static void __tb6612_motor_control(	tb6612_gpio_port_t in1_port, tb6612_gpio_pin_t in1_pin,
-									tb6612_gpio_port_t in2_port, tb6612_gpio_pin_t in2_pin,
+static void __tb6612_motor_control(	gpio_port_t in1_port, gpio_pin_t in1_pin,
+									gpio_port_t in2_port, gpio_pin_t in2_pin,
 									pwm_dev_t *pwm, int8_t speed)
 {
 	if (speed >= 0)

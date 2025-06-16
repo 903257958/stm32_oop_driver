@@ -81,7 +81,7 @@ static int8_t __mpu6050_get_data(mpu6050_dev_t *dev)
 	mpu6050_priv_data_t *priv_data = (mpu6050_priv_data_t *)dev->priv_data;
 
 	int16_t temp_val;
-	uint8_t data_h, data_l;									// 定义数据高8位和低8位的变量
+	uint8_t data_h, data_l;									    // 定义数据高8位和低8位的变量
 	
 	priv_data->i2c.read_reg(&priv_data->i2c, MPU6050_ADDRESS, MPU6050_ACCEL_XOUT_H, &data_h);	// 读取加速度计X轴的高8位数据
 	priv_data->i2c.read_reg(&priv_data->i2c, MPU6050_ADDRESS, MPU6050_ACCEL_XOUT_L, &data_l);	// 读取加速度计X轴的低8位数据
@@ -109,7 +109,7 @@ static int8_t __mpu6050_get_data(mpu6050_dev_t *dev)
 	
 	priv_data->i2c.read_reg(&priv_data->i2c, MPU6050_ADDRESS, MPU6050_TEMP_OUT_H, &data_h);		// 读取温度值的高8位数据
 	priv_data->i2c.read_reg(&priv_data->i2c, MPU6050_ADDRESS, MPU6050_TEMP_OUT_L, &data_l);		// 读取温度值的低8位数据
-	temp_val = ((data_h << 8) | data_l);					// 数据拼接
+	temp_val = ((data_h << 8) | data_l);					    // 数据拼接
 	dev->data.temp = (float)(temp_val)/340.0f + 36.53f;			// 计算温度值
 
 	return 0;

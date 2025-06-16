@@ -6,18 +6,22 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+#ifdef USE_STDPERIPH_DRIVER
+
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 	#include "stm32f10x.h"
-	typedef GPIO_TypeDef*	vibration_motor_gpio_port_t;
-	typedef uint32_t		vibration_motor_gpio_pin_t;
+	typedef GPIO_TypeDef*	gpio_port_t;
+	typedef uint32_t		gpio_pin_t;
 	
 #elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	#include "stm32f4xx.h"
-	typedef GPIO_TypeDef*	vibration_motor_gpio_port_t;
-	typedef uint32_t		vibration_motor_gpio_pin_t;
+	typedef GPIO_TypeDef*	gpio_port_t;
+	typedef uint32_t		gpio_pin_t;
 
 #else
     #error vibration_motor.h: No processor defined!
+#endif
+
 #endif
 
 #ifndef GPIO_LEVEL_HIGH
@@ -29,8 +33,8 @@
 #endif
 
 typedef struct {
-	vibration_motor_gpio_port_t port;	// 端口
-	vibration_motor_gpio_pin_t pin;		// 引脚
+	gpio_port_t port;	// 端口
+	gpio_pin_t pin;		// 引脚
 } vibration_motor_config_t;
 
 typedef struct vibration_motor_dev {

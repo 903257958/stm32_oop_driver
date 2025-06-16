@@ -1,5 +1,7 @@
 #include "led.h"
 
+#ifdef USE_STDPERIPH_DRIVER
+
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 	
 #define	__led_io_clock_enable(port)	{	if (port == GPIOA)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);} \
@@ -42,6 +44,8 @@
 
 #define	__led_io_write(port, pin, value)	GPIO_WriteBit(port, pin, (BitAction)value)
 
+#endif
+                                            
 #endif
 
 /* LED私有数据结构体 */

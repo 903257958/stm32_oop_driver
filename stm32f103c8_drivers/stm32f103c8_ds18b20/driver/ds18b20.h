@@ -6,18 +6,22 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+#ifdef USE_STDPERIPH_DRIVER
+
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
     #include "stm32f10x.h"
-    typedef GPIO_TypeDef*	ds18b20_gpio_port_t;
-    typedef uint32_t		ds18b20_gpio_pin_t;
+    typedef GPIO_TypeDef*	gpio_port_t;
+    typedef uint32_t		gpio_pin_t;
 	
 #elif defined(STM32F40_41xxx)
 	#include "stm32f4xx.h"
-	typedef GPIO_TypeDef*	ds18b20_gpio_port_t;
-    typedef uint32_t		ds18b20_gpio_pin_t;
+	typedef GPIO_TypeDef*	gpio_port_t;
+    typedef uint32_t		gpio_pin_t;
 	
 #else
     #error ds18b20.h: No processor defined!
+#endif
+
 #endif
 
 #include "delay.h"
@@ -30,8 +34,8 @@
 #endif
 
 typedef struct {
-	ds18b20_gpio_port_t port;	// 端口
-    ds18b20_gpio_pin_t pin;		// 引脚
+	gpio_port_t port;	// 端口
+    gpio_pin_t pin;		// 引脚
 } ds18b20_config_t;
 
 typedef struct ds18b20_dev {

@@ -6,26 +6,30 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+#ifdef USE_STDPERIPH_DRIVER
+
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
     #include "stm32f10x.h"
 	typedef SPI_TypeDef*	spi_periph_t;
-    typedef GPIO_TypeDef*	w25qx_gpio_port_t;
-    typedef uint32_t		w25qx_gpio_pin_t;
+    typedef GPIO_TypeDef*	gpio_port_t;
+    typedef uint32_t		gpio_pin_t;
 	
 #elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	#include "stm32f4xx.h"
 	typedef SPI_TypeDef*	spi_periph_t;
-	typedef GPIO_TypeDef*	w25qx_gpio_port_t;
-    typedef uint32_t		w25qx_gpio_pin_t;
+	typedef GPIO_TypeDef*	gpio_port_t;
+    typedef uint32_t		gpio_pin_t;
     
 #elif defined (GD32F10X_MD) || defined (GD32F10X_HD)
     #include "gd32f10x.h"
 	typedef uint32_t	spi_periph_t;
-    typedef uint32_t	w25qx_gpio_port_t;
-    typedef uint32_t	w25qx_gpio_pin_t;
+    typedef uint32_t	gpio_port_t;
+    typedef uint32_t	gpio_pin_t;
 	
 #else
     #error w25qx.h: No processor defined!
+#endif
+
 #endif
 
 #include "spi_hard.h"
@@ -68,15 +72,15 @@
 #define W25QX_DUMMY_BYTE						0xFF
 
 typedef struct {
-	spi_periph_t spix;				// SPI外设
-	w25qx_gpio_port_t sck_port;		// SCK端口
-	w25qx_gpio_pin_t sck_pin;		// SCK引脚
-	w25qx_gpio_port_t miso_port;	// MISO端口
-	w25qx_gpio_pin_t miso_pin;		// MISO引脚
-	w25qx_gpio_port_t mosi_port;	// MOSI端口
-	w25qx_gpio_pin_t mosi_pin;		// MOSI引脚
-	w25qx_gpio_port_t cs_port;		// CS端口
-	w25qx_gpio_pin_t cs_pin;		// CS引脚
+	spi_periph_t spix;		// SPI外设
+	gpio_port_t sck_port;	// SCK端口
+	gpio_pin_t sck_pin;		// SCK引脚
+	gpio_port_t miso_port;	// MISO端口
+	gpio_pin_t miso_pin;	// MISO引脚
+	gpio_port_t mosi_port;	// MOSI端口
+	gpio_pin_t mosi_pin;	// MOSI引脚
+	gpio_port_t cs_port;	// CS端口
+	gpio_pin_t cs_pin;		// CS引脚
 } w25qx_config_t;
 
 typedef struct w25qx_dev {

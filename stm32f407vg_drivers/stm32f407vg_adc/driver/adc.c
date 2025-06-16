@@ -1,5 +1,7 @@
 #include "adc.h"
 
+#ifdef USE_STDPERIPH_DRIVER
+
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 
 #define	__adc_clock_enable(adcx)	{	if(adcx == ADC1)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);} \
@@ -47,6 +49,8 @@
 												GPIO_Init(port, &GPIO_InitStructure); \
 											}
 
+#endif
+                                            
 #endif
 
 /* 函数声明 */

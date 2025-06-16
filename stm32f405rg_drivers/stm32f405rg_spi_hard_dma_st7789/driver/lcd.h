@@ -7,20 +7,24 @@
 #include <stdlib.h>
 #include <math.h>
 
+#ifdef USE_STDPERIPH_DRIVER
+
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
     #include "stm32f10x.h"
-    typedef GPIO_TypeDef*	lcd_gpio_port_t;
-    typedef uint32_t		lcd_gpio_pin_t;
+    typedef GPIO_TypeDef*	gpio_port_t;
+    typedef uint32_t		gpio_pin_t;
 	typedef TIM_TypeDef*	timer_periph_t;
 	
 #elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	#include "stm32f4xx.h"
-	typedef GPIO_TypeDef*	lcd_gpio_port_t;
-    typedef uint32_t		lcd_gpio_pin_t;
+	typedef GPIO_TypeDef*	gpio_port_t;
+    typedef uint32_t		gpio_pin_t;
     typedef TIM_TypeDef*	timer_periph_t;
 	
 #else
     #error lcd.h: No processor defined!
+#endif
+
 #endif
 
 #include "lcd_data.h"
@@ -84,22 +88,22 @@ typedef enum {
 } lcd_is_filled_t;
 
 typedef struct {
-	spi_periph_t spix;				// SPI外设
-	lcd_gpio_port_t sck_port;		// SCK端口
-	lcd_gpio_pin_t sck_pin;			// SCK引脚
-	lcd_gpio_port_t mosi_port;		// MOSI端口
-	lcd_gpio_pin_t mosi_pin;		// MOSI引脚
-	lcd_gpio_port_t res_port;		// RES端口
-	lcd_gpio_pin_t res_pin;			// RES引脚
-	lcd_gpio_port_t dc_port;		// DC端口
-	lcd_gpio_pin_t dc_pin;			// DC引脚
-	lcd_gpio_port_t cs_port;		// CS端口
-	lcd_gpio_pin_t cs_pin;			// CS引脚
-	lcd_gpio_port_t bl_port;		// BL端口
-	lcd_gpio_pin_t bl_pin;			// BL引脚
-	timer_periph_t timx;			// 背光PWM定时器
-	uint8_t oc_channel;				// 背光PWM输出比较通道
-	uint8_t dir;					// 显示方向
+	spi_periph_t spix;		// SPI外设
+	gpio_port_t sck_port;	// SCK端口
+	gpio_pin_t sck_pin;		// SCK引脚
+	gpio_port_t mosi_port;	// MOSI端口
+	gpio_pin_t mosi_pin;	// MOSI引脚
+	gpio_port_t res_port;	// RES端口
+	gpio_pin_t res_pin;		// RES引脚
+	gpio_port_t dc_port;	// DC端口
+	gpio_pin_t dc_pin;		// DC引脚
+	gpio_port_t cs_port;	// CS端口
+	gpio_pin_t cs_pin;		// CS引脚
+	gpio_port_t bl_port;	// BL端口
+	gpio_pin_t bl_pin;		// BL引脚
+	timer_periph_t timx;	// 背光PWM定时器
+	uint8_t oc_channel;		// 背光PWM输出比较通道
+	uint8_t dir;			// 显示方向
 } lcd_config_t;
 
 typedef struct lcd_dev {

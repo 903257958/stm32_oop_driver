@@ -1,6 +1,8 @@
 #include "oled.h"
 #include "oled_data.h"
 
+#ifdef USE_STDPERIPH_DRIVER
+
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 	
 #define	__oled_io_clock_enable(port)	{	if (port == GPIOA)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);} \
@@ -78,6 +80,8 @@
 										spix == SPI3 ? DMA_FLAG_TCIF5 : \
 										(int)0)
 											
+#endif
+                                        
 #endif
 
 /* 最大OLED设备数量 */			

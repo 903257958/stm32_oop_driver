@@ -1,5 +1,5 @@
-#ifndef __LCD_DATA_H
-#define __LCD_DATA_H
+#ifndef LCD_DATA_H
+#define LCD_DATA_H
 
 #include <stdint.h>
 

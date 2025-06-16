@@ -7,20 +7,24 @@
 #include <stdarg.h>
 #include <string.h>
 
+#ifdef USE_STDPERIPH_DRIVER
+
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 	#include "stm32f10x.h"
 	typedef USART_TypeDef*	uart_periph_t;
-	typedef GPIO_TypeDef*	uart_gpio_port_t;
-	typedef uint32_t		uart_gpio_pin_t;
+	typedef GPIO_TypeDef*	gpio_port_t;
+	typedef uint32_t		gpio_pin_t;
 	
 #elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	#include "stm32f4xx.h"
 	typedef USART_TypeDef*	uart_periph_t;
-	typedef GPIO_TypeDef*	uart_gpio_port_t;
-	typedef uint32_t		uart_gpio_pin_t;
+	typedef GPIO_TypeDef*	gpio_port_t;
+	typedef uint32_t		gpio_pin_t;
 	
 #else
 	#error uart.h: No processor defined!
+#endif
+
 #endif
 
 /* 索引结构体数组长度 */
@@ -43,17 +47,17 @@ typedef struct {
 
 /* 串口配置结构体 */
 typedef struct {
-	uart_periph_t uartx;		// 串口外设
-	uint32_t baud;				// 波特率
-	uart_gpio_port_t tx_port;	// 发送端口
-	uart_gpio_pin_t tx_pin;		// 发送引脚
-	uart_gpio_port_t rx_port;	// 接收端口
-	uart_gpio_pin_t rx_pin;		// 接收引脚
-    uint8_t *tx_buf;            // 发送数据缓冲区
-	uint8_t *rx_buf;            // 接收数据缓冲区
-	uint16_t tx_buf_size;		// 发送数据缓冲区大小
-	uint16_t rx_buf_size;		// 接收数据缓冲区大小
-	uint16_t rx_single_max;		// 单次接收最大数据量
+	uart_periph_t uartx;    // 串口外设
+	uint32_t baud;			// 波特率
+	gpio_port_t tx_port;	// 发送端口
+	gpio_pin_t tx_pin;		// 发送引脚
+	gpio_port_t rx_port;	// 接收端口
+	gpio_pin_t rx_pin;		// 接收引脚
+    uint8_t *tx_buf;        // 发送数据缓冲区
+	uint8_t *rx_buf;        // 接收数据缓冲区
+	uint16_t tx_buf_size;   // 发送数据缓冲区大小
+	uint16_t rx_buf_size;   // 接收数据缓冲区大小
+	uint16_t rx_single_max; // 单次接收最大数据量
 } uart_config_t;
 
 /* 串口设备结构体 */

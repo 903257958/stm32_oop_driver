@@ -7,20 +7,24 @@
 #include <stdlib.h>
 #include <math.h>
 
+#ifdef USE_STDPERIPH_DRIVER
+
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 	#include "stm32f10x.h"
 	typedef TIM_TypeDef*	timer_periph_t;
-	typedef GPIO_TypeDef*	rgb_gpio_port_t;
-	typedef uint32_t		rgb_gpio_pin_t;
+	typedef GPIO_TypeDef*	gpio_port_t;
+	typedef uint32_t		gpio_pin_t;
 	
 #elif defined(STM32F40_41xxx) || defined(STM32F411xE) || defined(STM32F429_439xx)
 	#include "stm32f4xx.h"
 	typedef TIM_TypeDef*	timer_periph_t;
-	typedef GPIO_TypeDef*	rgb_gpio_port_t;
-	typedef uint32_t		rgb_gpio_pin_t;
+	typedef GPIO_TypeDef*	gpio_port_t;
+	typedef uint32_t		gpio_pin_t;
 
 #else
 	#error rgb.h: No processor defined!
+#endif
+
 #endif
 
 #include "pwm.h"
@@ -34,19 +38,19 @@
 #endif
 
 typedef struct {
-	timer_periph_t red_timx;		// R定时器外设
-	uint8_t red_oc_channel;			// R输出比较通道
-	rgb_gpio_port_t red_port;		// R端口
-	rgb_gpio_pin_t red_pin;			// R引脚
-	timer_periph_t green_timx;		// G定时器外设
-	uint8_t green_oc_channel;		// G输出比较通道
-	rgb_gpio_port_t green_port;		// G端口
-	rgb_gpio_pin_t green_pin;		// G引脚
-	timer_periph_t blue_timx;		// B定时器外设
-	uint8_t blue_oc_channel;		// B输出比较通道
-	rgb_gpio_port_t blue_port;		// B端口
-	rgb_gpio_pin_t blue_pin;		// B引脚
-	bool off_level;					// LED灭时IO口的电平
+	timer_periph_t red_timx;	// R定时器外设
+	uint8_t red_oc_channel;		// R输出比较通道
+	gpio_port_t red_port;		// R端口
+	gpio_pin_t red_pin;			// R引脚
+	timer_periph_t green_timx;	// G定时器外设
+	uint8_t green_oc_channel;	// G输出比较通道
+	gpio_port_t green_port;		// G端口
+	gpio_pin_t green_pin;		// G引脚
+	timer_periph_t blue_timx;	// B定时器外设
+	uint8_t blue_oc_channel;	// B输出比较通道
+	gpio_port_t blue_port;		// B端口
+	gpio_pin_t blue_pin;		// B引脚
+	bool off_level;				// LED灭时IO口的电平
 } rgb_config_t;
 
 typedef struct rgb_dev {

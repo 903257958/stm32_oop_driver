@@ -1,5 +1,7 @@
 #include "lcd.h"
 
+#ifdef USE_STDPERIPH_DRIVER
+
 #if defined(STM32F10X_HD) || defined(STM32F10X_MD)
 
 #define TIMER_FREQ	72000000
@@ -89,6 +91,8 @@
 											spix == SPI2 ? DMA_FLAG_TCIF4 : \
 											spix == SPI3 ? DMA_FLAG_TCIF5 : \
 											(int)0)
+
+#endif
 
 #endif
 											
