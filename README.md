@@ -13,38 +13,39 @@
 
 ## 驱动列表
 
-| 驱动模块                   | 简要说明 |
-|---------------------------|----------|
-| `xxx_gpio`                | 基本GPIO输入输出操作 |
-| `xxx_led_and_delay`       | LED 控制 + 基于SysTick/定时器的延时函数 |
-| `xxx_exti`                | 外部中断 |
-| `xxx_exti_encoder`        | 外部中断驱动旋转编码器 |
-| `xxx_timer_irq`           | 定时器中断 |
-| `xxx_timer_oc_pwm_servo`  | 定时器输出比较配置PWM驱动舵机 |
-| `xxx_timer_oc_pwm_tb6612` | 定时器输出比较配置PWM驱动TB6612控制直流电机 |
-| `xxx_timer_oc_pwm_rgb`    | 定时器输出比较配置PWM驱动RGB灯 |
-| `xxx_timer_ic_sr04`       | 定时器输入捕获驱动SR04超声波测距 |
-| `xxx_key`                 | 按键 + 延时消抖 |
-| `xxx_key_fifo`            | 按键 + 环形缓冲区 + 定时器中断扫描消抖 |
-| `xxx_key_fifo_event`      | xxx_key_fifo 的基础上添加事件处理，支持双击、长按等复杂操作 |
-| `xxx_adc`                 | 多通道ADC采集 |
-| `xxx_uart`                | 串口发送 + 空闲中断 + DMA 接收 |
-| `xxx_esp8266`             | ESP8266通过AT指令获取时间天气信息、TCP透传 |
-| `xxx_i2c_soft_aht21`      | 软件I2C驱动AHT21测量温湿度 |
-| `xxx_i2c_soft_ap3216c`    | 软件I2C驱动AP3216C获取光照、距离与红外值 |
-| `xxx_i2c_soft_bmp280`     | 软件I2C驱动BMP280获取温度与气压值 |
-| `xxx_i2c_soft_eeprom`     | 软件I2C读写EEPROM（AT24C02） |
-| `xxx_i2c_soft_mpu6050`    | 软件I2C驱动MPU6050获取陀螺仪数据 |
-| `xxx_i2c_soft_max30102`   | 软件I2C驱动MAX30102获取心率血氧 |
-| `xxx_i2c_soft_ssd1306`    | 软件I2C驱动0.96寸OLED（SSD1306，128×64）|
-| `xxx_spi_hard_w25qx`      | 硬件SPI读写外部Flash |
-| `xxx_spi_hard_dma_ssd1306`| 硬件SPI + DMA驱动0.96寸OLED（SSD1306，128×64）|
-| `xxx_spi_hard_dma_st7735` | 硬件SPI + DMA驱动1.8寸LCD（ST7735，128×160）|
-| `xxx_spi_hard_dma_st7789` | 硬件SPI + DMA驱动1.69寸LCD（ST7789，240×280）, 软件I2C驱动CST816T触摸屏|
-| `xxx_fsmc_ili9341`        | FSMC驱动2.8寸LCD（ILI9341，240×320）|
-| `xxx_flash`               | 读写内部Flash |
-| `xxx_rtc`                 | RTC实时时钟 |
-| `xxx_dht11`               | DHT11测量温湿度 |
-| `xxx_ds18b20`             | DS18B20测量温度 |
-| `xxx_stepper_motor`       | 步进电机 |
-| `xxx_vibration_motor`     | 振动马达 |
+| 驱动模块                       | 简要说明 |
+|-------------------------------|----------|
+| `xxx_gpio`                    | GPIO基础输入输出控制 |
+| `xxx_led_and_delay`           | LED驱动与SysTick/定时器延时函数 |
+| `xxx_exti`                    | 外部中断 |
+| `xxx_exti_encoder`            | 外部中断控制旋转编码器 |
+| `xxx_timer_irq`               | 定时器中断 |
+| `xxx_timer_oc_pwm_servo`      | 定时器输出比较PWM驱动舵机 |
+| `xxx_timer_oc_pwm_tb6612`     | 定时器输出比较PWM驱动TB6612（直流电机驱动） |
+| `xxx_timer_oc_pwm_rgb`        | 定时器输出比较PWM驱动RGB灯 |
+| `xxx_timer_oc_pwm_dma_ws2812b`| 定时器输出比较PWM+DMA驱动WS2812B灯带 |
+| `xxx_timer_ic_sr04`           | 定时器输入捕获驱动SR04超声波测距模块 |
+| `xxx_key`                     | 按键扫描+延时消抖 |
+| `xxx_key_fifo`                | 按键环形缓冲区+定时器中断消抖 |
+| `xxx_key_fifo_event`          | 支持双击/长按的按键事件处理（基于xxx_key_fifo） |
+| `xxx_adc`                     | ADC采集 |
+| `xxx_uart`                    | 串口发送+空闲中断+DMA接收 |
+| `xxx_esp8266`                 | ESP8266 AT指令（时间天气获取/TCP透传） |
+| `xxx_i2c_soft_aht21`          | 软件I2C驱动AHT21（温湿度） |
+| `xxx_i2c_soft_ap3216c`        | 软件I2C驱动AP3216C（光照/距离/红外） |
+| `xxx_i2c_soft_bmp280`         | 软件I2C驱动BMP280（温度/气压） |
+| `xxx_i2c_soft_eeprom`         | 软件I2C读写EEPROM（AT24C02） |
+| `xxx_i2c_soft_mpu6050`        | 软件I2C驱动MPU6050（陀螺仪） |
+| `xxx_i2c_soft_max30102`       | 软件I2C驱动MAX30102（心率/血氧） |
+| `xxx_i2c_soft_ssd1306`        | 软件I2C驱动0.96寸OLED（SSD1306, 128×64） |
+| `xxx_spi_hard_w25qx`          | 硬件SPI读写外部Flash（W25QX） |
+| `xxx_spi_hard_dma_ssd1306`    | 硬件SPI+DMA驱动0.96寸OLED（SSD1306, 128×64） |
+| `xxx_spi_hard_dma_st7735`     | 硬件SPI+DMA驱动1.8寸LCD（ST7735, 128×160） |
+| `xxx_spi_hard_dma_st7789`     | 硬件SPI+DMA驱动1.69寸LCD（ST7789, 240×280）<br>+软件I2C驱动CST816T触摸屏 |
+| `xxx_fsmc_ili9341`            | FSMC驱动2.8寸LCD（ILI9341, 240×320） |
+| `xxx_flash`                   | 内部Flash读写 |
+| `xxx_rtc`                     | RTC实时时钟 |
+| `xxx_dht11`                   | DHT11驱动（温湿度） |
+| `xxx_ds18b20`                 | DS18B20驱动（温度） |
+| `xxx_stepper_motor`           | 步进电机驱动 |
+| `xxx_vibration_motor`         | 振动马达驱动 |
