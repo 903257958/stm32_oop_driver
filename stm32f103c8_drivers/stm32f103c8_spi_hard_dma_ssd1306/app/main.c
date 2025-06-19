@@ -22,7 +22,6 @@ int main(void)
 	GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);
 	DBGMCU->CR &= ~((uint32_t)1 << 5);
     
-    delay_init(72);
 	oled_init(&oled);
 	
 	while (1)

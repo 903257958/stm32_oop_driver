@@ -19,7 +19,6 @@ int main(void)
 
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
-	delay_init(168);
 	lcd_init(&lcd);
 	
 	lcd.fill(&lcd, BLUE);

@@ -6,7 +6,6 @@ int main(void)
 {
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
-	delay_init(168);
 	oled_init(&oled);
 
 	oled.show_char(&oled, 0, 0, 'A', OLED_8X16);

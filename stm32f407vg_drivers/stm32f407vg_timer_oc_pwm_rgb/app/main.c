@@ -13,7 +13,6 @@ int main(void)
 
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
-    delay_init(168);
 	rgb_init(&rgb);
     
     rgb.red(&rgb);

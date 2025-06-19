@@ -34,7 +34,6 @@ int main(void)
 
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
-    delay_init(72);
     uart_init(&debug);
 	esp8266_init(&esp8266);
 

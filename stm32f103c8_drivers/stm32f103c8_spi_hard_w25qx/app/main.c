@@ -34,7 +34,6 @@ int main(void)
 	GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);
 	DBGMCU->CR &= ~((uint32_t)1 << 5);
 
-    delay_init(72);
 	uart_init(&debug);
 	w25qx_init(&w25q128);
 

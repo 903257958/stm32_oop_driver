@@ -7,7 +7,6 @@ int main(void)
 {
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
-    delay_init(72);
 	led_init(&led);
 	
 	while (1)

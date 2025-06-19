@@ -94,7 +94,6 @@ int main(void)
 {
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
     
-    delay_init(72);
 	uart_init(&debug);
 	key_init(&key1);
 	key_init(&key2);
@@ -117,7 +116,6 @@ int main(void)
 
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
     
-    delay_init(72);
 	uart_init(&debug);
 	key_init(&key1);
 	key_init(&key2);

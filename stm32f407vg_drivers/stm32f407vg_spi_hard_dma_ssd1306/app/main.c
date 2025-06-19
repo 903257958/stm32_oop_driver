@@ -17,7 +17,6 @@ int main(void)
 
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
     
-    delay_init(168);
 	oled_init(&oled);
 	
 	while (1)

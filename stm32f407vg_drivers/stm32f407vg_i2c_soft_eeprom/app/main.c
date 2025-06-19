@@ -26,7 +26,6 @@ int main(void)
 
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
-    delay_init(168);
 	uart_init(&debug);
 	eeprom_init(&at24c02);
 

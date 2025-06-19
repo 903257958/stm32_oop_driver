@@ -37,8 +37,7 @@ timer_dev_t timer3 = {
 int main(void)
 {
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
-	
-	delay_init(168);
+
     uart_init(&debug);
 	timer_init(&timer2);
 	timer_init(&timer3);

@@ -10,7 +10,6 @@ int main(void)
 
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
-    delay_init(72);
 	tb6612_init(&tb6612);
     
 	while (1)

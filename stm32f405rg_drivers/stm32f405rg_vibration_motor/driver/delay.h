@@ -28,12 +28,11 @@
     #define USE_FREERTOS 0
 #endif
 
-#if !USE_FREERTOS
-void delay_init(uint16_t sysclk_mhz);
-#else
+#if USE_FREERTOS
 #include "timer.h"
 void delay_init(timer_dev_t *timer);
 #endif
+
 void delay_us(uint32_t us);
 void delay_ms(uint32_t ms);
 void delay_s(uint32_t s);

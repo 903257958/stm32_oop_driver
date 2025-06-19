@@ -11,7 +11,6 @@ int main(void)
 
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
-    delay_init(72);
 	ws2812b_init(&ws2812b);
 
     for (i = 0; i < ws2812b.config.led_num; i++)

@@ -6,7 +6,6 @@ int main(void)
 {
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
-    delay_init(168);
 	vibration_motor_init(&vibration_motor);
 	
     vibration_motor.on(&vibration_motor);

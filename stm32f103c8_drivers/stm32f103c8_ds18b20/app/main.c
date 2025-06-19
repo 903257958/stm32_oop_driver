@@ -23,7 +23,6 @@ int main(void)
 {
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
-    delay_init(72);
 	uart_init(&debug);
 	ds18b20_init(&ds18b20);
 	

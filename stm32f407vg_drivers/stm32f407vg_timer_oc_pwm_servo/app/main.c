@@ -8,7 +8,6 @@ int main(void)
 
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
-    delay_init(168);
 	servo_init(&sg90);
     
 	while (1)

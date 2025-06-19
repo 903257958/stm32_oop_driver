@@ -29,7 +29,6 @@ int main(void)
 
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
-    delay_init(168);
 	uart_init(&debug);
 	w25qx_init(&w25q128);
 

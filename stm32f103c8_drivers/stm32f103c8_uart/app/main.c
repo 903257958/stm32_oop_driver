@@ -69,7 +69,6 @@ int main(void)
 {
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
-	delay_init(72);
 	uart_init(&uart1);
 	uart_init(&uart2);
 	uart_init(&uart3);

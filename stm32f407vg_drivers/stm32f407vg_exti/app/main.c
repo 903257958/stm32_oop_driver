@@ -35,7 +35,6 @@ int main(void)
 {
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
-	delay_init(168);
 	uart_init(&debug);
     exti_init(&cnt[0]);
     exti_init(&cnt[1]);
