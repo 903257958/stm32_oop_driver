@@ -75,17 +75,9 @@
                                             
 #endif
 
-/* 按键最大数量 */
-#define KEY_MAX_NUM		6
-
 /* 按键状态 */
 #define KEY_PRESSED		1
 #define KEY_RELEASED	0
-
-/* 按键计时量 */
-#define KEY_TIME_DOUBLE		200
-#define KEY_TIME_LONG		2000
-#define KEY_TIME_REPEAT		100
 
 /* 环形缓冲区 */
 #define BUF_LEN 10
@@ -98,10 +90,10 @@ typedef struct {
 } key_buf_t;
 
 /* 全局变量定义 */
-static uint8_t g_key_dev_num = 0; 			// 已注册按键设备数
-static timer_dev_t g_timer_key_tick;		// 用于提供tick的定时器设备
-static key_dev_t *g_key_dev[KEY_MAX_NUM];	// 存储已注册按键设备地址
-static key_buf_t g_key_buf[KEY_MAX_NUM];	// 已注册按键设备的环形缓冲区
+static uint8_t g_key_dev_num = 0; 			    // 已注册按键设备数
+static timer_dev_t g_timer_key_tick;		    // 用于提供tick的定时器设备
+static key_dev_t *g_key_dev[MAX_KEY_DEV_NUM];	// 存储已注册按键设备地址
+static key_buf_t g_key_buf[MAX_KEY_DEV_NUM];	// 已注册按键设备的环形缓冲区
 
 /* 函数声明 */
 static bool __key_buf_is_empty(key_buf_t *buf);
@@ -122,7 +114,7 @@ static int8_t __key_deinit(key_dev_t *dev);
  ******************************************************************************/
 int8_t key_init(key_dev_t *dev)
 {
-	if (!dev || g_key_dev_num >= KEY_MAX_NUM)
+	if (!dev || g_key_dev_num >= MAX_KEY_DEV_NUM)
 		return -1;
 	
 	/* 配置时钟与GPIO */
@@ -225,10 +217,10 @@ static uint8_t __key_buf_read(key_buf_t *buf)
 static void __key_tick(void *param)
 {
     static uint8_t cnt = 0;
-    static int8_t prev_status[KEY_MAX_NUM] = {0};	// 上次状态
-    static int8_t curr_status[KEY_MAX_NUM] = {0};	// 本次状态
-	static uint8_t state[KEY_MAX_NUM] = {0};		// 状态机
-	static uint16_t timer[KEY_MAX_NUM] = {0};		// 状态机计时器
+    static int8_t prev_status[MAX_KEY_DEV_NUM] = {0};	// 上次状态
+    static int8_t curr_status[MAX_KEY_DEV_NUM] = {0};	// 本次状态
+	static uint8_t state[MAX_KEY_DEV_NUM] = {0};		// 状态机
+	static uint16_t timer[MAX_KEY_DEV_NUM] = {0};		// 状态机计时器
     uint8_t i;
 	uint8_t flag;
 	
@@ -271,7 +263,7 @@ static void __key_tick(void *param)
 			{
 				if (curr_status[i] == KEY_PRESSED)
 				{
-					timer[i] = KEY_TIME_LONG;
+					timer[i] = g_key_dev[i]->config.time_ms_long;
 					state[i] = 1;
 				}
 				break;
@@ -280,19 +272,12 @@ static void __key_tick(void *param)
 			{
 				if (curr_status[i] == KEY_RELEASED)
 				{
-					if (g_key_dev[i]->config.enable_double_click == KEY_DOUBLE_CLICK_ENABLE)
-					{
-						timer[i] = KEY_TIME_DOUBLE;
-					}
-					else
-					{
-						timer[i] = 0;
-					}
+					timer[i] = g_key_dev[i]->config.time_ms_double;
 					state[i] = 2;
 				}
 				else if (timer[i] == 0)
 				{
-					timer[i] = KEY_TIME_REPEAT;
+					timer[i] = g_key_dev[i]->config.time_ms_repeat;
 					flag |= KEY_LONG;
 					state[i] = 4;
 				}
@@ -328,7 +313,7 @@ static void __key_tick(void *param)
 				}
 				else if (timer[i] == 0)
 				{
-					timer[i] = KEY_TIME_REPEAT;
+					timer[i] = g_key_dev[i]->config.time_ms_repeat;
 					flag |= KEY_REPEAT;
 					state[i] = 4;
 				}

@@ -18,9 +18,9 @@ uart_dev_t debug = {
         .rx_single_max  = 64
     }
 };
-key_dev_t  key1  = {.config = {TIM2, GPIOA, GPIO_Pin_0, GPIO_LEVEL_HIGH, KEY_DOUBLE_CLICK_DISABLE}};
-key_dev_t  key2  = {.config = {TIM2, GPIOA, GPIO_Pin_1, GPIO_LEVEL_LOW, KEY_DOUBLE_CLICK_ENABLE}};
-key_dev_t  key3  = {.config = {TIM2, GPIOA, GPIO_Pin_4, GPIO_LEVEL_LOW, KEY_DOUBLE_CLICK_ENABLE}};
+key_dev_t  key1  = {.config = {1, TIM2, GPIOA, GPIO_Pin_0, GPIO_LEVEL_HIGH, 0, 2000, 100}};
+key_dev_t  key2  = {.config = {2, TIM2, GPIOA, GPIO_Pin_1, GPIO_LEVEL_LOW, 200, 2000, 100}};
+key_dev_t  key3  = {.config = {3, TIM2, GPIOA, GPIO_Pin_4, GPIO_LEVEL_LOW, 200, 2000, 100}};
 
 #if 1
 /* ========== 用法1：回调函数 + 事件映射表 ========== */

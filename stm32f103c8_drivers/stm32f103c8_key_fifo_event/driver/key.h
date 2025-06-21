@@ -35,9 +35,8 @@
 	#define GPIO_LEVEL_LOW 0
 #endif
 
-/* 是否启用双击检测（启用后每次单击间隔过短会判定为双击） */
-#define KEY_DOUBLE_CLICK_ENABLE		1
-#define KEY_DOUBLE_CLICK_DISABLE	0
+/* 最大按键设备数量 */
+#define MAX_KEY_DEV_NUM		6
 
 /* 按键状态标志位 */
 #define KEY_DOWN			0x01
@@ -74,11 +73,14 @@ typedef struct {
 
 /* 按键设备配置结构体 */
 typedef struct {
+    uint8_t id;                 // 编号
 	timer_periph_t timx;		// 用于提供tick，若有多个按键设备传入了不同的定时器外设，则以最后一次初始化的定时器外设为准
 	gpio_port_t port;		    // 端口
 	gpio_pin_t pin;			    // 引脚
 	bool press_level;			// 按键按下的时候IO口的电平
-	bool enable_double_click;	// 是否启用双击检测（启用后每次单击间隔过短会判定为双击）
+    uint16_t time_ms_double;    // 触发双击时间（单位：毫秒），如果为0则关闭双击检测（启用后需注意每次单击间隔过短会判定为双击）
+    uint16_t time_ms_long;      // 触发长按时间（单位：毫秒）
+    uint16_t time_ms_repeat;    // 触发重复时间（单位：毫秒）
 } key_config_t;
 
 /* 按键设备结构体 */
