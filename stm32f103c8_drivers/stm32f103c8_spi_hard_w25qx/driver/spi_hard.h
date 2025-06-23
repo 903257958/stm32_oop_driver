@@ -26,7 +26,7 @@
 	typedef uint32_t	gpio_pin_t;
 	
 #else
-	#error spi.h: No processor defined!
+	#error spi_hard.h: No processor defined!
 #endif
 
 #endif

@@ -31,10 +31,10 @@
             "path": "../driver/delay.h"
           },
           {
-            "path": "../driver/spi.c"
+            "path": "../driver/spi_hard.c"
           },
           {
-            "path": "../driver/spi.h"
+            "path": "../driver/spi_hard.h"
           },
           {
             "path": "../driver/uart.c"

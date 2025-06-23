@@ -49,10 +49,9 @@
 											prescaler == 64 ? SPI_BaudRatePrescaler_64 : \
 											prescaler == 128 ? SPI_BaudRatePrescaler_128 : \
 											prescaler == 256 ? SPI_BaudRatePrescaler_256 : \
-											(int)0	)				
-#endif
+											(int)0	)
 
-#if defined(STM32F40_41xxx) || defined(STM32F411xE)
+#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
 
 #define	__spi_clock_enable(SPIx)		{	if (SPIx == SPI1)		{RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);} \
 											else if (SPIx == SPI2)	{RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);} \
@@ -120,9 +119,8 @@
 											prescaler == 128 ? SPI_BaudRatePrescaler_128 : \
 											prescaler == 256 ? SPI_BaudRatePrescaler_256 : \
 											(int)0	)
-#endif
 
-#if defined (GD32F10X_MD) || defined (GD32F10X_HD)
+#elif defined (GD32F10X_MD) || defined (GD32F10X_HD)
 
 #define	__spi_clock_enable(spix)		{	if (spix == SPI0)		{rcu_periph_clock_enable(RCU_SPI0);} \
 											else if (spix == SPI1)	{rcu_periph_clock_enable(RCU_SPI1);} \
@@ -157,6 +155,9 @@
 											prescaler == 128 ? SPI_PSC_128 : \
 											prescaler == 256 ? SPI_PSC_256 : \
 											(int)0	)
+
+#else
+	#error spi_hard.c: No processor defined!
 #endif
 
 #endif

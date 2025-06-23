@@ -165,7 +165,7 @@ static void __w25qx_write_data(w25qx_dev_t *dev, uint32_t addr, uint8_t *data_ar
 	addr_rem = addr % W25QX_PAGE_SIZE;		// mod运算求余，若addr是W25QX_PAGE_SIZE整数倍，运算结果addr值为0
 	diff = W25QX_PAGE_SIZE - addr_rem;		// 差diff个数据值，刚好可以对齐到页地址
 	
-	num_of_page =  cnt / W25QX_PAGE_SIZE;	// 计算出要写多少整数页
+	num_of_page = cnt / W25QX_PAGE_SIZE;	// 计算出要写多少整数页
 	num_of_single = cnt % W25QX_PAGE_SIZE;	// mod运算求余，计算出剩余不满一页的字节数
 	
 	/* addr刚好按页对齐 */
@@ -267,7 +267,7 @@ static void __w25qx_block_erase_64kb(w25qx_dev_t *dev, uint16_t index)
 	__w25qx_write_enable(dev);						// 写使能
 	
 	priv_data->spi.start(&priv_data->spi);								// SPI起始
-	priv_data->spi.swap_byte(&priv_data->spi, W25QX_SECTOR_ERASE_4KB);	// 交换发送块擦除的指令
+	priv_data->spi.swap_byte(&priv_data->spi, W25QX_BLOCK_ERASE_64KB);	// 交换发送块擦除的指令
 	priv_data->spi.swap_byte(&priv_data->spi, index * 64 * 1024 >> 16);	// 交换发送地址23~16位
 	priv_data->spi.swap_byte(&priv_data->spi, index * 64 * 1024 >> 8);	// 交换发送地址15~8位
 	priv_data->spi.swap_byte(&priv_data->spi, index * 64 * 1024);		// 交换发送地址7~0位

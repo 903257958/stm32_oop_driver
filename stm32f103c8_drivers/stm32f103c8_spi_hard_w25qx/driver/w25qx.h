@@ -34,13 +34,8 @@
 
 #include "spi_hard.h"
 
-#define W25QX_PAGE_SIZE				256
-#define W25QX_PER_WRITE_PAGE_SIZE	256
-
-// #define  SPI_FLASH_ID		0x3015	//W25QX16
-// #define  SPI_FLASH_ID		0x4015	//W25Q16
-#define  SPI_FLASH_ID		0X4018	//W25Q128
-// #define  SPI_FLASH_ID		0X4017	//W25Q64
+#define W25QX_PAGE_SIZE							256
+#define W25QX_PER_WRITE_PAGE_SIZE				256
 
 #define W25QX_WRITE_ENABLE						0x06
 #define W25QX_WRITE_DISABLE						0x04
