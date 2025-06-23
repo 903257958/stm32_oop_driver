@@ -43,6 +43,7 @@
 | `xxx_spi_hard_dma_st7735`     | 硬件SPI+DMA驱动1.8寸LCD（ST7735, 128×160） |
 | `xxx_spi_hard_dma_st7789`     | 硬件SPI+DMA驱动1.69寸LCD（ST7789, 240×280）<br>（+软件I2C驱动CST816T触摸屏） |
 | `xxx_fsmc_ili9341`            | FSMC驱动2.8寸LCD（ILI9341, 240×320） |
+| `xxx_can`                     | CAN通信 |
 | `xxx_flash`                   | 内部Flash读写 |
 | `xxx_rtc`                     | RTC实时时钟 |
 | `xxx_dht11`                   | DHT11驱动（温湿度） |
