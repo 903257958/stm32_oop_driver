@@ -85,11 +85,9 @@ typedef struct {
 	int write;
 } key_buf_t;
 
-#define MAX_KEY_NUM	10						// 最大按键数量
-
-static key_dev_t *g_key_dev[MAX_KEY_NUM];	// 存储已注册按键设备，用于中断回调函数传参
-static uint8_t g_key_dev_num = 0; 			// 已注册按键设备数
-static timer_dev_t g_timer_key_tick;		// 用于提供tick的定时器设备
+static key_dev_t *g_key_dev[MAX_KEY_DEV_NUM];	// 存储已注册按键设备，用于中断回调函数传参
+static uint8_t g_key_dev_num = 0; 			    // 已注册按键设备数
+static timer_dev_t g_timer_key_tick;		    // 用于提供tick的定时器设备
 static key_buf_t g_key_buf = {
 	.read = 0,
 	.write = 0
@@ -160,8 +158,8 @@ static int __key_buf_read(key_buf_t *buf)
 static void __key_tick(void *param)
 { 
     static uint8_t cnt = 0; 
-    static int8_t prev_state[MAX_KEY_NUM] = {0};
-    static int8_t curr_state[MAX_KEY_NUM] = {0};
+    static int8_t prev_state[MAX_KEY_DEV_NUM] = {0};
+    static int8_t curr_state[MAX_KEY_DEV_NUM] = {0};
     uint8_t i; 
 
     /* 定时中断为1ms，每20ms检测一次按键状态，同时可以软件消抖 */ 
@@ -206,7 +204,7 @@ int key_get_val(void)
  ******************************************************************************/
 int8_t key_init(key_dev_t *dev)
 {
-	if (!dev || g_key_dev_num >= MAX_KEY_NUM)
+	if (!dev || g_key_dev_num >= MAX_KEY_DEV_NUM)
 		return -1;
 	
 	/* 配置时钟与GPIO */
@@ -222,14 +220,17 @@ int8_t key_init(key_dev_t *dev)
 	}
 	
 	/* 配置定时器 */
-	g_timer_key_tick.config.timx = dev->config.timx;
-	g_timer_key_tick.config.psc = TIMER_FREQ / 1000000 - 1;	// 计数周期1us
-	g_timer_key_tick.config.arr = 999;						// 定时周期1ms
-	g_timer_key_tick.config.irq_callback = __key_tick;		// 注册回调函数
-    g_timer_key_tick.config.irq_callback_param = NULL;
-    g_timer_key_tick.config.preemption_priority = 0;
-    g_timer_key_tick.config.sub_priority = 0;
-	timer_init(&g_timer_key_tick);
+    if (g_key_dev_num == 0)
+    {
+        g_timer_key_tick.config.timx = dev->config.timx;
+        g_timer_key_tick.config.psc = TIMER_FREQ / 1000000 - 1;	// 计数周期1us
+        g_timer_key_tick.config.arr = 999;						// 定时周期1ms
+        g_timer_key_tick.config.irq_callback = __key_tick;		// 注册回调函数
+        g_timer_key_tick.config.irq_callback_param = NULL;
+        g_timer_key_tick.config.preemption_priority = 0;
+        g_timer_key_tick.config.sub_priority = 0;
+        timer_init(&g_timer_key_tick);
+    }
 
 	/* 函数指针赋值 */
 	dev->deinit = __key_deinit;

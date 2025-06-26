@@ -35,6 +35,9 @@
 	#define GPIO_LEVEL_LOW 0
 #endif
 
+/* 最大按键设备数量 */
+#define MAX_KEY_DEV_NUM		3
+
 typedef struct {
 	timer_periph_t timx;	// 用于提供tick，若有多个按键设备传入了不同的定时器外设，则以最后一次初始化的定时器外设为准
 	gpio_port_t port;	    // 端口

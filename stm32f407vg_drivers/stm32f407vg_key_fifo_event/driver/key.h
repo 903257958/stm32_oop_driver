@@ -36,7 +36,7 @@
 #endif
 
 /* 最大按键设备数量 */
-#define MAX_KEY_DEV_NUM		6
+#define MAX_KEY_DEV_NUM		3
 
 /* 按键状态标志位 */
 #define KEY_DOWN			0x01

@@ -130,14 +130,17 @@ int8_t key_init(key_dev_t *dev)
 	}
 	
 	/* 配置定时器 */
-	g_timer_key_tick.config.timx = dev->config.timx;
-	g_timer_key_tick.config.psc = TIMER_FREQ / 1000000 - 1;	// 计数周期1us
-	g_timer_key_tick.config.arr = 999;						// 定时周期1ms
-	g_timer_key_tick.config.irq_callback = __key_tick;		// 注册回调函数
-    g_timer_key_tick.config.irq_callback_param = NULL;
-    g_timer_key_tick.config.preemption_priority = 0;
-    g_timer_key_tick.config.sub_priority = 0;
-	timer_init(&g_timer_key_tick);
+    if (g_key_dev_num == 0)
+    {
+        g_timer_key_tick.config.timx = dev->config.timx;
+        g_timer_key_tick.config.psc = TIMER_FREQ / 1000000 - 1;	// 计数周期1us
+        g_timer_key_tick.config.arr = 999;						// 定时周期1ms
+        g_timer_key_tick.config.irq_callback = __key_tick;		// 注册回调函数
+        g_timer_key_tick.config.irq_callback_param = NULL;
+        g_timer_key_tick.config.preemption_priority = 0;
+        g_timer_key_tick.config.sub_priority = 0;
+        timer_init(&g_timer_key_tick);
+    }
 
 	/* 函数指针赋值 */
 	dev->get_flag = __key_get_flag;
