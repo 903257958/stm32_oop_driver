@@ -19,8 +19,9 @@ del *.axf /s
 del *.tra /s
 del *.dep /s           
 del JLinkLog.txt /s
-del *.uvguix* /s
+
 del *.iex /s
 del *.htm /s
+del *.sct /s
 del *.map /s
 exit
