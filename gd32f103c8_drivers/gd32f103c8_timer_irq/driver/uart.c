@@ -73,7 +73,7 @@ static void uart_dma_init(uart_dev_t *dev);
 static void uart_printf(uart_dev_t *dev, const char *format, va_list args);
 static void uart_send(uart_dev_t *dev, uint8_t *data, uint32_t len);
 static char *uart_recv(uart_dev_t *dev);
-static int uart_deinit(uart_dev_t *dev);
+static int uart_drv_deinit(uart_dev_t *dev);
 
 #ifdef UART0_AVAILABLE
 static void uart0_printf(char *format, ...);
@@ -98,7 +98,7 @@ static char *uart2_recv(void);
  * @param[in,out] dev uart_dev_t 结构体指针
  * @return	0 表示成功，其他值表示失败
  */												
-int uart_init(uart_dev_t *dev)
+int uart_drv_init(uart_dev_t *dev)
 {
 	if (!dev)
 		return -1;
@@ -167,7 +167,7 @@ int uart_init(uart_dev_t *dev)
 	}
 	#endif
 
-	dev->deinit = uart_deinit;
+	dev->deinit = uart_drv_deinit;
 
 	dev->init_flag = true;
 	return 0;
@@ -267,7 +267,7 @@ static char *uart_recv(uart_dev_t *dev)
  * @param[in,out] dev uart_dev_t 结构体指针
  * @return	0 表示成功，其他值表示失败
  */	
-static int uart_deinit(uart_dev_t *dev)
+static int uart_drv_deinit(uart_dev_t *dev)
 {
 	if (!dev || !dev->init_flag)
 		return -1;

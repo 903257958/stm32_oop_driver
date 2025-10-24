@@ -62,6 +62,6 @@ typedef struct uart_dev {
 	int (*deinit)(struct uart_dev *dev);
 } uart_dev_t;
 
-int uart_init(uart_dev_t *dev);
+int uart_drv_init(uart_dev_t *dev);
 
 #endif

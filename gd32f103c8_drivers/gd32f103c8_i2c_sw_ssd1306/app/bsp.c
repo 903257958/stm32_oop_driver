@@ -11,7 +11,7 @@ oled_dev_t oled = {
  */
 int bsp_init(void)
 {
-    oled_init(&oled);
+    oled_drv_init(&oled);
     
     return 0;
 }

@@ -24,15 +24,15 @@ uart_dev_t debug = {
 /* 16Bit：11位STID、1位RTR、1位IDE、3位0 */
 static can_filter_config_t can0_filters[] = {
     /* 32位屏蔽模式示例，接收所有帧 */
-    // {
-    //     .id = 0,
-    //     .mode = CAN_FILTER_MODE_32BIT_MASK,
-    //     .id_high = 0x0000,
-    //     .id_low  = 0x0000,
-    //     .mask_id_high = 0x0000,
-    //     .mask_id_low  = 0x0000,
-    //     .fifo_assignment = CAN_FIFO0
-    // },
+    {
+        .id = 0,
+        .mode = CAN_FILTER_MODE_32BIT_MASK,
+        .id_high = 0x0000,
+        .id_low  = 0x0000,
+        .mask_id_high = 0x0000,
+        .mask_id_low  = 0x0000,
+        .fifo_assignment = CAN_FIFO0
+    },
 
     /* 16位列表模式示例，只接收标准格式0x234，0x345，0x567 */
 	// {
@@ -90,15 +90,15 @@ static can_filter_config_t can0_filters[] = {
     // },
 
     /* 32位屏蔽模式示例，只接收数据帧 */
-    {
-        .id = 6,
-        .mode = CAN_FILTER_MODE_32BIT_MASK,
-        .id_high = 0x0 >> 16,
-        .id_low  = 0x0,
-        .mask_id_high = (0x01 << 1) >> 16,
-        .mask_id_low  = (uint16_t)(0x01 << 1),
-        .fifo_assignment = CAN_FIFO0
-    },
+    // {
+    //     .id = 6,
+    //     .mode = CAN_FILTER_MODE_32BIT_MASK,
+    //     .id_high = 0x0 >> 16,
+    //     .id_low  = 0x0,
+    //     .mask_id_high = (0x01 << 1) >> 16,
+    //     .mask_id_low  = (uint16_t)(0x01 << 1),
+    //     .fifo_assignment = CAN_FIFO0
+    // },
 };
 
 can_dev_t can0 = {
@@ -108,7 +108,7 @@ can_dev_t can0 = {
         .rx_pin = GPIO_PIN_11,
         .tx_port = GPIOA,
         .tx_pin = GPIO_PIN_12,
-        .mode = CAN_LOOPBACK_MODE,
+        .mode = CAN_NORMAL_MODE,
         .filter_list = can0_filters,
         .filter_num = sizeof(can0_filters) / sizeof(can0_filters[0])
     }
@@ -120,7 +120,7 @@ can_dev_t can0 = {
  */
 int bsp_init(void)
 {
-    uart_init(&debug);
+    uart_drv_init(&debug);
     can_drv_init(&can0);
     
     return 0;

@@ -93,14 +93,14 @@ static int i2c_soft_read_reg(i2c_soft_dev_t *dev, uint8_t dev_addr, uint8_t reg_
 static int i2c_soft_read_regs(i2c_soft_dev_t *dev, uint8_t dev_addr, uint8_t reg_addr, uint16_t num, uint8_t data[]);
 static int i2c_soft_write_reg(i2c_soft_dev_t *dev, uint8_t dev_addr, uint8_t reg_addr, uint8_t data);
 static int i2c_soft_write_regs(i2c_soft_dev_t *dev, uint8_t dev_addr, uint8_t reg_addr, uint16_t num, uint8_t data[]);
-static int i2c_soft_deinit(i2c_soft_dev_t *dev);
+static int i2c_soft_drv_deinit(i2c_soft_dev_t *dev);
 
 /**
  * @brief   初始化软件 I2C
  * @param[in,out] dev i2c_soft_dev_t 结构体指针
  * @return	0 表示成功，其他值表示失败
  */
-int i2c_soft_init(i2c_soft_dev_t *dev)
+int i2c_soft_drv_init(i2c_soft_dev_t *dev)
 {
 	if (!dev)
 		return -1;
@@ -120,7 +120,7 @@ int i2c_soft_init(i2c_soft_dev_t *dev)
 	dev->read_regs = i2c_soft_read_regs;
 	dev->write_reg = i2c_soft_write_reg;
 	dev->write_regs = i2c_soft_write_regs;
-	dev->deinit = i2c_soft_deinit;
+	dev->deinit = i2c_soft_drv_deinit;
 
 	dev->init_flag = true;
 	
@@ -433,7 +433,7 @@ static int i2c_soft_write_regs(i2c_soft_dev_t *dev, uint8_t dev_addr, uint8_t re
  * @param[in,out] dev i2c_soft_dev_t 结构体指针
  * @return	0 表示成功，其他值表示失败
  */
-static int i2c_soft_deinit(i2c_soft_dev_t *dev)
+static int i2c_soft_drv_deinit(i2c_soft_dev_t *dev)
 {    
     if (!dev || !dev->init_flag)
         return -1;

@@ -11,7 +11,7 @@ led_dev_t led = {
  */
 int bsp_init(void)
 {
-    led_init(&led);
+    led_drv_init(&led);
     
     return 0;
 }

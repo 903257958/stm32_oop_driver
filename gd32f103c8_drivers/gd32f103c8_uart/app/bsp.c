@@ -19,7 +19,6 @@ uart_dev_t uart0 = {
     }
 };
 
-/* 硬件设备定义 */
 static uint8_t uart1_tx_buf[2048];
 static uint8_t uart1_rx_buf[2048];
 uart_dev_t uart1 = {
@@ -62,9 +61,9 @@ uart_dev_t uart2 = {
  */
 int bsp_init(void)
 {
-    uart_init(&uart0);
-	uart_init(&uart1);
-	uart_init(&uart2);
+    uart_drv_init(&uart0);
+	uart_drv_init(&uart1);
+	uart_drv_init(&uart2);
     
     return 0;
 }

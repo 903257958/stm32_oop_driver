@@ -4,10 +4,10 @@ static can_tx_msg_t tx_msg_buf[] = {
 
     /* 测试 */
 /*   rx_sfid  rx_efid       rx_ff              rx_ft            rx_dlen   Data[8]                */
-    // {0x555, 0x00000000, CAN_FF_STANDARD, CAN_FT_DATA,   4,   {0x11, 0x22, 0x33, 0x44}},    // 标准格式数据帧
-    // {0x000, 0x12345678, CAN_FF_EXTENDED, CAN_FT_DATA,   4,   {0xAA, 0xBB, 0xCC, 0xDD}},    // 扩展格式数据帧
-    // {0x666, 0x00000000, CAN_FF_STANDARD, CAN_FT_REMOTE, 0,   NULL},                        // 标准格式遥控帧
-    // {0x000, 0x0789ABCD, CAN_FF_EXTENDED, CAN_FT_REMOTE, 0,   NULL},                        // 扩展格式遥控帧
+    {0x555, 0x00000000, CAN_FF_STANDARD, CAN_FT_DATA,   4,   {0x11, 0x22, 0x33, 0x44}},    // 标准格式数据帧
+    {0x000, 0x12345678, CAN_FF_EXTENDED, CAN_FT_DATA,   4,   {0xAA, 0xBB, 0xCC, 0xDD}},    // 扩展格式数据帧
+    {0x666, 0x00000000, CAN_FF_STANDARD, CAN_FT_REMOTE, 0,   NULL},                        // 标准格式遥控帧
+    {0x000, 0x0789ABCD, CAN_FF_EXTENDED, CAN_FT_REMOTE, 0,   NULL},                        // 扩展格式遥控帧
 
     /* 16位列表模式过滤器测试 */
 /*   rx_sfid  rx_efid       rx_ff              rx_ft            rx_dlen   Data[8]                */
@@ -63,20 +63,20 @@ static can_tx_msg_t tx_msg_buf[] = {
 
     /* 32位屏蔽模式过滤器测试（只接收遥控/数据帧） */
 /*   rx_sfid  rx_efid       rx_ff              rx_ft            rx_dlen   Data[8]                */
-    {0x123, 0x00000000, CAN_FF_STANDARD, CAN_FT_DATA,   4,   {0x11, 0x22, 0x33, 0x44}},    // 标准格式数据帧
-    {0x234, 0x00000000, CAN_FF_STANDARD, CAN_FT_REMOTE, 0,   NULL},                        // 标准格式遥控帧
-    {0x345, 0x00000000, CAN_FF_STANDARD, CAN_FT_DATA,   4,   {0x11, 0x22, 0x33, 0x44}},    // 标准格式数据帧
-    {0x456, 0x00000000, CAN_FF_STANDARD, CAN_FT_REMOTE, 0,   NULL},                        // 标准格式遥控帧
+    // {0x123, 0x00000000, CAN_FF_STANDARD, CAN_FT_DATA,   4,   {0x11, 0x22, 0x33, 0x44}},    // 标准格式数据帧
+    // {0x234, 0x00000000, CAN_FF_STANDARD, CAN_FT_REMOTE, 0,   NULL},                        // 标准格式遥控帧
+    // {0x345, 0x00000000, CAN_FF_STANDARD, CAN_FT_DATA,   4,   {0x11, 0x22, 0x33, 0x44}},    // 标准格式数据帧
+    // {0x456, 0x00000000, CAN_FF_STANDARD, CAN_FT_REMOTE, 0,   NULL},                        // 标准格式遥控帧
 
-    {0x000, 0x12345600, CAN_FF_EXTENDED, CAN_FT_DATA,   4,   {0x11, 0x22, 0x33, 0x44}},    // 扩展格式数据帧
-    {0x000, 0x12345601, CAN_FF_EXTENDED, CAN_FT_REMOTE, 0,   NULL},                        // 扩展格式遥控帧
-    {0x000, 0x123456FE, CAN_FF_EXTENDED, CAN_FT_DATA,   4,   {0x11, 0x22, 0x33, 0x44}},    // 扩展格式数据帧
-    {0x000, 0x123456FF, CAN_FF_EXTENDED, CAN_FT_REMOTE, 0,   NULL},                        // 扩展格式遥控帧
+    // {0x000, 0x12345600, CAN_FF_EXTENDED, CAN_FT_DATA,   4,   {0x11, 0x22, 0x33, 0x44}},    // 扩展格式数据帧
+    // {0x000, 0x12345601, CAN_FF_EXTENDED, CAN_FT_REMOTE, 0,   NULL},                        // 扩展格式遥控帧
+    // {0x000, 0x123456FE, CAN_FF_EXTENDED, CAN_FT_DATA,   4,   {0x11, 0x22, 0x33, 0x44}},    // 扩展格式数据帧
+    // {0x000, 0x123456FF, CAN_FF_EXTENDED, CAN_FT_REMOTE, 0,   NULL},                        // 扩展格式遥控帧
 
-    {0x000, 0x0789AB00, CAN_FF_EXTENDED, CAN_FT_DATA,   4,   {0x11, 0x22, 0x33, 0x44}},    // 扩展格式数据帧
-    {0x000, 0x0789AB01, CAN_FF_EXTENDED, CAN_FT_REMOTE, 0,   NULL},                        // 扩展格式遥控帧
-    {0x000, 0x0789ABFE, CAN_FF_EXTENDED, CAN_FT_DATA,   4,   {0x11, 0x22, 0x33, 0x44}},    // 扩展格式数据帧
-    {0x000, 0x0789ABFF, CAN_FF_EXTENDED, CAN_FT_REMOTE, 0,   NULL},                        // 扩展格式遥控帧
+    // {0x000, 0x0789AB00, CAN_FF_EXTENDED, CAN_FT_DATA,   4,   {0x11, 0x22, 0x33, 0x44}},    // 扩展格式数据帧
+    // {0x000, 0x0789AB01, CAN_FF_EXTENDED, CAN_FT_REMOTE, 0,   NULL},                        // 扩展格式遥控帧
+    // {0x000, 0x0789ABFE, CAN_FF_EXTENDED, CAN_FT_DATA,   4,   {0x11, 0x22, 0x33, 0x44}},    // 扩展格式数据帧
+    // {0x000, 0x0789ABFF, CAN_FF_EXTENDED, CAN_FT_REMOTE, 0,   NULL},                        // 扩展格式遥控帧
 };
 
 static uint8_t tx_msg_index = 0;

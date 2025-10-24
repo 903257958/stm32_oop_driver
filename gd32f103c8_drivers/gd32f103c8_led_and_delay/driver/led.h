@@ -54,6 +54,6 @@ typedef struct led_dev {
 	int (*deinit)(struct led_dev *dev);
 } led_dev_t;
 
-int led_init(led_dev_t *dev);
+int led_drv_init(led_dev_t *dev);
 
 #endif

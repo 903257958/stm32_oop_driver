@@ -39,7 +39,7 @@ timer_dev_t timer2 = {
  */
 int bsp_init(void)
 {
-    uart_init(&debug);
+    uart_drv_init(&debug);
     timer_drv_init(&timer1);
 	timer_drv_init(&timer2);
 	

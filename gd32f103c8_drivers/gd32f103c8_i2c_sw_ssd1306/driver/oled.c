@@ -55,14 +55,14 @@ static int oled_draw_triangle(oled_dev_t *dev, uint8_t x0, uint8_t y0, uint8_t x
 static int oled_draw_circle(oled_dev_t *dev, uint8_t x, uint8_t y, uint8_t radius, uint8_t is_filled);
 static int oled_draw_ellipse(oled_dev_t *dev, uint8_t x, uint8_t y, uint8_t a, uint8_t b, uint8_t is_filled);
 static int oled_draw_arc(oled_dev_t *dev, uint8_t x, uint8_t y, uint8_t radius, int16_t start_angle, int16_t end_angle, uint8_t is_filled);
-static int oled_deinit(oled_dev_t *dev);
+static int oled_drv_deinit(oled_dev_t *dev);
 
 /**
  * @brief   初始化 OLED 设备
  * @param[in,out] dev oled_dev_t 结构体指针
  * @return	0 表示成功，其他值表示失败
  */
-int oled_init(oled_dev_t *dev)
+int oled_drv_init(oled_dev_t *dev)
 {
 	if (!dev)
 		return -1;
@@ -83,7 +83,7 @@ int oled_init(oled_dev_t *dev)
 	priv_data->i2c.config.sda_pin = dev->config.sda_pin;
 	priv_data->index = g_index++;
 	
-	i2c_soft_init(&priv_data->i2c);
+	i2c_soft_drv_init(&priv_data->i2c);
 	
 	dev->update = oled_update;
 	dev->update_area = oled_update_area;
@@ -109,7 +109,7 @@ int oled_init(oled_dev_t *dev)
 	dev->draw_circle = oled_draw_circle;
 	dev->draw_ellipse = oled_draw_ellipse;
 	dev->draw_arc = oled_draw_arc;
-	dev->deinit = oled_deinit;
+	dev->deinit = oled_drv_deinit;
 	
 	dev->init_flag = true;
 	
@@ -1399,7 +1399,7 @@ static int oled_draw_arc(oled_dev_t *dev, uint8_t x, uint8_t y, uint8_t radius, 
  * @param[in,out] dev oled_dev_t 结构体指针
  * @return	0 表示成功，其他值表示失败
  */
-static int oled_deinit(oled_dev_t *dev)
+static int oled_drv_deinit(oled_dev_t *dev)
 {
 	oled_priv_data_t *priv_data = (oled_priv_data_t *)dev->priv_data;
 

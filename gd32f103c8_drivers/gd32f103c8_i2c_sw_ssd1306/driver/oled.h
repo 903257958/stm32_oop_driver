@@ -80,6 +80,6 @@ typedef struct oled_dev {
 	int (*deinit)(struct oled_dev *dev);
 } oled_dev_t;
 
-int oled_init(oled_dev_t *dev);
+int oled_drv_init(oled_dev_t *dev);
 
 #endif

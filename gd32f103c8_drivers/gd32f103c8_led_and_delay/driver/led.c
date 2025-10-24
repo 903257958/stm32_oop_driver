@@ -87,14 +87,14 @@ static int led_on(led_dev_t *dev);
 static int led_off(led_dev_t *dev);
 static int led_get_status(led_dev_t *dev, bool *status);
 static int led_toggle(led_dev_t *dev);
-static int led_deinit(led_dev_t *dev);
+static int led_drv_deinit(led_dev_t *dev);
 
 /**
  * @brief   初始化 LED 设备
  * @param[in,out] dev led_dev_t 结构体指针
  * @return	0 表示成功，其他值表示失败
  */
-int led_init(led_dev_t *dev)
+int led_drv_init(led_dev_t *dev)
 {
 	if (!dev)
 		return -1;
@@ -112,7 +112,7 @@ int led_init(led_dev_t *dev)
 	dev->off = led_off;
 	dev->get_status = led_get_status;
 	dev->toggle = led_toggle;
-	dev->deinit = led_deinit;
+	dev->deinit = led_drv_deinit;
 	
     dev->init_flag = true;
     
@@ -203,7 +203,7 @@ static int led_toggle(led_dev_t *dev)
  * @param[in,out] dev led_dev_t 结构体指针
  * @return	0 表示成功，其他值表示失败
  */
-static int led_deinit(led_dev_t *dev)
+static int led_drv_deinit(led_dev_t *dev)
 {
 	if (!dev || !dev->init_flag)
 		return -1;

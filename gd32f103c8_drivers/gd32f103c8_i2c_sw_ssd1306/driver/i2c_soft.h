@@ -56,6 +56,6 @@ typedef struct i2c_soft_dev {
 	int (*deinit)(struct i2c_soft_dev *dev);
 } i2c_soft_dev_t;
 
-int i2c_soft_init(i2c_soft_dev_t *dev);
+int i2c_soft_drv_init(i2c_soft_dev_t *dev);
 
 #endif

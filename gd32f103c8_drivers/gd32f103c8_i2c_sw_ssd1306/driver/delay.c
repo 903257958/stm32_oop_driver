@@ -3,12 +3,12 @@
 /* 系统主频 */
 extern uint32_t SystemCoreClock;
 
-#if USE_FREERTOS
+#if USE_RTOS
 static bool g_init_flag = false;
 static timer_dev_t g_timer_delay;
 #endif
 
-#if !USE_FREERTOS
+#if !USE_RTOS
 
 /**
  * @brief   微秒级延时
@@ -40,7 +40,7 @@ void delay_us(uint32_t us)
 void delay_init(timer_dev_t *timer)
 {
     g_timer_delay = *timer;     /* 保存传入的定时器设备 */
-    timer_init(&g_timer_delay);
+    timer_drv_init(&g_timer_delay);
     g_init_flag = true;
 }
 
