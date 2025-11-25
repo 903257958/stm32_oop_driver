@@ -1,37 +1,41 @@
-#include "main.h"
+#include "drv_delay.h"
+#include "drv_uart.h"
+#include "drv_can.h"
+#include <stddef.h>
 
-static uint8_t uart1_tx_buf[256];
-static uint8_t uart1_rx_buf[256];
-uart_dev_t debug = {
-    .config = {
-        .uartx          = USART1,
-        .baud           = 115200,
-        .tx_port        = GPIOA,
-        .tx_pin         = GPIO_Pin_9,
-        .rx_port        = GPIOA,
-        .rx_pin         = GPIO_Pin_10,
-        .tx_buf         = uart1_tx_buf,
-        .rx_buf         = uart1_rx_buf,
-        .tx_buf_size    = sizeof(uart1_tx_buf),
-        .rx_buf_size    = sizeof(uart1_rx_buf),
-        .rx_single_max  = 64
-    }
+static uart_dev_t uart_debug;
+static uint8_t uart_debug_tx_buf[256];
+static uint8_t uart_debug_rx_buf[256];
+static const uart_cfg_t uart_debug_cfg = {
+    .uart_periph     = USART1,
+    .baud            = 115200,
+    .tx_port         = GPIOA,
+    .tx_pin          = GPIO_Pin_9,
+    .rx_port         = GPIOA,
+    .rx_pin          = GPIO_Pin_10,
+    .tx_buf          = uart_debug_tx_buf,
+    .rx_buf          = uart_debug_rx_buf,
+    .tx_buf_size     = sizeof(uart_debug_tx_buf),
+    .rx_buf_size     = sizeof(uart_debug_rx_buf),
+    .rx_pre_priority = 0,
+    .rx_sub_priority = 0
 };
 
+static can_dev_t can1;
 /* CAN1过滤器 */
 /* 32Bit：11位STID、18位EXID、1位IDE、1位RTR、1位0 */
 /* 16Bit：11位STID、1位RTR、1位IDE、3位0 */
-can_filter_config_t can1_filters[] = {
-    // /* 32位屏蔽模式示例，接收所有帧 */
-    // {
-    //     .id = 0,
-    //     .mode = CAN_FILTER_MODE_32BIT_MASK,
-    //     .id_high = 0x0000,
-    //     .id_low  = 0x0000,
-    //     .mask_id_high = 0x0000,
-    //     .mask_id_low  = 0x0000,
-    //     .fifo_assignment = CAN_Filter_FIFO0
-    // },
+static can_filter_cfg_t can1_filters[] = {
+    /* 32位屏蔽模式示例，接收所有帧 */
+    {
+        .id = 0,
+        .mode = CAN_FILTER_MODE_32BIT_MASK,
+        .id_high = 0x0000,
+        .id_low  = 0x0000,
+        .mask_id_high = 0x0000,
+        .mask_id_low  = 0x0000,
+        .fifo_assignment = CAN_Filter_FIFO0
+    },
 
     /* 16位列表模式示例，只接收标准格式0x234，0x345，0x567 */
 	// {
@@ -56,7 +60,7 @@ can_filter_config_t can1_filters[] = {
     // },
 
     /* 32位列表模式示例，只接收标准格式0x123和扩展格式0x12345678 */
-    //     {
+    // {
     //     .id = 3,
     //     .mode = CAN_FILTER_MODE_32BIT_LIST,
     //     .id_high = (0x123U << 21) >> 16,
@@ -89,39 +93,37 @@ can_filter_config_t can1_filters[] = {
     // },
 
     /* 32位屏蔽模式示例，只接收数据帧 */
-    {
-        .id = 6,
-        .mode = CAN_FILTER_MODE_32BIT_MASK,
-        .id_high = 0x0 >> 16,
-        .id_low  = 0x0,
-        .mask_id_high = (0x01 << 1) >> 16,
-        .mask_id_low  = (uint16_t)(0x01 << 1),
-        .fifo_assignment = CAN_Filter_FIFO0
-    },
+    // {
+    //     .id = 6,
+    //     .mode = CAN_FILTER_MODE_32BIT_MASK,
+    //     .id_high = 0x0 >> 16,
+    //     .id_low  = 0x0,
+    //     .mask_id_high = (0x01 << 1) >> 16,
+    //     .mask_id_low  = (uint16_t)(0x01 << 1),
+    //     .fifo_assignment = CAN_Filter_FIFO0
+    // },
+};
+static const can_cfg_t can1_cfg = {
+    .can_periph  = CAN1,
+    .baudrate    = CAN_BAUDRATE_250K, 
+    .rx_port     = GPIOA,
+    .rx_pin      = GPIO_Pin_11,
+    .tx_port     = GPIOA,
+    .tx_pin      = GPIO_Pin_12,
+    .mode        = CAN_Mode_LoopBack, /* or CAN_Mode_Normal */
+    .filter_list = can1_filters,
+    .filter_num  = sizeof(can1_filters) / sizeof(can1_filters[0])
 };
 
-/* CAN1设备 */
-can_dev_t can1 = {
-    .config = {
-        .canx = CAN1,
-        .rx_port = GPIOA,
-        .rx_pin = GPIO_Pin_11,
-        .tx_port = GPIOA,
-        .tx_pin = GPIO_Pin_12,
-        .mode = CAN_Mode_LoopBack,
-        .filter_list = can1_filters,
-        .filter_num = sizeof(can1_filters) / sizeof(can1_filters[0])
-    }
-};
 
-can_tx_msg_t tx_msg_buf[] = {
+static can_tx_msg_t tx_msg_buf[] = {
 
     /* 测试 */
 /*   StdId  ExtId       IDE              RTR            DLC   Data[8]                */
-    // {0x555, 0x00000000, CAN_Id_Standard, CAN_RTR_Data,   4,   {0x11, 0x22, 0x33, 0x44}},    // 标准格式数据帧
-    // {0x000, 0x12345678, CAN_Id_Extended, CAN_RTR_Data,   4,   {0xAA, 0xBB, 0xCC, 0xDD}},    // 扩展格式数据帧
-    // {0x666, 0x00000000, CAN_Id_Standard, CAN_RTR_Remote, 0,   NULL},                        // 标准格式遥控帧
-    // {0x000, 0x0789ABCD, CAN_Id_Extended, CAN_RTR_Remote, 0,   NULL},                        // 扩展格式遥控帧
+    {0x555, 0x00000000, CAN_Id_Standard, CAN_RTR_Data,   4,   {0x11, 0x22, 0x33, 0x44}},    // 标准格式数据帧
+    {0x000, 0x12345678, CAN_Id_Extended, CAN_RTR_Data,   4,   {0xAA, 0xBB, 0xCC, 0xDD}},    // 扩展格式数据帧
+    {0x666, 0x00000000, CAN_Id_Standard, CAN_RTR_Remote, 0,   NULL},                        // 标准格式遥控帧
+    {0x000, 0x0789ABCD, CAN_Id_Extended, CAN_RTR_Remote, 0,   NULL},                        // 扩展格式遥控帧
 
     /* 16位列表模式过滤器测试 */
 /*   StdId  ExtId       IDE              RTR            DLC   Data[8]                */
@@ -177,77 +179,72 @@ can_tx_msg_t tx_msg_buf[] = {
 
     /* 32位屏蔽模式过滤器测试（只接收遥控/数据帧） */
 /*   StdId  ExtId       IDE              RTR            DLC   Data[8]                */
-    {0x123, 0x00000000, CAN_Id_Standard, CAN_RTR_Data,   4,   {0x11, 0x22, 0x33, 0x44}},    // 标准格式数据帧
-    {0x234, 0x00000000, CAN_Id_Standard, CAN_RTR_Remote, 0,   NULL},                        // 标准格式遥控帧
-    {0x345, 0x00000000, CAN_Id_Standard, CAN_RTR_Data,   4,   {0x11, 0x22, 0x33, 0x44}},    // 标准格式数据帧
-    {0x456, 0x00000000, CAN_Id_Standard, CAN_RTR_Remote, 4,   NULL},                        // 标准格式遥控帧
+    // {0x123, 0x00000000, CAN_Id_Standard, CAN_RTR_Data,   4,   {0x11, 0x22, 0x33, 0x44}},    // 标准格式数据帧
+    // {0x234, 0x00000000, CAN_Id_Standard, CAN_RTR_Remote, 0,   NULL},                        // 标准格式遥控帧
+    // {0x345, 0x00000000, CAN_Id_Standard, CAN_RTR_Data,   4,   {0x11, 0x22, 0x33, 0x44}},    // 标准格式数据帧
+    // {0x456, 0x00000000, CAN_Id_Standard, CAN_RTR_Remote, 4,   NULL},                        // 标准格式遥控帧
 
-    {0x000, 0x12345600, CAN_Id_Extended, CAN_RTR_Data,   4,   {0x11, 0x22, 0x33, 0x44}},    // 扩展格式数据帧
-    {0x000, 0x12345601, CAN_Id_Extended, CAN_RTR_Remote, 0,   NULL},                        // 扩展格式遥控帧
-    {0x000, 0x123456FE, CAN_Id_Extended, CAN_RTR_Data,   4,   {0x11, 0x22, 0x33, 0x44}},    // 扩展格式数据帧
-    {0x000, 0x123456FF, CAN_Id_Extended, CAN_RTR_Remote, 0,   NULL},                        // 扩展格式遥控帧
+    // {0x000, 0x12345600, CAN_Id_Extended, CAN_RTR_Data,   4,   {0x11, 0x22, 0x33, 0x44}},    // 扩展格式数据帧
+    // {0x000, 0x12345601, CAN_Id_Extended, CAN_RTR_Remote, 0,   NULL},                        // 扩展格式遥控帧
+    // {0x000, 0x123456FE, CAN_Id_Extended, CAN_RTR_Data,   4,   {0x11, 0x22, 0x33, 0x44}},    // 扩展格式数据帧
+    // {0x000, 0x123456FF, CAN_Id_Extended, CAN_RTR_Remote, 0,   NULL},                        // 扩展格式遥控帧
 
-    {0x000, 0x0789AB00, CAN_Id_Extended, CAN_RTR_Data,   4,   {0x11, 0x22, 0x33, 0x44}},    // 扩展格式数据帧
-    {0x000, 0x0789AB01, CAN_Id_Extended, CAN_RTR_Remote, 0,   NULL},                        // 扩展格式遥控帧
-    {0x000, 0x0789ABFE, CAN_Id_Extended, CAN_RTR_Data,   4,   {0x11, 0x22, 0x33, 0x44}},    // 扩展格式数据帧
-    {0x000, 0x0789ABFF, CAN_Id_Extended, CAN_RTR_Remote, 0,   NULL},                        // 扩展格式遥控帧
+    // {0x000, 0x0789AB00, CAN_Id_Extended, CAN_RTR_Data,   4,   {0x11, 0x22, 0x33, 0x44}},    // 扩展格式数据帧
+    // {0x000, 0x0789AB01, CAN_Id_Extended, CAN_RTR_Remote, 0,   NULL},                        // 扩展格式遥控帧
+    // {0x000, 0x0789ABFE, CAN_Id_Extended, CAN_RTR_Data,   4,   {0x11, 0x22, 0x33, 0x44}},    // 扩展格式数据帧
+    // {0x000, 0x0789ABFF, CAN_Id_Extended, CAN_RTR_Remote, 0,   NULL},                        // 扩展格式遥控帧
 };
-uint8_t tx_msg_index = 0;
-
-can_rx_msg_t rx_msg;
+static uint8_t tx_msg_index = 0;
+static can_rx_msg_t rx_msg;
 
 int main(void)
 {
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
+	uint8_t i;
 
-	uart_init(&debug);
-    can_init(&can1);
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
-    debug.printf("\r\nCAN bus test!\r\n\r\n");
-    
-	while (1)
-	{
-        /* 发送 */
-        can1.send(&can1, &tx_msg_buf[tx_msg_index++]);
+    drv_uart_init(&uart_debug, &uart_debug_cfg);
+    drv_can_init(&can1, &can1_cfg);
+
+	uart_debug.ops->printf("\r\nCAN bus test!\r\n\r\n");
+	
+	while (1) {
+		/* 发送 */
+        can1.ops->send(&can1, &tx_msg_buf[tx_msg_index]);
+		uart_debug.ops->printf("Tx: %s %s 0x%08X [%d] {", 
+                               (tx_msg_buf[tx_msg_index].IDE == CAN_Id_Standard) ? "[STD" : "[EXT", 
+                               (tx_msg_buf[tx_msg_index].RTR == CAN_RTR_Data) ? "DATA]  " : "REMOTE]",
+                               (tx_msg_buf[tx_msg_index].IDE == CAN_Id_Standard) ? 
+                                tx_msg_buf[tx_msg_index].StdId : tx_msg_buf[tx_msg_index].ExtId,
+                                tx_msg_buf[tx_msg_index].DLC);
+			
+		if (tx_msg_buf[tx_msg_index].RTR == CAN_RTR_Data)
+			for (i = 0; i < tx_msg_buf[tx_msg_index].DLC; i++)
+				uart_debug.ops->printf(" 0x%02X", tx_msg_buf[tx_msg_index].Data[i]);
+		uart_debug.ops->printf(" }\r\n");
+		
+		tx_msg_index++;
         if (tx_msg_index >= sizeof(tx_msg_buf) / sizeof(can_tx_msg_t))
-        {
             tx_msg_index = 0;
-        }
-        
-        delay_ms(200);
+		
+        delay_ms(500);
 
         /* 接收 */
-        if (can1.recv_flag(&can1, 0))
-        {
-            can1.recv(&can1, 0, &rx_msg);
+        if (can1.ops->recv_flag(&can1, CAN_FIFO0)) {
+            can1.ops->recv(&can1, CAN_FIFO0, &rx_msg);
 
-            debug.printf("Rx: %s %s\r\n", 
-                        ((rx_msg.IDE == CAN_Id_Standard) ? "Std" : "Ext"), 
-                        ((rx_msg.RTR == CAN_RTR_Data) ? "Data" : "Remote"));
-
-
-            if (rx_msg.IDE == CAN_Id_Standard)
-            {
-                debug.printf("ID: 0x%x,      ",  rx_msg.StdId);
-            }
-            else if (rx_msg.IDE == CAN_Id_Extended)
-            {
-                debug.printf("ID: 0x%08x, ",  rx_msg.ExtId);
-            }
-
-            debug.printf("Len: %d, ", rx_msg.DLC);
-
-            if (rx_msg.RTR == CAN_RTR_Data)
-            {
-                debug.printf("Data: 0x%x 0x%x 0x%x 0x%x\r\n\r\n", 
-                            rx_msg.Data[0], rx_msg.Data[1], rx_msg.Data[2], rx_msg.Data[3]);
-            }
-            else if (rx_msg.RTR == CAN_RTR_Remote)
-            {
-                debug.printf("Data: NULL\r\n\r\n");
-            }
+            uart_debug.ops->printf("Rx: %s %s 0x%08X [%d] {", 
+                                   (rx_msg.IDE == CAN_Id_Standard) ? "[STD" : "[EXT", 
+                                   (rx_msg.RTR == CAN_RTR_Data) ? "DATA]  " : "REMOTE]",
+                                   (rx_msg.IDE == CAN_Id_Standard) ? rx_msg.StdId : rx_msg.ExtId,
+                                    rx_msg.DLC);
+			
+			if (rx_msg.RTR == CAN_RTR_Data)
+				for (i = 0; i < rx_msg.DLC; i++)
+					uart_debug.ops->printf(" 0x%02X", rx_msg.Data[i]);
+			uart_debug.ops->printf(" }\r\n\r\n");
         }
 
-		delay_ms(200);
+		delay_ms(500);
 	}
 }

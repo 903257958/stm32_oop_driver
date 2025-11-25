@@ -12,12 +12,6 @@
         "files": [
           {
             "path": "../app/main.c"
-          },
-          {
-            "path": "../app/bsp.c"
-          },
-          {
-            "path": "../app/bsp.h"
           }
         ],
         "folders": []
@@ -26,22 +20,22 @@
         "name": "driver",
         "files": [
           {
-            "path": "../driver/delay.c"
+            "path": "../driver/drv_delay.c"
           },
           {
-            "path": "../driver/delay.h"
+            "path": "../driver/drv_delay.h"
           },
           {
-            "path": "../driver/uart.c"
+            "path": "../driver/drv_timer.c"
           },
           {
-            "path": "../driver/uart.h"
+            "path": "../driver/drv_timer.h"
           },
           {
-            "path": "../driver/timer.c"
+            "path": "../driver/drv_uart.c"
           },
           {
-            "path": "../driver/timer.h"
+            "path": "../driver/drv_uart.h"
           }
         ],
         "folders": []
@@ -59,6 +53,9 @@
             "path": "../firmware/cmsis/core/core_cmInstr.h"
           },
           {
+            "path": "../firmware/cmsis/device/gd32f10x.h"
+          },
+          {
             "path": "../firmware/cmsis/device/gd32f10x_it.c"
           },
           {
@@ -66,9 +63,6 @@
           },
           {
             "path": "../firmware/cmsis/device/gd32f10x_libopt.h"
-          },
-          {
-            "path": "../firmware/cmsis/device/gd32f10x.h"
           },
           {
             "path": "../firmware/cmsis/device/startup_gd32f10x_md.s"
@@ -163,7 +157,7 @@
   "deviceName": null,
   "packDir": null,
   "miscInfo": {
-    "uid": "973e2903955422a671ceb993d70803b5"
+    "uid": "8834e1bca8cc0a5c33e0c085b7da2765"
   },
   "targets": {
     "Target 1": {
@@ -171,6 +165,7 @@
       "toolchain": "AC5",
       "compileConfig": {
         "cpuType": "Cortex-M3",
+        "archExtensions": "",
         "floatingPointHardware": "none",
         "scatterFilePath": "",
         "useCustomScatterFile": false,
@@ -280,8 +275,7 @@
             }
           ]
         },
-        "options": "null",
-        "archExtensions": ""
+        "options": "null"
       },
       "uploader": "OpenOCD",
       "uploadConfig": {
@@ -339,6 +333,9 @@
           },
           "asm-compiler": {},
           "linker": {
+            "$outputTaskExcludes": [
+              ".bin"
+            ],
             "output-format": "elf",
             "xo-base": "",
             "ro-base": "0x08000000",

@@ -190,7 +190,7 @@
             <hadIRAM2>1</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
-            <useUlib>0</useUlib>
+            <useUlib>1</useUlib>
             <EndSel>0</EndSel>
             <uLtcg>0</uLtcg>
             <nSecure>0</nSecure>
@@ -385,11 +385,6 @@
           <GroupName>app</GroupName>
           <Files>
             <File>
-              <FileName>main.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\app\main.h</FilePath>
-            </File>
-            <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\app\main.c</FilePath>
@@ -400,34 +395,34 @@
           <GroupName>driver</GroupName>
           <Files>
             <File>
-              <FileName>delay.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\driver\delay.h</FilePath>
-            </File>
-            <File>
-              <FileName>delay.c</FileName>
+              <FileName>drv_delay.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\driver\delay.c</FilePath>
+              <FilePath>..\driver\drv_delay.c</FilePath>
             </File>
             <File>
-              <FileName>uart.h</FileName>
+              <FileName>drv_delay.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\driver\uart.h</FilePath>
+              <FilePath>..\driver\drv_delay.h</FilePath>
             </File>
             <File>
-              <FileName>uart.c</FileName>
+              <FileName>drv_exti.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\driver\uart.c</FilePath>
+              <FilePath>..\driver\drv_exti.c</FilePath>
             </File>
             <File>
-              <FileName>exti.h</FileName>
+              <FileName>drv_exti.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\driver\exti.h</FilePath>
+              <FilePath>..\driver\drv_exti.h</FilePath>
             </File>
             <File>
-              <FileName>exti.c</FileName>
+              <FileName>drv_uart.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\driver\exti.c</FilePath>
+              <FilePath>..\driver\drv_uart.c</FilePath>
+            </File>
+            <File>
+              <FileName>drv_uart.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\driver\drv_uart.h</FilePath>
             </File>
           </Files>
         </Group>

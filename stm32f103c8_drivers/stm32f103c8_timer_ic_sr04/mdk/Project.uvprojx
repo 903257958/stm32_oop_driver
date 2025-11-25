@@ -385,11 +385,6 @@
           <GroupName>app</GroupName>
           <Files>
             <File>
-              <FileName>main.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\app\main.h</FilePath>
-            </File>
-            <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\app\main.c</FilePath>
@@ -400,34 +395,34 @@
           <GroupName>driver</GroupName>
           <Files>
             <File>
-              <FileName>delay.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\driver\delay.h</FilePath>
-            </File>
-            <File>
-              <FileName>delay.c</FileName>
+              <FileName>drv_delay.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\driver\delay.c</FilePath>
+              <FilePath>..\driver\drv_delay.c</FilePath>
             </File>
             <File>
-              <FileName>uart.h</FileName>
+              <FileName>drv_delay.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\driver\uart.h</FilePath>
+              <FilePath>..\driver\drv_delay.h</FilePath>
             </File>
             <File>
-              <FileName>uart.c</FileName>
+              <FileName>drv_sr04.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\driver\uart.c</FilePath>
+              <FilePath>..\driver\drv_sr04.c</FilePath>
             </File>
             <File>
-              <FileName>sr04.h</FileName>
+              <FileName>drv_sr04.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\driver\sr04.h</FilePath>
+              <FilePath>..\driver\drv_sr04.h</FilePath>
             </File>
             <File>
-              <FileName>sr04.c</FileName>
+              <FileName>drv_uart.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\driver\sr04.c</FilePath>
+              <FilePath>..\driver\drv_uart.c</FilePath>
+            </File>
+            <File>
+              <FileName>drv_uart.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\driver\drv_uart.h</FilePath>
             </File>
           </Files>
         </Group>

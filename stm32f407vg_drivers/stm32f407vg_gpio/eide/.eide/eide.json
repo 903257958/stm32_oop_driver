@@ -2,9 +2,7 @@
   "name": "Project",
   "type": "ARM",
   "dependenceList": [],
-  "srcDirs": [
-    ".eide/deps"
-  ],
+  "srcDirs": [],
   "virtualFolder": {
     "name": "<virtual_root>",
     "files": [],
@@ -14,9 +12,6 @@
         "files": [
           {
             "path": "../app/main.c"
-          },
-          {
-            "path": "../app/main.h"
           }
         ],
         "folders": []
@@ -25,10 +20,22 @@
         "name": "driver",
         "files": [
           {
-            "path": "../driver/gpio.c"
+            "path": "../driver/drv_delay.c"
           },
           {
-            "path": "../driver/gpio.h"
+            "path": "../driver/drv_delay.h"
+          },
+          {
+            "path": "../driver/drv_gpio.c"
+          },
+          {
+            "path": "../driver/drv_gpio.h"
+          },
+          {
+            "path": "../driver/drv_uart.c"
+          },
+          {
+            "path": "../driver/drv_uart.h"
           }
         ],
         "folders": []
@@ -321,7 +328,8 @@
             }
           ]
         },
-        "options": "null"
+        "options": "null",
+        "archExtensions": ""
       },
       "uploader": "OpenOCD",
       "uploadConfig": {
@@ -354,17 +362,41 @@
           "../third_lib/freertos/include",
           "../third_lib/freertos/portable/RVDS/ARM_CM4F",
           ".cmsis/include",
-          "../mdk/RTE/_Target 1",
-          ".eide/deps"
+          "../mdk/RTE/_Target 1"
         ],
         "libList": [],
-        "sourceDirList": [],
         "defineList": [
           "STM32F40_41xxx",
           "USE_STDPERIPH_DRIVER"
         ]
+      },
+      "builderOptions": {
+        "AC5": {
+          "version": 4,
+          "beforeBuildTasks": [],
+          "afterBuildTasks": [],
+          "global": {
+            "use-microLIB": true,
+            "output-debug-info": "enable"
+          },
+          "c/cpp-compiler": {
+            "optimization": "level-0",
+            "one-elf-section-per-function": true,
+            "c99-mode": true,
+            "C_FLAGS": "--no-multibyte-chars",
+            "CXX_FLAGS": "--no-multibyte-chars",
+            "warnings": "all-warnings"
+          },
+          "asm-compiler": {},
+          "linker": {
+            "output-format": "elf",
+            "xo-base": "",
+            "ro-base": "0x08000000",
+            "rw-base": "0x20000000"
+          }
+        }
       }
     }
   },
-  "version": "3.3"
+  "version": "3.6"
 }

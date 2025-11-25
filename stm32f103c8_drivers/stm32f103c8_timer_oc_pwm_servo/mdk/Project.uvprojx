@@ -385,11 +385,6 @@
           <GroupName>app</GroupName>
           <Files>
             <File>
-              <FileName>main.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\app\main.h</FilePath>
-            </File>
-            <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\app\main.c</FilePath>
@@ -400,34 +395,34 @@
           <GroupName>driver</GroupName>
           <Files>
             <File>
-              <FileName>delay.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\driver\delay.h</FilePath>
-            </File>
-            <File>
-              <FileName>delay.c</FileName>
+              <FileName>drv_delay.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\driver\delay.c</FilePath>
+              <FilePath>..\driver\drv_delay.c</FilePath>
             </File>
             <File>
-              <FileName>pwm.h</FileName>
+              <FileName>drv_delay.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\driver\pwm.h</FilePath>
+              <FilePath>..\driver\drv_delay.h</FilePath>
             </File>
             <File>
-              <FileName>pwm.c</FileName>
+              <FileName>drv_pwm.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\driver\pwm.c</FilePath>
+              <FilePath>..\driver\drv_pwm.c</FilePath>
             </File>
             <File>
-              <FileName>servo.h</FileName>
+              <FileName>drv_pwm.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\driver\servo.h</FilePath>
+              <FilePath>..\driver\drv_pwm.h</FilePath>
             </File>
             <File>
-              <FileName>servo.c</FileName>
+              <FileName>drv_servo.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\driver\servo.c</FilePath>
+              <FilePath>..\driver\drv_servo.c</FilePath>
+            </File>
+            <File>
+              <FileName>drv_servo.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\driver\drv_servo.h</FilePath>
             </File>
           </Files>
         </Group>

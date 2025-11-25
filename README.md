@@ -1,52 +1,63 @@
-# STM32面向对象外设驱动
+# STM32 面向对象外设驱动
 
-- 本项目为个人编写的一套STM32/GD32外设驱动集合，采用C语言实现“结构体+函数指针”的面向对象编程思想，可大幅度提高代码的模块化与可复用性。
+- 本项目为个人编写的一套 STM32 外设驱动集合，采用 C 语言实现**“结构体+函数指针”**的**面向对象**编程思想，可大幅度提高代码的模块化与可复用性。
 
 ## 项目特点
 
-- 主要提供STM32F103C8T6与STM32F407VGT6标准库的测试例程；
-- 驱动文件高度可移植：无需修改初始化函数内部代码，通过结构体在初始化阶段传入配置信息；
-- 驱动兼容多型号MCU：例如F1与F4系列均使用相同代码，也可通过修改驱动文件中的宏定义适配其他型号MCU，甚至迁移至HAL库；
-- 移植时只需参考所提供例程的app目录内文件，自定义外设引脚与通信接口，即可快速适配任意开发板；
-- 适配VSCode插件EIDE，如果不使用VSCode开发，"eide"文件夹可直接删除。
+- 提供 STM32 与 GD32 部分型号**标准外设库**的测试例程；
+- **驱动文件高度可移植**：无需修改初始化函数内部代码，只需参考所提供例程的 `app` 目录内文件，通过结构体在初始化阶段传入自定义的引脚接口与配置信息（部分驱动还需根据实际硬件修改 `drv_xxx.h` 中的”用户配置“部分），即可**快速适配任意开发板**；
+- **驱动兼容多型号**：所有芯片都使用相同的驱动代码，也可通过修改驱动文件 `drv_xxx.c` 中的“硬件抽象层”来适配其他型号 MCU，甚至迁移至 HAL 库；
+- 本仓库专注于驱动，所以 `app` 目录只是对驱动的使用做最简单直接的演示，你在项目中完全可以用更规范的形式使用驱动；
+- 适配 VSCode 插件 EIDE，如果不使用 VSCode 开发，`eide`文件夹可直接删除。
+
+## 更新记录
+
+- **2025.11.25 - v3.0.0**:
+  - 重构驱动架构，统一实现“**硬件抽象层**”与“**核心驱动层**”的逻辑结构。今后适配其他芯片仅需在“硬件抽象层”中添加对应实现；
+  - 全面使用**静态内存分配**，提升内存安全性与可预测性；
+  - I2C、SPI 等设备驱动与通信外设驱动完全解耦；
+  - 优化代码规范与命名规则，使函数、变量与文件命名更加统一、易读；
+  - 改进设备结构体、配置结构体以及设备私有数据的设计；
+  - 增加对部分 **GD32** 系列 MCU 的适配；
+  - **重要提示： 新版本重构幅度较大，部分驱动仍在迁移中。旧版本代码已保留在 `_old` 目录下以供参考，待全部迁移完成后将正式移除。**
 
 ## 驱动列表
 
 | 驱动模块                       | 简要说明 |
 |-------------------------------|----------|
-| `xxx_gpio`                    | GPIO基础输入输出控制 |
-| `xxx_led_and_delay`           | LED驱动与SysTick/定时器延时函数 |
+| `xxx_gpio`                    | GPIO 基础输入输出控制 |
+| `xxx_led_and_delay`           | LED 驱动与 SysTick /定时器延时函数 |
 | `xxx_exti`                    | 外部中断 |
 | `xxx_exti_encoder`            | 外部中断控制旋转编码器 |
 | `xxx_timer_irq`               | 定时器中断 |
-| `xxx_timer_oc_pwm_servo`      | 定时器输出比较PWM驱动舵机 |
-| `xxx_timer_oc_pwm_tb6612`     | 定时器输出比较PWM驱动TB6612（直流电机驱动） |
-| `xxx_timer_oc_pwm_rgb`        | 定时器输出比较PWM驱动RGB灯 |
-| `xxx_timer_oc_pwm_dma_ws2812b`| 定时器输出比较PWM+DMA驱动WS2812B灯带 |
-| `xxx_timer_ic_sr04`           | 定时器输入捕获驱动SR04超声波测距模块 |
+| `xxx_timer_oc_pwm_servo`      | 定时器输出比较 PWM 驱动舵机 |
+| `xxx_timer_oc_pwm_tb6612`     | 定时器输出比较 PWM 驱动 TB6612（直流电机驱动） |
+| `xxx_timer_oc_pwm_rgb`        | 定时器输出比较 PWM 驱动 RGB 灯 |
+| `xxx_timer_oc_pwm_dma_ws2812b`| 定时器输出比较 PWM + DMA 驱动 WS2812B 灯带 |
+| `xxx_timer_ic_sr04`           | 定时器输入捕获驱动 SR04 超声波测距模块 |
 | `xxx_key`                     | 按键扫描+延时消抖 |
 | `xxx_key_fifo`                | 按键环形缓冲区+定时器中断消抖 |
-| `xxx_key_fifo_event`          | 支持双击/长按的按键事件处理（基于xxx_key_fifo） |
+| `xxx_key_fifo_event`          | 支持双击/长按的按键事件处理（基于 `xxx_key_fifo`） |
 | `xxx_adc`                     | ADC采集 |
-| `xxx_uart`                    | 串口发送+空闲中断+DMA接收 |
+| `xxx_uart`                    | 串口发送+空闲中断+ DMA 接收 |
 | `xxx_esp8266`                 | ESP8266 AT指令（时间天气获取/TCP透传） |
-| `xxx_i2c_soft_aht21`          | 软件I2C驱动AHT21（温湿度） |
-| `xxx_i2c_soft_ap3216c`        | 软件I2C驱动AP3216C（光照/距离/红外） |
-| `xxx_i2c_soft_bmp280`         | 软件I2C驱动BMP280（温度/气压） |
-| `xxx_i2c_soft_eeprom`         | 软件I2C读写EEPROM（AT24C02） |
-| `xxx_i2c_soft_mpu6050`        | 软件I2C驱动MPU6050（陀螺仪） |
-| `xxx_i2c_soft_max30102`       | 软件I2C驱动MAX30102（心率/血氧） |
-| `xxx_i2c_soft_ssd1306`        | 软件I2C驱动0.96寸OLED（SSD1306, 128×64） |
-| `xxx_spi_hard_dma_ssd1306`    | 硬件SPI+DMA驱动0.96寸OLED（SSD1306, 128×64） |
-| `xxx_spi_hard_dma_st7735`     | 硬件SPI+DMA驱动1.8寸LCD（ST7735, 128×160） |
-| `xxx_spi_hard_dma_st7789`     | 硬件SPI+DMA驱动1.69寸LCD（ST7789, 240×280）<br>（+软件I2C驱动CST816T触摸屏） |
-| `xxx_spi_hard_w25qx`          | 硬件SPI读写外部Flash（W25QX） |
-| `xxx_spi_soft_w25qx`          | 软件SPI读写外部Flash（W25QX） |
-| `xxx_fsmc_ili9341`            | FSMC驱动2.8寸LCD（ILI9341, 240×320） |
-| `xxx_can`                     | CAN通信 |
-| `xxx_flash`                   | 内部Flash读写 |
-| `xxx_rtc`                     | RTC实时时钟 |
-| `xxx_dht11`                   | DHT11驱动（温湿度） |
-| `xxx_ds18b20`                 | DS18B20驱动（温度） |
+| `xxx_i2c_soft_aht21`          | 软件 I2C 驱动 AHT21（温湿度） |
+| `xxx_i2c_soft_ap3216c`        | 软件 I2C 驱动 AP3216C（光照/距离/红外） |
+| `xxx_i2c_soft_bmp280`         | 软件 I2C 驱动 BMP280（温度/气压） |
+| `xxx_i2c_soft_eeprom`         | 软件 I2C 读写 EEPROM（AT24C02） |
+| `xxx_i2c_soft_mpu6050`        | 软件 I2C 驱动 MPU6050（陀螺仪） |
+| `xxx_i2c_soft_max30102`       | 软件 I2C 驱动 MAX30102（心率/血氧） |
+| `xxx_i2c_soft_ssd1306`        | 软件 I2C 驱动 0.96 寸 OLED（SSD1306, 128×64） |
+| `xxx_spi_dma_ssd1306`    | 硬件 SPI + DMA 驱动 0.96 寸 OLED（SSD1306, 128×64） |
+| `xxx_spi_dma_st7735`     | 硬件 SPI + DMA 驱动 1.8 寸 LCD（ST7735, 128×160） |
+| `xxx_spi_dma_st7789v`    | 硬件 SPI + DMA 驱动 1.69 寸 LCD（ST7789V, 240×280）<br>（+软件 I2C 驱动 CST816T 触摸屏） |
+| `xxx_spi_w25qx`          | 硬件 SPI 读写外部 Flash（W25QX） |
+| `xxx_spi_soft_w25qx`          | 软件 SPI 读写外部 Flash（W25QX） |
+| `xxx_fsmc_ili9341`            | FSMC 驱动2.8寸LCD（ILI9341, 240×320） |
+| `xxx_can`                     | CAN 通信 |
+| `xxx_flash`                   | 内部 Flash 读写 |
+| `xxx_rtc`                     | RTC 实时时钟 |
+| `xxx_dht11`                   | DHT11 驱动（温湿度） |
+| `xxx_ds18b20`                 | DS18B20 驱动（温度） |
 | `xxx_stepper_motor`           | 步进电机驱动 |
 | `xxx_vibration_motor`         | 振动马达驱动 |

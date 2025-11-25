@@ -1,48 +1,45 @@
-#include "main.h"
+#include "drv_delay.h"
+#include "drv_uart.h"
+#include "drv_key.h"
 
-static uint8_t uart1_tx_buf[256];
-static uint8_t uart1_rx_buf[256];
-uart_dev_t debug = {
-    .config = {
-        .uartx          = USART1,
-        .baud           = 115200,
-        .tx_port        = GPIOA,
-        .tx_pin         = GPIO_Pin_9,
-        .rx_port        = GPIOA,
-        .rx_pin         = GPIO_Pin_10,
-        .tx_buf         = uart1_tx_buf,
-        .rx_buf         = uart1_rx_buf,
-        .tx_buf_size    = sizeof(uart1_tx_buf),
-        .rx_buf_size    = sizeof(uart1_tx_buf),
-        .rx_single_max  = 64
-    }
+static uart_dev_t uart_debug;
+static uint8_t uart_debug_tx_buf[256];
+static uint8_t uart_debug_rx_buf[256];
+static const uart_cfg_t uart_debug_cfg = {
+    .uart_periph     = USART1,
+    .baud            = 115200,
+    .tx_port         = GPIOA,
+    .tx_pin          = GPIO_Pin_9,
+    .rx_port         = GPIOA,
+    .rx_pin          = GPIO_Pin_10,
+    .tx_buf          = uart_debug_tx_buf,
+    .rx_buf          = uart_debug_rx_buf,
+    .tx_buf_size     = sizeof(uart_debug_tx_buf),
+    .rx_buf_size     = sizeof(uart_debug_rx_buf),
+    .rx_pre_priority = 0,
+    .rx_sub_priority = 0
 };
-key_dev_t  key1  = {.config = {GPIOB, GPIO_Pin_12, GPIO_LEVEL_LOW}};
-key_dev_t  key2  = {.config = {GPIOA, GPIO_Pin_8, GPIO_LEVEL_LOW}};
-key_dev_t  key3  = {.config = {GPIOB, GPIO_Pin_5, GPIO_LEVEL_LOW}};
+
+static key_dev_t key;
+static const key_cfg_t key_cfg = {
+    .delay_ms    = delay_ms,
+    .port        = GPIOB,
+    .pin         = GPIO_Pin_12,
+    .press_level = GPIO_LEVEL_LOW
+};
 
 int main(void)
 {
+    bool status;
+
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
-	uart_init(&debug);
-	key_init(&key1);
-	key_init(&key2);
-    key_init(&key3);
-	
-	while (1)
-	{
-		if(key1.is_press(&key1))
-		{
-			debug.printf("key1 pressed!\r\n");
-		}
-		if(key2.is_press(&key2))
-		{
-			debug.printf("key2 pressed!\r\n");
-		}
-        if(key3.is_press(&key3))
-		{
-			debug.printf("key3 pressed!\r\n");
-		}
+    drv_uart_init(&uart_debug, &uart_debug_cfg);
+    drv_key_init(&key, &key_cfg);
+
+	while (1) {
+        key.ops->get_status(&key, &status);
+        if (status)
+            uart_debug.ops->printf("key pressed!\r\n");
 	}
 }

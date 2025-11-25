@@ -385,11 +385,6 @@
           <GroupName>app</GroupName>
           <Files>
             <File>
-              <FileName>main.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\app\main.h</FilePath>
-            </File>
-            <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\app\main.c</FilePath>
@@ -400,44 +395,44 @@
           <GroupName>driver</GroupName>
           <Files>
             <File>
-              <FileName>delay.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\driver\delay.h</FilePath>
-            </File>
-            <File>
-              <FileName>delay.c</FileName>
+              <FileName>drv_delay.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\driver\delay.c</FilePath>
+              <FilePath>..\driver\drv_delay.c</FilePath>
             </File>
             <File>
-              <FileName>i2c_soft.h</FileName>
+              <FileName>drv_delay.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\driver\i2c_soft.h</FilePath>
+              <FilePath>..\driver\drv_delay.h</FilePath>
             </File>
             <File>
-              <FileName>i2c_soft.c</FileName>
+              <FileName>drv_i2c_soft.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\driver\i2c_soft.c</FilePath>
+              <FilePath>..\driver\drv_i2c_soft.c</FilePath>
             </File>
             <File>
-              <FileName>oled.h</FileName>
+              <FileName>drv_i2c_soft.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\driver\oled.h</FilePath>
+              <FilePath>..\driver\drv_i2c_soft.h</FilePath>
             </File>
             <File>
-              <FileName>oled.c</FileName>
+              <FileName>drv_oled_data.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\driver\oled.c</FilePath>
+              <FilePath>..\driver\drv_oled_data.c</FilePath>
             </File>
             <File>
-              <FileName>oled_data.h</FileName>
+              <FileName>drv_oled_data.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\driver\oled_data.h</FilePath>
+              <FilePath>..\driver\drv_oled_data.h</FilePath>
             </File>
             <File>
-              <FileName>oled_data.c</FileName>
+              <FileName>drv_ssd1306.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\driver\oled_data.c</FilePath>
+              <FilePath>..\driver\drv_ssd1306.c</FilePath>
+            </File>
+            <File>
+              <FileName>drv_ssd1306.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\driver\drv_ssd1306.h</FilePath>
             </File>
           </Files>
         </Group>

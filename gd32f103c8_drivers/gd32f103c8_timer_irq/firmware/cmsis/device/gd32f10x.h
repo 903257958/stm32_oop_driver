@@ -155,8 +155,8 @@ typedef enum IRQn
     I2C1_ER_IRQn                 = 34,     /*!< I2C1 error interrupt                                     */
     SPI0_IRQn                    = 35,     /*!< SPI0 interrupt                                           */
     SPI1_IRQn                    = 36,     /*!< SPI1 interrupt                                           */
-    USART1_IRQn                  = 38,     /*!< USART1 interrupt                                         */
     USART0_IRQn                  = 37,     /*!< USART0 interrupt                                         */
+    USART1_IRQn                  = 38,     /*!< USART1 interrupt                                         */
     USART2_IRQn                  = 39,     /*!< USART2 interrupt                                         */
     EXTI10_15_IRQn               = 40,     /*!< EXTI[15:10] interrupts                                   */
     RTC_Alarm_IRQn               = 41,     /*!< RTC alarm interrupt                                      */
@@ -302,8 +302,8 @@ typedef enum IRQn
     USBFS_IRQn                   = 67,     /*!< USBFS global interrupt                                   */
 #endif /* GD32F10X_CL */
 
-
 } IRQn_Type;
+
 /* includes */
 #include "core_cm3.h"
 #include "system_gd32f10x.h"

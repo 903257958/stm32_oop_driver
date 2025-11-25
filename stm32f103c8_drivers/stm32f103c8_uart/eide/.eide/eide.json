@@ -12,9 +12,6 @@
         "files": [
           {
             "path": "../app/main.c"
-          },
-          {
-            "path": "../app/main.h"
           }
         ],
         "folders": []
@@ -23,16 +20,16 @@
         "name": "driver",
         "files": [
           {
-            "path": "../driver/delay.c"
+            "path": "../driver/drv_delay.c"
           },
           {
-            "path": "../driver/delay.h"
+            "path": "../driver/drv_delay.h"
           },
           {
-            "path": "../driver/uart.c"
+            "path": "../driver/drv_uart.c"
           },
           {
-            "path": "../driver/uart.h"
+            "path": "../driver/drv_uart.h"
           }
         ],
         "folders": []

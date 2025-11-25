@@ -26,22 +26,22 @@
         "name": "driver",
         "files": [
           {
-            "path": "../driver/delay.c"
+            "path": "../driver/drv_delay.c"
           },
           {
-            "path": "../driver/delay.h"
+            "path": "../driver/drv_delay.h"
           },
           {
-            "path": "../driver/uart.c"
+            "path": "../driver/drv_exti.c"
           },
           {
-            "path": "../driver/uart.h"
+            "path": "../driver/drv_exti.h"
           },
           {
-            "path": "../driver/exti.c"
+            "path": "../driver/drv_uart.c"
           },
           {
-            "path": "../driver/exti.h"
+            "path": "../driver/drv_uart.h"
           }
         ],
         "folders": []

@@ -1,4 +1,119 @@
-#include "bsp.h"
+#include "drv_delay.h"
+#include "drv_uart.h"
+#include "drv_can.h"
+#include <stddef.h>
+
+static uart_dev_t uart_debug;
+static uint8_t uart_debug_tx_buf[256];
+static uint8_t uart_debug_rx_buf[256];
+static const uart_cfg_t uart_debug_cfg = {
+    .uart_periph     = USART0,
+    .baud            = 115200,
+    .tx_port         = GPIOA,
+    .tx_pin          = GPIO_PIN_9,
+    .rx_port         = GPIOA,
+    .rx_pin          = GPIO_PIN_10,
+    .tx_buf          = uart_debug_tx_buf,
+    .rx_buf          = uart_debug_rx_buf,
+    .tx_buf_size     = sizeof(uart_debug_tx_buf),
+    .rx_buf_size     = sizeof(uart_debug_rx_buf),
+    .rx_pre_priority = 0,
+    .rx_sub_priority = 0
+};
+
+static can_dev_t can0;
+/* CAN0过滤器 */
+/* 32Bit：11位STID、18位EXID、1位IDE、1位RTR、1位0 */
+/* 16Bit：11位STID、1位RTR、1位IDE、3位0 */
+static can_filter_cfg_t can0_filters[] = {
+    /* 32位屏蔽模式示例，接收所有帧 */
+    {
+        .id = 0,
+        .mode = CAN_FILTER_MODE_32BIT_MASK,
+        .id_high = 0x0000,
+        .id_low  = 0x0000,
+        .mask_id_high = 0x0000,
+        .mask_id_low  = 0x0000,
+        .fifo_assignment = CAN_FIFO0
+    },
+
+    /* 16位列表模式示例，只接收标准格式0x234，0x345，0x567 */
+	// {
+    //     .id = 1,
+    //     .mode = CAN_FILTER_MODE_16BIT_LIST,
+    //     .id_high = (0x234 << 5) | (0x01 << 4),
+    //     .id_low  = 0x345 << 5,
+    //     .mask_id_high = 0x456 << 5,
+    //     .mask_id_low  = 0x000 << 5,
+    //     .fifo_assignment = CAN_FIFO0
+    // },
+
+    /* 16位屏蔽模式示例，只接收标准格式0x200~0x2FF，0x320~0x32F */
+    // {
+    //     .id = 2,
+    //     .mode = CAN_FILTER_MODE_16BIT_MASK,
+    //     .id_high = 0x234 << 5,
+    //     .id_low  = 0x320 << 5,
+    //     .mask_id_high = (0x700 << 5) | (0x01 << 4) | (0x01 << 3),
+    //     .mask_id_low  = (0x7F0 << 5) | (0x01 << 4) | (0x01 << 3),
+    //     .fifo_assignment = CAN_FIFO0
+    // },
+
+    /* 32位列表模式示例，只接收标准格式0x123和扩展格式0x12345678 */
+    // {
+    //     .id = 3,
+    //     .mode = CAN_FILTER_MODE_32BIT_LIST,
+    //     .id_high = (0x123U << 21) >> 16,
+    //     .id_low  = (uint16_t)(0x123U << 21),
+    //     .mask_id_high = ((0x12345678U << 3) | (0x01 << 2)) >> 16,
+    //     .mask_id_low  = (uint16_t)((0x12345678U << 3) | (0x01 << 2)),
+    //     .fifo_assignment = CAN_FIFO0
+    // },
+
+    /* 32位屏蔽模式示例，只接收扩展格式0x12345600~0x123456FF */
+    // {
+    //     .id = 4,
+    //     .mode = CAN_FILTER_MODE_32BIT_MASK,
+    //     .id_high = ((0x12345600U << 3) | (0x01 << 2)) >> 16,
+    //     .id_low  = (uint16_t)((0x12345600U << 3) | (0x01 << 2)),
+    //     .mask_id_high = ((0x1FFFFF00U << 3) | (0x01 << 2) | (0x01 << 1)) >> 16,
+    //     .mask_id_low  = (uint16_t)((0x1FFFFF00U << 3) | (0x01 << 2) | (0x01 << 1)),
+    //     .fifo_assignment = CAN_FIFO0
+    // },
+
+    /* 32位屏蔽模式示例，只接收遥控帧 */
+    // {
+    //     .id = 5,
+    //     .mode = CAN_FILTER_MODE_32BIT_MASK,
+    //     .id_high = (0x01 << 1) >> 16,
+    //     .id_low  = (uint16_t)(0x01 << 1),
+    //     .mask_id_high = (0x01 << 1) >> 16,
+    //     .mask_id_low  = (uint16_t)(0x01 << 1),
+    //     .fifo_assignment = CAN_FIFO0
+    // },
+
+    /* 32位屏蔽模式示例，只接收数据帧 */
+    // {
+    //     .id = 6,
+    //     .mode = CAN_FILTER_MODE_32BIT_MASK,
+    //     .id_high = 0x0 >> 16,
+    //     .id_low  = 0x0,
+    //     .mask_id_high = (0x01 << 1) >> 16,
+    //     .mask_id_low  = (uint16_t)(0x01 << 1),
+    //     .fifo_assignment = CAN_FIFO0
+    // },
+};
+static can_cfg_t const can0_cfg = {
+    .can_periph  = CAN0,
+    .baudrate    = CAN_BAUDRATE_250K, 
+    .rx_port     = GPIOA,
+    .rx_pin      = GPIO_PIN_11,
+    .tx_port     = GPIOA,
+    .tx_pin      = GPIO_PIN_12,
+    .mode        = CAN_LOOPBACK_MODE, /* or CAN_NORMAL_MODE */
+    .filter_list = can0_filters,
+    .filter_num  = sizeof(&can0_filters) / sizeof(&can0_filters[0])
+};
 
 static can_tx_msg_t tx_msg_buf[] = {
 
@@ -86,25 +201,27 @@ int main(void)
 {
 	uint8_t i;
 
-	nvic_priority_group_set(NVIC_PRIGROUP_PRE2_SUB2);
-    bsp_init();
+    nvic_priority_group_set(NVIC_PRIGROUP_PRE4_SUB0);
 
-	debug.printf("\r\nCAN bus test!\r\n\r\n");
+    drv_uart_init(&uart_debug, &uart_debug_cfg);
+    drv_can_init(&can0, &can0_cfg);
+
+	uart_debug.ops->printf("\r\nCAN bus test!\r\n\r\n");
 	
 	while (1) {
 		/* 发送 */
-        can0.send(&can0, &tx_msg_buf[tx_msg_index]);
-		debug.printf("Tx: %s %s 0x%08X [%d] {", 
-					(tx_msg_buf[tx_msg_index].tx_ff == CAN_FF_STANDARD) ? "[STD" : "[EXT", 
-					(tx_msg_buf[tx_msg_index].tx_ft == CAN_FT_DATA) ? "DATA]  " : "REMOTE]",
-					(tx_msg_buf[tx_msg_index].tx_ff == CAN_FF_STANDARD) ? 
-					tx_msg_buf[tx_msg_index].tx_sfid : tx_msg_buf[tx_msg_index].tx_efid,
-					tx_msg_buf[tx_msg_index].tx_dlen);
+        can0.ops->send(&can0, &tx_msg_buf[tx_msg_index]);
+		uart_debug.ops->printf("Tx: %s %s 0x%08X [%d] {", 
+                               (tx_msg_buf[tx_msg_index].tx_ff == CAN_FF_STANDARD) ? "[STD" : "[EXT", 
+                               (tx_msg_buf[tx_msg_index].tx_ft == CAN_FT_DATA) ? "DATA]  " : "REMOTE]",
+                               (tx_msg_buf[tx_msg_index].tx_ff == CAN_FF_STANDARD) ? 
+                                tx_msg_buf[tx_msg_index].tx_sfid : tx_msg_buf[tx_msg_index].tx_efid,
+                                tx_msg_buf[tx_msg_index].tx_dlen);
 			
 		if (tx_msg_buf[tx_msg_index].tx_ft == CAN_FT_DATA)
 			for (i = 0; i < tx_msg_buf[tx_msg_index].tx_dlen; i++)
-				debug.printf(" 0x%02X", tx_msg_buf[tx_msg_index].tx_data[i]);
-		debug.printf(" }\r\n");
+				uart_debug.ops->printf(" 0x%02X", tx_msg_buf[tx_msg_index].tx_data[i]);
+		uart_debug.ops->printf(" }\r\n");
 		
 		tx_msg_index++;
         if (tx_msg_index >= sizeof(tx_msg_buf) / sizeof(can_tx_msg_t))
@@ -113,19 +230,19 @@ int main(void)
         delay_ms(500);
 
         /* 接收 */
-        if (can0.recv_flag(&can0, CAN_FIFO0)) {
-            can0.recv(&can0, CAN_FIFO0, &rx_msg);
+        if (can0.ops->recv_flag(&can0, CAN_FIFO0)) {
+            can0.ops->recv(&can0, CAN_FIFO0, &rx_msg);
 
-            debug.printf("Rx: %s %s 0x%08X [%d] {", 
-                        (rx_msg.rx_ff == CAN_FF_STANDARD) ? "[STD" : "[EXT", 
-                        (rx_msg.rx_ft == CAN_FT_DATA) ? "DATA]  " : "REMOTE]",
-						(rx_msg.rx_ff == CAN_FF_STANDARD) ? rx_msg.rx_sfid : rx_msg.rx_efid,
-						rx_msg.rx_dlen);
+            uart_debug.ops->printf("Rx: %s %s 0x%08X [%d] {", 
+                                   (rx_msg.rx_ff == CAN_FF_STANDARD) ? "[STD" : "[EXT", 
+                                   (rx_msg.rx_ft == CAN_FT_DATA) ? "DATA]  " : "REMOTE]",
+                                   (rx_msg.rx_ff == CAN_FF_STANDARD) ? rx_msg.rx_sfid : rx_msg.rx_efid,
+                                    rx_msg.rx_dlen);
 			
 			if (rx_msg.rx_ft == CAN_FT_DATA)
 				for (i = 0; i < rx_msg.rx_dlen; i++)
-					debug.printf(" 0x%02X", rx_msg.rx_data[i]);
-			debug.printf(" }\r\n\r\n");
+					uart_debug.ops->printf(" 0x%02X", rx_msg.rx_data[i]);
+			uart_debug.ops->printf(" }\r\n\r\n");
         }
 
 		delay_ms(500);

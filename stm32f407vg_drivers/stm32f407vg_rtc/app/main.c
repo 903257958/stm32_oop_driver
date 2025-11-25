@@ -1,42 +1,53 @@
-#include "main.h"
+#include "drv_delay.h"
+#include "drv_uart.h"
+#include "drv_rtc.h"
 
-static uint8_t uart1_tx_buf[2048];
-static uint8_t uart1_rx_buf[2048];
-uart_dev_t debug = {
-    .config = {
-        .uartx          = USART1,
-        .baud           = 115200,
-        .tx_port        = GPIOA,
-        .tx_pin         = GPIO_Pin_9,
-        .rx_port        = GPIOA,
-        .rx_pin         = GPIO_Pin_10,
-        .tx_buf         = uart1_tx_buf,
-        .rx_buf         = uart1_rx_buf,
-        .tx_buf_size    = sizeof(uart1_tx_buf),
-        .rx_buf_size    = sizeof(uart1_tx_buf),
-        .rx_single_max  = 512
-    }
+static uart_dev_t uart_debug;
+static uint8_t uart_debug_tx_buf[256];
+static uint8_t uart_debug_rx_buf[256];
+static const uart_cfg_t uart_debug_cfg = {
+    .uart_periph     = USART1,
+    .baud            = 115200,
+    .tx_port         = GPIOA,
+    .tx_pin          = GPIO_Pin_9,
+    .rx_port         = GPIOA,
+    .rx_pin          = GPIO_Pin_10,
+    .tx_buf          = uart_debug_tx_buf,
+    .rx_buf          = uart_debug_rx_buf,
+    .tx_buf_size     = sizeof(uart_debug_tx_buf),
+    .rx_buf_size     = sizeof(uart_debug_rx_buf),
+    .rx_pre_priority = 0,
+    .rx_sub_priority = 0
 };
-rtc_dev_t  rtc 	 = {.config = {2025, 1, 1, 23, 59, 55}};
+
+static rtc_dev_t rtc;
+static const rtc_time_t time_set = {
+    .year   = 2025,
+    .month  = 11,
+    .day    = 10,
+    .hour   = 23,
+    .minute = 59,
+    .second = 56
+};
 
 int main(void)
 {
-	// rtc_time_t rtc_time = {2000, 1, 1, 23, 59, 55};
+    rtc_time_t time;
 
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
-	uart_init(&debug);
-	rtc_init(&rtc);
-	
-	// rtc.set_time(&rtc, &rtc_time);
+    drv_uart_init(&uart_debug, &uart_debug_cfg);
+    drv_rtc_init(&rtc);
+    
+    rtc.ops->set_time(&rtc, &time_set);
 
-	while (1)
-	{
-		rtc.get_time(&rtc);
+	while (1) {
+        rtc.ops->get_time(&rtc, &time);
 
-		debug.printf("\r\nDate:%04d-%02d-%02d-%d\r\n", rtc.time.year, rtc.time.month, rtc.time.day, rtc.time.week);
-		debug.printf("Time:%02d:%02d:%02d\r\n", rtc.time.hour, rtc.time.minute, rtc.time.second);
-
-		delay_ms(1000);
+        uart_debug.ops->printf("\r\nDate: %04d-%02d-%02d-%d\r\n", 
+                               time.year, time.month, time.day, time.week);
+		uart_debug.ops->printf("Time: %02d:%02d:%02d\r\n", 
+                               time.hour, time.minute, time.second);
+        delay_ms(1000);
 	}
 }
