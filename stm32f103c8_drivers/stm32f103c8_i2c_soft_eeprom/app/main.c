@@ -5,11 +5,11 @@
 #include <string.h>
 
 static uart_dev_t uart_debug;
-static uint8_t uart_debug_tx_buf[256];
-static uint8_t uart_debug_rx_buf[256];
+static uint8_t uart_debug_tx_buf[512];
+static uint8_t uart_debug_rx_buf[512];
 static const uart_cfg_t uart_debug_cfg = {
     .uart_periph     = USART1,
-    .baud            = 115200,
+    .baudrate        = 115200,
     .tx_port         = GPIOA,
     .tx_pin          = GPIO_Pin_9,
     .rx_port         = GPIOA,
@@ -18,6 +18,7 @@ static const uart_cfg_t uart_debug_cfg = {
     .rx_buf          = uart_debug_rx_buf,
     .tx_buf_size     = sizeof(uart_debug_tx_buf),
     .rx_buf_size     = sizeof(uart_debug_rx_buf),
+    .rx_single_max   = 256,
     .rx_pre_priority = 0,
     .rx_sub_priority = 0
 };
@@ -70,27 +71,27 @@ int main(void)
     drv_i2c_soft_init(&i2c_soft, &i2c_soft_cfg);
     drv_eeprom_init(&at24c02, &at24c02_cfg);
 
-    uart_debug.ops->printf("==== EEPROM Test Start ====\r\n");
+    uart_debug.ops->printf(&uart_debug, "==== EEPROM Test Start ====\r\n");
 
     /* 1. 单字节写读测试 */
     ret = at24c02.ops->write_byte(&at24c02, 0x00, 0xAB);
     delay_ms(5);
     ret |= at24c02.ops->read_data(&at24c02, 0x00, 1, rbuf);
-    uart_debug.ops->printf("1. Byte %s (W=AB R=%02X)\r\n",
+    uart_debug.ops->printf(&uart_debug, "1. Byte %s (W=AB R=%02X)\r\n",
                            (!ret && rbuf[0] == 0xAB) ? "PASS" : "FAIL", rbuf[0]);
 
     /* 2. 整页写读测试 */
     ret = at24c02.ops->write_page(&at24c02, 0x08, wbuf);
     delay_ms(5);
     ret |= at24c02.ops->read_data(&at24c02, 0x08, sizeof(wbuf), rbuf);
-    uart_debug.ops->printf("2. Page %s\r\n", (!ret && !memcmp(wbuf,rbuf,sizeof(wbuf)))?"PASS":"FAIL");
+    uart_debug.ops->printf(&uart_debug, "2. Page %s\r\n", (!ret && !memcmp(wbuf,rbuf,sizeof(wbuf)))?"PASS":"FAIL");
 
     /* 3. 连续读取测试 */
     ret = at24c02.ops->read_data(&at24c02, 0x00, 10, rbuf);
-    uart_debug.ops->printf("3. Continuous Read %s: ", ret?"FAIL":"PASS");
+    uart_debug.ops->printf(&uart_debug, "3. Continuous Read %s: ", ret?"FAIL":"PASS");
     for (uint8_t i = 0; i < 10; i++) 
-        uart_debug.ops->printf("%02X ", rbuf[i]);
-    uart_debug.ops->printf("\r\n==== All Tests Done ====\r\n");
+        uart_debug.ops->printf(&uart_debug, "%02X ", rbuf[i]);
+    uart_debug.ops->printf(&uart_debug, "\r\n==== All Tests Done ====\r\n");
 
     while (1)
         delay_s(1);

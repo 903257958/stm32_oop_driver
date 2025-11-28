@@ -4,11 +4,11 @@
 #include <stddef.h>
 
 static uart_dev_t uart_debug;
-static uint8_t uart_debug_tx_buf[256];
-static uint8_t uart_debug_rx_buf[256];
+static uint8_t uart_debug_tx_buf[512];
+static uint8_t uart_debug_rx_buf[512];
 static const uart_cfg_t uart_debug_cfg = {
     .uart_periph     = USART1,
-    .baud            = 115200,
+    .baudrate        = 115200,
     .tx_port         = GPIOA,
     .tx_pin          = GPIO_Pin_9,
     .rx_port         = GPIOA,
@@ -17,6 +17,7 @@ static const uart_cfg_t uart_debug_cfg = {
     .rx_buf          = uart_debug_rx_buf,
     .tx_buf_size     = sizeof(uart_debug_tx_buf),
     .rx_buf_size     = sizeof(uart_debug_rx_buf),
+    .rx_single_max   = 256,
     .rx_pre_priority = 0,
     .rx_sub_priority = 0
 };
@@ -206,12 +207,12 @@ int main(void)
     drv_uart_init(&uart_debug, &uart_debug_cfg);
     drv_can_init(&can1, &can1_cfg);
 
-	uart_debug.ops->printf("\r\nCAN bus test!\r\n\r\n");
+	uart_debug.ops->printf(&uart_debug, "\r\nCAN bus test!\r\n\r\n");
 	
 	while (1) {
 		/* 发送 */
         can1.ops->send(&can1, &tx_msg_buf[tx_msg_index]);
-		uart_debug.ops->printf("Tx: %s %s 0x%08X [%d] {", 
+		uart_debug.ops->printf(&uart_debug, "Tx: %s %s 0x%08X [%d] {", 
                                (tx_msg_buf[tx_msg_index].IDE == CAN_Id_Standard) ? "[STD" : "[EXT", 
                                (tx_msg_buf[tx_msg_index].RTR == CAN_RTR_Data) ? "DATA]  " : "REMOTE]",
                                (tx_msg_buf[tx_msg_index].IDE == CAN_Id_Standard) ? 
@@ -220,8 +221,8 @@ int main(void)
 			
 		if (tx_msg_buf[tx_msg_index].RTR == CAN_RTR_Data)
 			for (i = 0; i < tx_msg_buf[tx_msg_index].DLC; i++)
-				uart_debug.ops->printf(" 0x%02X", tx_msg_buf[tx_msg_index].Data[i]);
-		uart_debug.ops->printf(" }\r\n");
+				uart_debug.ops->printf(&uart_debug, " 0x%02X", tx_msg_buf[tx_msg_index].Data[i]);
+		uart_debug.ops->printf(&uart_debug, " }\r\n");
 		
 		tx_msg_index++;
         if (tx_msg_index >= sizeof(tx_msg_buf) / sizeof(can_tx_msg_t))
@@ -233,7 +234,7 @@ int main(void)
         if (can1.ops->recv_flag(&can1, CAN_FIFO0)) {
             can1.ops->recv(&can1, CAN_FIFO0, &rx_msg);
 
-            uart_debug.ops->printf("Rx: %s %s 0x%08X [%d] {", 
+            uart_debug.ops->printf(&uart_debug, "Rx: %s %s 0x%08X [%d] {", 
                                    (rx_msg.IDE == CAN_Id_Standard) ? "[STD" : "[EXT", 
                                    (rx_msg.RTR == CAN_RTR_Data) ? "DATA]  " : "REMOTE]",
                                    (rx_msg.IDE == CAN_Id_Standard) ? rx_msg.StdId : rx_msg.ExtId,
@@ -241,8 +242,8 @@ int main(void)
 			
 			if (rx_msg.RTR == CAN_RTR_Data)
 				for (i = 0; i < rx_msg.DLC; i++)
-					uart_debug.ops->printf(" 0x%02X", rx_msg.Data[i]);
-			uart_debug.ops->printf(" }\r\n\r\n");
+					uart_debug.ops->printf(&uart_debug, " 0x%02X", rx_msg.Data[i]);
+			uart_debug.ops->printf(&uart_debug, " }\r\n\r\n");
         }
 
 		delay_ms(500);

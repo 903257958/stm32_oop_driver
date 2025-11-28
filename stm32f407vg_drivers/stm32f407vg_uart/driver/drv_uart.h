@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdarg.h>
 
 #if defined(STM32F10X_MD) || defined(STM32F10X_HD)
 #define DRV_UART_PLATFORM_STM32F1 1
@@ -36,16 +37,14 @@ typedef IRQn_Type			iqrn_type_t;
 #error drv_uart.h: No processor defined!
 #endif
 
-/* ----------------------- 用户配置，可根据实际硬件修改 ----------------------- */
-
-/* 单次最大接收数据量（字节） */
-#define RX_SINGLE_MAX	128
-/* -------------------------------------------------------------------------- */
+#ifndef EAGAIN
+#define EAGAIN	11
+#endif
 
 /* 配置结构体 */
 typedef struct {
 	uart_periph_t uart_periph;
-	uint32_t 	  baud;
+	uint32_t 	  baudrate;
 	gpio_port_t   tx_port;
 	gpio_pin_t 	  tx_pin;
 	gpio_port_t   rx_port;
@@ -53,7 +52,8 @@ typedef struct {
     uint8_t 	 *tx_buf;
 	uint8_t 	 *rx_buf;
 	uint16_t 	  tx_buf_size;
-	uint16_t 	  rx_buf_size;
+	uint16_t 	  rx_buf_size;	// 必须 >= rx_single_max + 1
+	uint16_t      rx_single_max;
 	uint8_t 	  rx_pre_priority;
 	uint8_t 	  rx_sub_priority;
 } uart_cfg_t;
@@ -62,9 +62,11 @@ typedef struct uart_dev uart_dev_t;
 
 /* 操作接口结构体 */
 typedef struct {
-	void (*printf)(char *format, ...);
-	void (*send)(uint8_t *data, uint32_t len);
-	char *(*recv)(void);
+	void (*vprintf)(uart_dev_t *dev, const char *format, va_list args);
+	void (*printf)(uart_dev_t *dev, const char *format, ...);
+	int (*send_data)(uart_dev_t *dev, uint8_t *data, uint32_t len);
+	int (*recv_str)(uart_dev_t *dev, char *str);
+	int (*recv_data)(uart_dev_t *dev, uint8_t **data, uint32_t *len);
 	int (*deinit)(uart_dev_t *dev);
 } uart_ops_t;
 

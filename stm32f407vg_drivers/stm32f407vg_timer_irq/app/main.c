@@ -4,11 +4,11 @@
 #include <stddef.h>
 
 static uart_dev_t uart_debug;
-static uint8_t uart_debug_tx_buf[256];
-static uint8_t uart_debug_rx_buf[256];
+static uint8_t uart_debug_tx_buf[512];
+static uint8_t uart_debug_rx_buf[512];
 static const uart_cfg_t uart_debug_cfg = {
     .uart_periph     = USART1,
-    .baud            = 115200,
+    .baudrate        = 115200,
     .tx_port         = GPIOA,
     .tx_pin          = GPIO_Pin_9,
     .rx_port         = GPIOA,
@@ -17,6 +17,7 @@ static const uart_cfg_t uart_debug_cfg = {
     .rx_buf          = uart_debug_rx_buf,
     .tx_buf_size     = sizeof(uart_debug_tx_buf),
     .rx_buf_size     = sizeof(uart_debug_rx_buf),
+    .rx_single_max   = 256,
     .rx_pre_priority = 0,
     .rx_sub_priority = 0
 };
@@ -45,7 +46,7 @@ void timer3_irq_callback(void *param)
 {
     const char *name = (const char *)param;
 
-	uart_debug.ops->printf("%s 500ms interrupt!\r\n", name);
+	uart_debug.ops->printf(&uart_debug, "%s 500ms interrupt!\r\n", name);
 }
 
 /* 测试：TIM2延时500ms打印，TIM3中断500ms打印 */
@@ -62,6 +63,6 @@ int main(void)
 
 	while (1) {
         timer2.ops->delay_ms(&timer2, 500);
-        uart_debug.ops->printf("timer2 500ms delay!\r\n");
+        uart_debug.ops->printf(&uart_debug, "timer2 500ms delay!\r\n");
 	}
 }

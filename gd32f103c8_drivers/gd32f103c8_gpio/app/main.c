@@ -3,11 +3,11 @@
 #include "drv_gpio.h"
 
 static uart_dev_t uart_debug;
-static uint8_t uart_debug_tx_buf[256];
-static uint8_t uart_debug_rx_buf[256];
+static uint8_t uart_debug_tx_buf[512];
+static uint8_t uart_debug_rx_buf[512];
 static const uart_cfg_t uart_debug_cfg = {
     .uart_periph     = USART0,
-    .baud            = 115200,
+    .baudrate        = 115200,
     .tx_port         = GPIOA,
     .tx_pin          = GPIO_PIN_9,
     .rx_port         = GPIOA,
@@ -16,6 +16,7 @@ static const uart_cfg_t uart_debug_cfg = {
     .rx_buf          = uart_debug_rx_buf,
     .tx_buf_size     = sizeof(uart_debug_tx_buf),
     .rx_buf_size     = sizeof(uart_debug_rx_buf),
+    .rx_single_max   = 256,
     .rx_pre_priority = 0,
     .rx_sub_priority = 0
 };
@@ -58,10 +59,10 @@ int main(void)
 
 	while (1) {
         gpio[1].ops->read(&gpio[1], &level);
-        uart_debug.ops->printf("gpio[1]: %d\r\n", level);
+        uart_debug.ops->printf(&uart_debug, "gpio[1]: %d\r\n", level);
 
         gpio[2].ops->read(&gpio[2], &level);
-        uart_debug.ops->printf("gpio[2]: %d\r\n", level);
+        uart_debug.ops->printf(&uart_debug, "gpio[2]: %d\r\n", level);
         delay_ms(1000);
 	}
 }

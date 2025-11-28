@@ -231,7 +231,7 @@ static void uart_hw_uart_init(const uart_cfg_t *cfg)
 #if DRV_UART_PLATFORM_STM32F1 || DRV_UART_PLATFORM_STM32F4
 	/* 配置 USART */
 	USART_InitTypeDef USART_InitStructure;
-	USART_InitStructure.USART_BaudRate = cfg->baud;
+	USART_InitStructure.USART_BaudRate = cfg->baudrate;
 	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
 	USART_InitStructure.USART_Mode = USART_Mode_Tx | USART_Mode_Rx;
 	USART_InitStructure.USART_Parity = USART_Parity_No;
@@ -254,7 +254,7 @@ static void uart_hw_uart_init(const uart_cfg_t *cfg)
 #elif DRV_UART_PLATFORM_GD32F1
 	/* 配置 USART */
 	usart_deinit(cfg->uart_periph);
-	usart_baudrate_set(cfg->uart_periph, cfg->baud);
+	usart_baudrate_set(cfg->uart_periph, cfg->baudrate);
 	usart_word_length_set(cfg->uart_periph, USART_WL_8BIT);
 	usart_parity_config(cfg->uart_periph, USART_PM_NONE);
 	usart_stop_bit_set(cfg->uart_periph, USART_STB_1BIT);
@@ -287,7 +287,7 @@ static void uart_hw_dma_init(const uart_cfg_t *cfg)
 	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)cfg->rx_buf;				// DMA内存基地址
 	DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;				// 内存数据宽度为8位
 	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;						// 内存地址寄存器递增
-	DMA_InitStructure.DMA_BufferSize = RX_SINGLE_MAX + 1;						// 指定DMA缓冲区大小为单次最大接收量加1，只有空闲中断才能判断接收完成
+	DMA_InitStructure.DMA_BufferSize = cfg->rx_single_max + 1;					// 指定DMA缓冲区大小为单次最大接收量加1，只有空闲中断才能判断接收完成
 	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;							// 数据传输方向，从外设读取发送到内存
 	DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;								// 工作在正常模式，一次传输后自动结束
 	DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;								// 没有设置为内存到内存传输
@@ -306,7 +306,7 @@ static void uart_hw_dma_init(const uart_cfg_t *cfg)
 	DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)cfg->rx_buf;				// DMA内存基地址
     DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;				// 内存数据宽度为8位
     DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;						// 内存地址寄存器递增
-	DMA_InitStructure.DMA_BufferSize = RX_SINGLE_MAX + 1;						// 指定DMA缓冲区大小为单次最大接收量加1，只有空闲中断才能判断接收完成
+	DMA_InitStructure.DMA_BufferSize = cfg->rx_single_max + 1;					// 指定DMA缓冲区大小为单次最大接收量加1，只有空闲中断才能判断接收完成
     DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;						// 数据传输方向，从外设读取发送到内存
     DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;								// 工作在正常模式，一次传输后自动结束
     DMA_InitStructure.DMA_Priority = DMA_Priority_High;							// 高优先级
@@ -325,7 +325,7 @@ static void uart_hw_dma_init(const uart_cfg_t *cfg)
 	dma_init_struct.periph_width = DMA_PERIPHERAL_WIDTH_8BIT;	// 外设数据宽度
 	dma_init_struct.memory_addr = (uint32_t)cfg->rx_buf;		// 内存基地址
 	dma_init_struct.memory_width = DMA_MEMORY_WIDTH_8BIT;		// 内存数据宽度
-	dma_init_struct.number = RX_SINGLE_MAX + 1;					// 只有空闲中断才能判断接收完成，不会产生DMA完成中断
+	dma_init_struct.number = cfg->rx_single_max + 1;			// 只有空闲中断才能判断接收完成，不会产生DMA完成中断
 	dma_init_struct.priority = DMA_PRIORITY_HIGH;				// 优先级
 	dma_init_struct.periph_inc = DMA_PERIPH_INCREASE_DISABLE;	// 外设不递增
 	dma_init_struct.memory_inc = DMA_MEMORY_INCREASE_ENABLE;	// 内存递增
@@ -519,75 +519,25 @@ static uart_priv_t g_uart_priv[MAX_UART_NUM];
 
 static uart_priv_t *uart_priv_alloc(uart_periph_t uart_periph);
 static void uart_priv_free(uart_priv_t *priv);
-static char *uart_recv(uart_dev_t *dev);
+
+static void uart_vprintf_impl(uart_dev_t *dev, const char *format, va_list args);
+static void uart_printf_impl(uart_dev_t *dev, const char *format, ...);
+static int uart_send_data_impl(uart_dev_t *dev, uint8_t *data, uint32_t len);
+static int uart_recv_str_impl(uart_dev_t *dev, char *str);
+static int uart_recv_data_impl(uart_dev_t *dev, uint8_t **data, uint32_t *len);
 static int uart_deinit_impl(uart_dev_t *dev);
+
 static void uart_idle_irq_handler(uart_periph_t uart_periph);
 
-/**
- * @brief	定义串口操作函数宏
- * @details 为指定串口生成 printf、send、recv 等操作函数及接口表
- * @param[in] x           串口号（如1、2、3）
- * @param[in] uart_periph 串口外设
- */
-#define DEFINE_UART_OPS(x, uart_periph) 							\
-static void uart##x##_printf_impl(char *format, ...)				\
-{																	\
-	const uart_hw_info_t *hw_info = uart_get_hw_info(uart_periph);  \
-	uart_dev_t *dev = g_uart_priv[hw_info->idx].dev;				\
-	va_list args;													\
-	va_start(args, format);											\
-	uart_hw_printf(hw_info, dev->cfg.tx_buf, 						\
-				   dev->cfg.tx_buf_size, format, args); 			\
-	va_end(args);													\
-}																	\
-static void uart##x##_send_impl(uint8_t *data, uint32_t len)   		\
-{															   	    \
-	const uart_hw_info_t *hw_info = uart_get_hw_info(uart_periph);  \
-	uart_hw_send(hw_info, data, len);								\
-}																	\
-static char *uart##x##_recv_impl(void)								\
-{															   	    \
-	const uart_hw_info_t *hw_info = uart_get_hw_info(uart_periph);  \
-	uart_dev_t *dev = g_uart_priv[hw_info->idx].dev;				\
-	return uart_recv(dev);								   			\
-}																	\
-static const uart_ops_t uart##x##_ops = { 							\
-    .printf = uart##x##_printf_impl, 								\
-    .send = uart##x##_send_impl, 									\
-    .recv = uart##x##_recv_impl, 									\
-    .deinit = uart_deinit_impl 										\
-}
-
-/* 生成各平台的串口操作函数与接口表 */
-#if DRV_UART_PLATFORM_STM32F1
-DEFINE_UART_OPS(1, USART1);
-DEFINE_UART_OPS(2, USART2);
-DEFINE_UART_OPS(3, USART3);
-#if defined(STM32F10X_HD)
-DEFINE_UART_OPS(4, UART4);
-#endif
-#endif	/* DRV_UART_PLATFORM_STM32F1 */
-
-#if DRV_UART_PLATFORM_STM32F4
-#if defined(STM32F40_41xxx) || defined(STM32F429_439xx)
-DEFINE_UART_OPS(1, USART1);
-DEFINE_UART_OPS(2, USART2);
-DEFINE_UART_OPS(3, USART3);
-DEFINE_UART_OPS(4, UART4);
-DEFINE_UART_OPS(5, UART5);
-DEFINE_UART_OPS(6, USART6);
-#elif defined(STM32F411xE)
-DEFINE_UART_OPS(1, USART1);
-DEFINE_UART_OPS(2, USART2);
-DEFINE_UART_OPS(6, USART6);
-#endif
-#endif	/* DRV_UART_PLATFORM_STM32F4 */
-
-#if DRV_UART_PLATFORM_GD32F1
-DEFINE_UART_OPS(0, USART0);
-DEFINE_UART_OPS(1, USART1);
-DEFINE_UART_OPS(2, USART2);
-#endif	/* DRV_UART_PLATFORM_GD32F1 */
+/* 操作接口表 */
+static const uart_ops_t uart_ops = { 
+	.vprintf   = uart_vprintf_impl,
+    .printf    = uart_printf_impl,
+    .send_data = uart_send_data_impl,
+    .recv_str  = uart_recv_str_impl,
+    .recv_data = uart_recv_data_impl,
+    .deinit    = uart_deinit_impl
+};
 
 /**
  * @brief   初始化串口设备驱动
@@ -600,6 +550,9 @@ int drv_uart_init(uart_dev_t *dev, const uart_cfg_t *cfg)
 {
 	if (!dev || !cfg)
         return -EINVAL;
+	
+	if (cfg->rx_buf_size < (cfg->rx_single_max + 1))
+        return -ENOMEM;
 
 	uart_priv_t *priv = uart_priv_alloc(cfg->uart_periph);
 	if (!priv)
@@ -615,24 +568,7 @@ int drv_uart_init(uart_dev_t *dev, const uart_cfg_t *cfg)
 	priv->dev = dev;
 	dev->priv = priv;
     dev->cfg  = *cfg;
-
-	/* 关联操作接口表 */
-	const uart_ops_t *uart_ops_table[MAX_UART_NUM] = {
-#if defined(STM32F10X_MD)
-	&uart1_ops, &uart2_ops, &uart3_ops
-#elif defined(STM32F10X_HD)
-	&uart1_ops, &uart2_ops, &uart3_ops, &uart4_ops
-#elif defined(STM32F40_41xxx) || defined(STM32F429_439xx)
-	&uart1_ops, &uart2_ops, &uart3_ops, &uart4_ops, &uart5_ops, &uart6_ops
-#elif defined(STM32F411xE)
-	&uart1_ops, &uart2_ops, &uart6_ops
-#elif DRV_UART_PLATFORM_GD32F1
-	&uart0_ops, &uart1_ops, &uart2_ops
-#endif
-	};
-	
-	const uart_hw_info_t *hw_info = uart_get_hw_info(cfg->uart_periph);
-	dev->ops = uart_ops_table[hw_info->idx];
+	dev->ops  = &uart_ops;
 
 	/* 初始化硬件 */
 	uart_hw_init(cfg);
@@ -670,44 +606,136 @@ static void uart_priv_free(uart_priv_t *priv)
 }
 
 /**
- * @brief   串口通用接收函数，内部使用
- * @param[in] dev  uart_priv_t 结构体指针
- * @return	接收到数据字符串的首地址，未接收到数据则为 NULL
+ * @brief   串口格式化输出（使用已存在的 va_list）
+ * @param[in] dev    uart_dev_t 结构体指针
+ * @param[in] format 格式化字符串
+ * @param[in] args   已经初始化的 va_list
  */
-static char *uart_recv(uart_dev_t *dev)
+static void uart_vprintf_impl(uart_dev_t *dev, const char *format, va_list args)
 {
-    if (!dev)
-        return NULL;
-    
-    uart_priv_t *priv = (uart_priv_t *)dev->priv;
+    if (!dev || !format)
+        return;
 
-	/* 缓冲区中有未处理数据 */
-    if (priv->rx_cb.idx_in != priv->rx_cb.idx_out) {
-        char *start = (char *)priv->rx_cb.idx_out->start;
-        size_t len = priv->rx_cb.idx_out->end - priv->rx_cb.idx_out->start + 1;
+    const uart_hw_info_t *hw_info = uart_get_hw_info(dev->cfg.uart_periph);
 
-        /* 安全复制出数据（防止越界） */
-        static char rx_buf_copy[RX_SINGLE_MAX + 1];
-        if (len >= sizeof(rx_buf_copy))
-            len = sizeof(rx_buf_copy) - 1;
-        memcpy(rx_buf_copy, start, len);
-        rx_buf_copy[len] = '\0';
-
-        /* 处理完当前数据段后，移动idx_out指针到下一个位置，准备处理下一段数据 */
-        priv->rx_cb.idx_out++;
-        if (priv->rx_cb.idx_out == priv->rx_cb.idx_end)
-            priv->rx_cb.idx_out = &priv->rx_cb.idx_buf[0];
-
-        return rx_buf_copy;
-    }
-
-    return NULL;
+    uart_hw_printf(hw_info, dev->cfg.tx_buf,
+                   dev->cfg.tx_buf_size, format, args);
 }
 
+/**
+ * @brief   串口格式化输出字符串
+ * @param[in] dev 	 uart_priv_t 结构体指针
+ * @param[in] format 格式化字符串
+ * @param[in] ... 	 可变参数列表
+ */
+static void uart_printf_impl(uart_dev_t *dev, const char *format, ...)
+{
+	if (!dev || !format)
+        return;
+
+    va_list args;
+    va_start(args, format);
+    uart_vprintf_impl(dev, format, args);
+    va_end(args);
+}
+
+/**
+ * @brief   串口发送原始二进制数据
+ * @details 直接将用户提供的缓冲区写入 UART 硬件，适用于任意协议数据
+ * @param[in] dev  uart_priv_t 结构体指针
+ * @param[in] data 待发送数据起始地址
+ * @param[in] len  数据长度（字节）
+ * @return	0 表示成功，其他值表示失败
+ */
+static int uart_send_data_impl(uart_dev_t *dev, uint8_t *data, uint32_t len)
+{
+	if (!dev || !data || !len)
+        return -EINVAL;
+
+	const uart_hw_info_t *hw_info = uart_get_hw_info(dev->cfg.uart_periph);
+
+	uart_hw_send(hw_info, data, len);
+	return 0;
+}
+
+/**
+ * @brief   串口接收字符串
+ * @details 从环形缓冲区取出一段连续数据，将其复制到用户提供的 str 中，
+ * 			并自动在末尾补 '\0'，适用于 AT 命令、文本协议等。
+ * @param[in]  dev uart_priv_t 结构体指针
+ * @param[out] str 接收缓冲区，需由调用方分配
+ * @return	0 表示成功，其他值表示失败
+ */
+static int uart_recv_str_impl(uart_dev_t *dev, char *str)
+{
+	if (!dev || !str)
+        return -EINVAL;
+
+    uart_priv_t *priv = (uart_priv_t *)dev->priv;
+
+	/* 无数据 */
+    if (priv->rx_cb.idx_in == priv->rx_cb.idx_out)
+        return -EAGAIN;
+
+	char *start = (char *)priv->rx_cb.idx_out->start;
+	uint32_t len = priv->rx_cb.idx_out->end - priv->rx_cb.idx_out->start + 1;
+
+	if (len >= dev->cfg.rx_single_max)
+		len = dev->cfg.rx_single_max - 1;
+
+	memcpy(str, start, len);
+	str[len] = '\0';
+
+	/* 处理完当前数据段后，移动idx_out指针到下一个位置，准备处理下一段数据 */
+	priv->rx_cb.idx_out++;
+	if (priv->rx_cb.idx_out == priv->rx_cb.idx_end)
+		priv->rx_cb.idx_out = &priv->rx_cb.idx_buf[0];
+
+	return 0;
+}
+
+/**
+ * @brief   串口接收原始数据（零拷贝，不添加 '\0'）
+ * @details 该函数不进行 memcpy，也不在数据后追加 '\0'，完全适用于二进制协议（如 Xmodem、IAP、文件传输）
+ *          返回的 data 指针指向环形缓冲区的原始内存区域。
+ * 			注意：该指针在下一次接收后内容可能被覆盖，调用方应当在使用前及时处理或复制。
+ * @param[in]  dev  uart_priv_t 结构体指针
+ * @param[out] data 输出参数，返回数据首地址（无需调用方分配缓冲区，只需传入指针的地址）
+ * @param[out] len  输出参数，返回数据长度
+ * @return	0 表示成功，其他值表示失败
+ */
+static int uart_recv_data_impl(uart_dev_t *dev, uint8_t **data, uint32_t *len)
+{
+	if (!dev || !data || !len)
+        return -EINVAL;
+
+    uart_priv_t *priv = (uart_priv_t *)dev->priv;
+
+    /* 无数据 */
+    if (priv->rx_cb.idx_in == priv->rx_cb.idx_out) {
+        *data = NULL;
+        *len = 0;
+        return -EAGAIN;
+    }
+
+    /* 读取起始地址和长度 */
+    uint8_t *start = priv->rx_cb.idx_out->start;
+    uint32_t l = priv->rx_cb.idx_out->end - priv->rx_cb.idx_out->start + 1;
+
+    *data = start;
+    *len  = l;
+
+    /* 移动 idx_out 到下一段 */
+    priv->rx_cb.idx_out++;
+    if (priv->rx_cb.idx_out == priv->rx_cb.idx_end)
+        priv->rx_cb.idx_out = &priv->rx_cb.idx_buf[0];
+
+    return 0;
+}
 
 /**
  * @brief   去初始化串口
- * @param[in,out] dev uart_dev_t 结构体指针
+ * @param[in] dev uart_dev_t 结构体指针
  * @return	0 表示成功，其他值表示失败
  */	
 static int uart_deinit_impl(uart_dev_t *dev)
@@ -731,12 +759,13 @@ static void uart_idle_irq_handler(uart_periph_t uart_periph)
 	const uart_hw_info_t *hw_info = uart_get_hw_info(uart_periph);
     uart_priv_t *priv = &g_uart_priv[hw_info->idx];
 	uart_dev_t *dev = priv->dev;
+	uint16_t rx_single_max = dev->cfg.rx_single_max;
 
     if (uart_hw_get_it_idle_flag(hw_info)) {	// 检查空闲中断标志
 		uart_hw_clear_it_flag(hw_info);			// 清除空闲中断标志
 
 		/* 计算已接收数据量 */
-		priv->rx_cb.data_cnt += (RX_SINGLE_MAX + 1) -
+		priv->rx_cb.data_cnt += (rx_single_max + 1) -
 			uart_hw_dma_get_curr_data_counter(hw_info);
 
 		/* 标记这一段数据的结尾 */
@@ -748,7 +777,7 @@ static void uart_idle_irq_handler(uart_periph_t uart_periph)
 			priv->rx_cb.idx_in = &priv->rx_cb.idx_buf[0];
 
 		/* 判断数据缓冲区剩余大小 */
-		if (dev->cfg.rx_buf_size - priv->rx_cb.data_cnt >= RX_SINGLE_MAX) {
+		if (dev->cfg.rx_buf_size - priv->rx_cb.data_cnt >= rx_single_max) {
 			/* 剩余大小足够再接收一次数据，标记下一段数据的start */
 			priv->rx_cb.idx_in->start = &dev->cfg.rx_buf[priv->rx_cb.data_cnt];
 		} else {
@@ -758,7 +787,7 @@ static void uart_idle_irq_handler(uart_periph_t uart_periph)
 		}
 
 		/* 重新配置 DMA ，准备下一次接收 */
-		uart_hw_dma_rx_reconfig(hw_info, priv->rx_cb.idx_in->start, RX_SINGLE_MAX + 1);
+		uart_hw_dma_rx_reconfig(hw_info, priv->rx_cb.idx_in->start, rx_single_max + 1);
 	}
 }
 

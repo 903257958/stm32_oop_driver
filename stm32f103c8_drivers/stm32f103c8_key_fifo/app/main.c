@@ -5,11 +5,11 @@
 #include <stddef.h>
 
 static uart_dev_t uart_debug;
-static uint8_t uart_debug_tx_buf[256];
-static uint8_t uart_debug_rx_buf[256];
+static uint8_t uart_debug_tx_buf[512];
+static uint8_t uart_debug_rx_buf[512];
 static const uart_cfg_t uart_debug_cfg = {
     .uart_periph     = USART1,
-    .baud            = 115200,
+    .baudrate        = 115200,
     .tx_port         = GPIOA,
     .tx_pin          = GPIO_Pin_9,
     .rx_port         = GPIOA,
@@ -18,6 +18,7 @@ static const uart_cfg_t uart_debug_cfg = {
     .rx_buf          = uart_debug_rx_buf,
     .tx_buf_size     = sizeof(uart_debug_tx_buf),
     .rx_buf_size     = sizeof(uart_debug_rx_buf),
+    .rx_single_max   = 256,
     .rx_pre_priority = 0,
     .rx_sub_priority = 0
 };
@@ -35,7 +36,6 @@ static const timer_cfg_t timer_key_cfg = {
 static key_dev_t key[2];
 static const key_cfg_t key_cfg[] = {
     {
-        .delay_ms          = delay_ms,
         .port              = GPIOB,
         .pin               = GPIO_Pin_12,
         .press_level       = GPIO_LEVEL_LOW,
@@ -48,7 +48,6 @@ static const key_cfg_t key_cfg[] = {
         .enable_repeat     = true
     },
     {
-        .delay_ms          = delay_ms,
         .port              = GPIOA,
         .pin               = GPIO_Pin_8,
         .press_level       = GPIO_LEVEL_LOW,
@@ -64,32 +63,32 @@ static const key_cfg_t key_cfg[] = {
 
 static void key_down_callback(void *param)
 {
-    uart_debug.ops->printf("%s down\r\n", (char *)param);
+    uart_debug.ops->printf(&uart_debug, "%s down\r\n", (char *)param);
 }
 
 static void key_up_callback(void *param)
 {
-    uart_debug.ops->printf("%s up\r\n", (char *)param);
+    uart_debug.ops->printf(&uart_debug, "%s up\r\n", (char *)param);
 }
 
 static void key_click_callback(void *param)
 {
-    uart_debug.ops->printf("%s clicked\r\n", (char *)param);
+    uart_debug.ops->printf(&uart_debug, "%s clicked\r\n", (char *)param);
 }
 
 static void key_double_callback(void *param)
 {
-    uart_debug.ops->printf("%s double clicked\r\n", (char *)param);
+    uart_debug.ops->printf(&uart_debug, "%s double clicked\r\n", (char *)param);
 }
 
 static void key_long_callback(void *param)
 {
-    uart_debug.ops->printf("%s long pressed\r\n", (char *)param);
+    uart_debug.ops->printf(&uart_debug, "%s long pressed\r\n", (char *)param);
 }
 
 static void key_repeat_callback(void *param)
 {
-    uart_debug.ops->printf("%s repeat\r\n", (char *)param);
+    uart_debug.ops->printf(&uart_debug, "%s repeat\r\n", (char *)param);
 }
 
 int main(void)
@@ -125,7 +124,7 @@ int main(void)
         for (i = 0; i < sizeof(key) / sizeof(key[0]); i++) {
             key[i].ops->process_event(&key[i]);
         }
-        delay_ms(1000);
+        delay_ms(1);
 	}
 #else
     /* 使用延时轮询，必须 1ms 调用一次按键 Tick */

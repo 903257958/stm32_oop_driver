@@ -5,11 +5,11 @@
 #include <string.h>
 
 static uart_dev_t uart_debug;
-static uint8_t uart_debug_tx_buf[256];
-static uint8_t uart_debug_rx_buf[256];
+static uint8_t uart_debug_tx_buf[512];
+static uint8_t uart_debug_rx_buf[512];
 static const uart_cfg_t uart_debug_cfg = {
     .uart_periph     = USART1,
-    .baud            = 115200,
+    .baudrate        = 115200,
     .tx_port         = GPIOA,
     .tx_pin          = GPIO_Pin_9,
     .rx_port         = GPIOA,
@@ -18,6 +18,7 @@ static const uart_cfg_t uart_debug_cfg = {
     .rx_buf          = uart_debug_rx_buf,
     .tx_buf_size     = sizeof(uart_debug_tx_buf),
     .rx_buf_size     = sizeof(uart_debug_rx_buf),
+    .rx_single_max   = 256,
     .rx_pre_priority = 0,
     .rx_sub_priority = 0
 };
@@ -66,10 +67,10 @@ int main(void)
     while (1) {
         mpu6050.ops->get_id(&mpu6050, &id);
         mpu6050.ops->get_data(&mpu6050, &data);
-        uart_debug.ops->printf("ID: 0x%X\r\n", id);
-        uart_debug.ops->printf("Temperature: %f\r\n", data.temp);
-		uart_debug.ops->printf("Accx: %d\tAccy: %d\tAccz: %d\r\n", data.accx, data.accy, data.accz);
-		uart_debug.ops->printf("Gyrox: %d\tGyroy: %d\tGyroz: %d\r\n\r\n", data.gyrox, data.gyroy, data.gyroz);
+        uart_debug.ops->printf(&uart_debug, "ID: 0x%X\r\n", id);
+        uart_debug.ops->printf(&uart_debug, "Temperature: %f\r\n", data.temp);
+		uart_debug.ops->printf(&uart_debug, "Accx: %d\tAccy: %d\tAccz: %d\r\n", data.accx, data.accy, data.accz);
+		uart_debug.ops->printf(&uart_debug, "Gyrox: %d\tGyroy: %d\tGyroz: %d\r\n\r\n", data.gyrox, data.gyroy, data.gyroz);
         delay_ms(500);
     }
 }
