@@ -22,22 +22,26 @@ static int esp8266_send_cmd_impl(esp8266_dev_t *dev,
                                 uint32_t timeout_ms);
 static int esp8266_wifi_connect(esp8266_dev_t *dev, const char *ssid, const char *pwd);
 static int esp8266_wifi_disconnect(esp8266_dev_t *dev);
-static int esp8266_tcp_transmit_connect_impl(esp8266_dev_t *dev, const char *ip, uint16_t port);
-static int esp8266_tcp_transmit_disconnect_impl(esp8266_dev_t *dev);
-static int esp8266_tcp_send_data_impl(esp8266_dev_t *dev, uint8_t *data, uint32_t len);
-static int esp8266_tcp_recv_data_impl(esp8266_dev_t *dev, uint8_t **data, uint32_t *len, uint32_t timeout_ms);
+static int esp8266_tcp_connect_impl(esp8266_dev_t *dev, const char *ip, uint16_t port);
+static int esp8266_tcp_disconnect_impl(esp8266_dev_t *dev);
+static int esp8266_enter_transparent_mode_impl(esp8266_dev_t *dev, uint32_t len);
+static int esp8266_exit_transparent_mode_impl(esp8266_dev_t *dev);
+static int esp8266_send_data_impl(esp8266_dev_t *dev, uint8_t *data, uint32_t len);
+static int esp8266_recv_data_impl(esp8266_dev_t *dev, uint8_t **data, uint32_t *len, uint32_t timeout_ms);
 static int esp8266_deinit_impl(esp8266_dev_t *dev);
 
 /* 操作接口表 */
 static const esp8266_ops_t esp8266_ops = {
-	.send_cmd                = esp8266_send_cmd_impl,
-    .wifi_connect            = esp8266_wifi_connect,
-    .wifi_disconnect         = esp8266_wifi_disconnect,
-	.tcp_transmit_connect    = esp8266_tcp_transmit_connect_impl,
-	.tcp_transmit_disconnect = esp8266_tcp_transmit_disconnect_impl,
-	.tcp_send_data           = esp8266_tcp_send_data_impl,
-	.tcp_recv_data           = esp8266_tcp_recv_data_impl,
-	.deinit                  = esp8266_deinit_impl
+	.send_cmd               = esp8266_send_cmd_impl,
+    .wifi_connect           = esp8266_wifi_connect,
+    .wifi_disconnect        = esp8266_wifi_disconnect,
+	.tcp_connect            = esp8266_tcp_connect_impl,
+	.tcp_disconnect         = esp8266_tcp_disconnect_impl,
+    .enter_transparent_mode = esp8266_enter_transparent_mode_impl,
+    .exit_transparent_mode  = esp8266_exit_transparent_mode_impl,
+	.send_data              = esp8266_send_data_impl,
+	.recv_data              = esp8266_recv_data_impl,
+	.deinit                 = esp8266_deinit_impl
 };
 
 /**
@@ -81,12 +85,17 @@ int drv_esp8266_init(esp8266_dev_t *dev, const esp8266_cfg_t *cfg)
  */
 static void esp8266_log_raw(esp8266_dev_t *dev, const char *fmt, ...)
 {
+#if ESP8266_INFO_ENABLE
     va_list args;
     va_start(args, fmt);
 
     if (dev && dev->cfg.log_ops && dev->cfg.log_ops->vprintf)
         dev->cfg.log_ops->vprintf(fmt, args);
     va_end(args);
+#else
+    (void)dev;
+    (void)fmt;
+#endif
 }
 
 /**
@@ -330,15 +339,15 @@ static int esp8266_wifi_disconnect(esp8266_dev_t *dev)
 }
 
 /**
- * @brief	ESP8266 建立 TCP 连接 + 透传（作为客户端）
+ * @brief	ESP8266 建立 TCP 连接（作为客户端）
  * @param[in]  dev  esp8266_dev_t 结构体指针
  * @param[in]  ip   服务器IP地址字符串（如 "192.168.4.1"）
  * @param[in]  port 服务器端口（如 8080）
  * @return	0 表示成功，其他值表示失败
  */
-static int esp8266_tcp_transmit_connect_impl(esp8266_dev_t *dev, const char *ip, uint16_t port)
+static int esp8266_tcp_connect_impl(esp8266_dev_t *dev, const char *ip, uint16_t port)
 {
-	char cmd[64];
+	char cmd[128];
     char *recv = NULL;
 
     if (!dev || !ip)
@@ -355,24 +364,17 @@ static int esp8266_tcp_transmit_connect_impl(esp8266_dev_t *dev, const char *ip,
     if (dev->ops->send_cmd(dev, cmd, "CONNECT", &recv, 3000) != 0)
         return -EIO;
 
-    /* 进入透传模式 */
-    if (dev->ops->send_cmd(dev, "AT+CIPMODE=1", "OK", &recv, 3000) != 0)
-        return -EIO;
-
-    if (dev->ops->send_cmd(dev, "AT+CIPSEND", ">", &recv, 3000) != 0)
-        return -EIO;
-
     esp_log(">>> TCP connection established: %s:%u\r\n", ip, port);
     esp_log("============== ESP8266 TCP CONNECT DONE ==============\r\n");
     return 0;
 }
 
 /**
- * @brief	ESP8266 退出 TCP 透传模式
+ * @brief	ESP8266 断开 TCP 连接
  * @param[in] dev esp8266_dev_t 结构体指针
  * @return	0 表示成功，其他值表示失败
  */
-static int esp8266_tcp_transmit_disconnect_impl(esp8266_dev_t *dev)
+static int esp8266_tcp_disconnect_impl(esp8266_dev_t *dev)
 {
     char *recv = NULL;
 
@@ -380,11 +382,6 @@ static int esp8266_tcp_transmit_disconnect_impl(esp8266_dev_t *dev)
 		return -EINVAL;
 
     esp_log("\r\n=============== ESP8266 TCP DISCONNECT ===============\r\n");
-
-    /* 退出透传 */
-    if (dev->cfg.uart_ops->send_data("+++", 3) != 0)
-        return -EIO;
-    esp_delay_ms(100);
 
     /* 断开TCP连接 */
     if (dev->ops->send_cmd(dev, "AT+CIPCLOSE", "OK", &recv, 3000) != 0)
@@ -399,18 +396,75 @@ static int esp8266_tcp_transmit_disconnect_impl(esp8266_dev_t *dev)
 }
 
 /**
- * @brief	ESP8266 TCP 透传发送数据
- * @param[in] dev  esp8266_dev_t 结构体指针
- * @param[in] data 发送的数据
+ * @brief	ESP8266 进入 TCP 透传模式
+ * @param[in] dev esp8266_dev_t 结构体指针
+ * @param[in] len 要发送的数据长度，传入 0 表示不定长
  * @return	0 表示成功，其他值表示失败
  */
-static int esp8266_tcp_send_data_impl(esp8266_dev_t *dev, uint8_t *data, uint32_t len)
+static int esp8266_enter_transparent_mode_impl(esp8266_dev_t *dev, uint32_t len)
+{
+    char cmd[32];
+    char *recv = NULL;
+
+    if (!dev)
+        return -EINVAL;
+
+    esp_log("\r\n=========== ESP8266 ENTER TRANSPARENT MODE ===========\r\n");
+
+    /* 进入透传模式 */
+    if (dev->ops->send_cmd(dev, "AT+CIPMODE=1", "OK", &recv, 3000) != 0)
+        return -EIO;
+
+    if (len == 0) {
+        if (dev->ops->send_cmd(dev, "AT+CIPSEND", ">", &recv, 3000) != 0)
+            return -EIO;
+        esp_log("Enter transparent mode (indefinite length)");
+    } else {
+        snprintf(cmd, sizeof(cmd), "AT+CIPSEND=%d", len);
+        if (dev->ops->send_cmd(dev, cmd, ">", &recv, 3000) != 0)
+            return -EIO;
+        esp_log("Enter transparent mode (length = %u)", len);
+    }
+
+    esp_log("======== ESP8266 ENTER TRANSPARENT MODE DONE =========\r\n");
+    return 0;
+}
+
+/**
+ * @brief	ESP8266 退出 TCP 透传模式
+ * @param[in] dev esp8266_dev_t 结构体指针
+ * @return	0 表示成功，其他值表示失败
+ */
+static int esp8266_exit_transparent_mode_impl(esp8266_dev_t *dev)
+{
+    if (!dev)
+		return -EINVAL;
+
+    esp_log("\r\n=========== ESP8266 EXIT TRANSPARENT MODE ============\r\n");
+
+    /* 退出透传 */
+    if (dev->cfg.uart_ops->send_data("+++", 3) != 0)
+        return -EIO;
+    esp_delay_ms(100);
+
+    esp_log("========= ESP8266 EXIT TRANSPARENT MODE DONE =========\r\n");
+    return 0;
+}
+
+/**
+ * @brief	ESP8266 发送数据
+ * @param[in] dev  esp8266_dev_t 结构体指针
+ * @param[in] data 发送的数据
+ * @param[in] len  数据长度
+ * @return	0 表示成功，其他值表示失败
+ */
+static int esp8266_send_data_impl(esp8266_dev_t *dev, uint8_t *data, uint32_t len)
 {
 	if (!dev || !data)
         return -EINVAL;
 
     if (len > dev->cfg.tx_buf_size) {
-        esp_log("!!! TX buffer too small for TCP send (%u > %u)\n", len, dev->cfg.tx_buf_size);
+        esp_log("!!! TX buffer too small for send data (%u > %u)\n", len, dev->cfg.tx_buf_size);
         return -ENOMEM;
     }
 
@@ -419,22 +473,22 @@ static int esp8266_tcp_send_data_impl(esp8266_dev_t *dev, uint8_t *data, uint32_
 
     /* 打印日志，截断长数据避免刷屏 */
     if (len > 128)
-        esp_log("\r\n>>> [ESP8266 TCP SEND] %.*s... (len=%u)\r\n", 128, data, len);
+        esp_log("\r\n>>> [ESP8266 SEND DATA] %.*s... (len=%u)\r\n", 128, data, len);
     else
-        esp_log("\r\n>>> [ESP8266 TCP SEND] %.*s\r\n", (int)len, data);
+        esp_log("\r\n>>> [ESP8266 SEND DATA] %.*s\r\n", (int)len, data);
 
     return 0;
 }
 
 /**
- * @brief	ESP8266 TCP 透传接收数据（零拷贝）
+ * @brief	ESP8266 接收数据（零拷贝）
  * @param[in]  dev        esp8266_dev_t 结构体指针
  * @param[out] data       输出参数，接收数据首地址（无需调用方分配缓冲区，只需传入指针的地址）
  * @param[out] len        输出参数，接收数据长度
  * @param[in]  timeout_ms 超时时间（毫秒）
  * @return	0 表示成功，其他值表示失败
  */
-static int esp8266_tcp_recv_data_impl(esp8266_dev_t *dev, uint8_t **data, uint32_t *len, uint32_t timeout_ms)
+static int esp8266_recv_data_impl(esp8266_dev_t *dev, uint8_t **data, uint32_t *len, uint32_t timeout_ms)
 {
     if (!dev || !data || !len)
         return -EINVAL;
@@ -443,7 +497,7 @@ static int esp8266_tcp_recv_data_impl(esp8266_dev_t *dev, uint8_t **data, uint32
     *data = NULL;
     *len = 0;
 
-    while (elapsed < timeout_ms) {
+    while (elapsed <= timeout_ms) {
         uint8_t *ptr = NULL;
         uint32_t rlen = 0;
 

@@ -344,7 +344,7 @@ static int spi_swap_byte_impl(spi_dev_t *dev, uint8_t send, uint8_t *recv)
 	while(!spi_hw_get_flag_status(dev->cfg.spi_periph, SPI_I2S_FLAG_RXNE));	// 等待RXNE置1，表示接收寄存器非空，收到一个字节
 	uint16_t recv_raw = spi_hw_recv_data(dev->cfg.spi_periph);				// 读取接收到的字节
 
-	if (recv != NULL) 
+	if (recv != NULL)
         *recv = (uint8_t)(recv_raw & 0xFF);
 	
 	return 0;

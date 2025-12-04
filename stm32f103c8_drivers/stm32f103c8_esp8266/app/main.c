@@ -98,14 +98,15 @@ void esp8266_tcp_transmit_test(const char *ssid, const char *pwd, const char *ip
     uint32_t tcp_recv_len;
 
     esp8266.ops->wifi_connect(&esp8266, ssid, pwd);
-    esp8266.ops->tcp_transmit_connect(&esp8266, ip, 8088);
-    esp8266.ops->tcp_send_data(&esp8266, "Hello", 5);
+    esp8266.ops->tcp_connect(&esp8266, ip, 8088);
+    esp8266.ops->enter_transparent_mode(&esp8266, 0);
+    esp8266.ops->send_data(&esp8266, "Hello", 5);
     delay_ms(100);
-    esp8266.ops->tcp_send_data(&esp8266, "World", 5);
+    esp8266.ops->send_data(&esp8266, "World", 5);
     delay_ms(100);
 
     while (1) {
-        if (esp8266.ops->tcp_recv_data(&esp8266, &tcp_recv_data, &tcp_recv_len, 5000) == 0) {
+        if (esp8266.ops->recv_data(&esp8266, &tcp_recv_data, &tcp_recv_len, 5000) == 0) {
             uart_debug.ops->printf(&uart_debug, "\r\nTCP recv: ");
             uart_debug.ops->send_data(&uart_debug, tcp_recv_data, tcp_recv_len);
             uart_debug.ops->printf(&uart_debug, "\r\n");
@@ -114,7 +115,8 @@ void esp8266_tcp_transmit_test(const char *ssid, const char *pwd, const char *ip
         }
 	}
 
-    esp8266.ops->tcp_transmit_disconnect(&esp8266);
+    esp8266.ops->exit_transparent_mode(&esp8266);
+    esp8266.ops->tcp_disconnect(&esp8266);
     esp8266.ops->wifi_disconnect(&esp8266);
 }
 
@@ -128,17 +130,19 @@ void esp8266_get_time_test(const char *ssid, const char *pwd)
     time_info_t time_info;
 
     esp8266.ops->wifi_connect(&esp8266, ssid, pwd);
-    esp8266.ops->tcp_transmit_connect(&esp8266, "www.beijing-time.org", 80);
-    esp8266.ops->tcp_send_data(&esp8266, "1\r\n", 3);
+    esp8266.ops->tcp_connect(&esp8266, "www.beijing-time.org", 80);
+    esp8266.ops->enter_transparent_mode(&esp8266, 0);
+    esp8266.ops->send_data(&esp8266, "1\r\n", 3);
 
-    if (esp8266.ops->tcp_recv_data(&esp8266, &tcp_recv_data, &tcp_recv_len, 5000) == 0) {
+    if (esp8266.ops->recv_data(&esp8266, &tcp_recv_data, &tcp_recv_len, 5000) == 0) {
         uart_debug.ops->printf(&uart_debug, "\r\nTCP recv:\r\n");
         uart_debug.ops->send_data(&uart_debug, tcp_recv_data, tcp_recv_len);
         uart_debug.ops->printf(&uart_debug, "\r\n");
         parse_time(tcp_recv_data, &time_info);
     }
 
-    esp8266.ops->tcp_transmit_disconnect(&esp8266);
+    esp8266.ops->exit_transparent_mode(&esp8266);
+    esp8266.ops->tcp_disconnect(&esp8266);
     esp8266.ops->wifi_disconnect(&esp8266);
 
     uart_debug.ops->printf(&uart_debug, 
@@ -166,14 +170,15 @@ void esp8266_get_weather_test(const char *ssid, const char *pwd, const char *key
     char send[256];
 
     esp8266.ops->wifi_connect(&esp8266, ssid, pwd);
-    esp8266.ops->tcp_transmit_connect(&esp8266, "api.seniverse.com", 80);
+    esp8266.ops->tcp_connect(&esp8266, "api.seniverse.com", 80);
+    esp8266.ops->enter_transparent_mode(&esp8266, 0);
     
     snprintf(send, sizeof(send),
              "GET https://api.seniverse.com/v3/weather/now.json?key=%s&location=%s&language=en&unit=c\r\n",
              key, city);
-    esp8266.ops->tcp_send_data(&esp8266, (uint8_t *)send, sizeof(send));
+    esp8266.ops->send_data(&esp8266, (uint8_t *)send, sizeof(send));
 
-    if (esp8266.ops->tcp_recv_data(&esp8266, &tcp_recv_data, &tcp_recv_len, 5000) == 0) {
+    if (esp8266.ops->recv_data(&esp8266, &tcp_recv_data, &tcp_recv_len, 5000) == 0) {
         uart_debug.ops->printf(&uart_debug, "\r\nTCP recv:\r\n");
         uart_debug.ops->send_data(&uart_debug, tcp_recv_data, tcp_recv_len);
         uart_debug.ops->printf(&uart_debug, "\r\n");
@@ -185,16 +190,17 @@ void esp8266_get_weather_test(const char *ssid, const char *pwd, const char *key
     snprintf(send, sizeof(send),
              "GET https://api.seniverse.com/v3/weather/daily.json?key=%s&location=%s&language=en&unit=c&start=0&days=5\r\n",
              key, city);
-    esp8266.ops->tcp_send_data(&esp8266, (uint8_t *)send, sizeof(send));
+    esp8266.ops->send_data(&esp8266, (uint8_t *)send, sizeof(send));
 
-    if (esp8266.ops->tcp_recv_data(&esp8266, &tcp_recv_data, &tcp_recv_len, 5000) == 0) {
+    if (esp8266.ops->recv_data(&esp8266, &tcp_recv_data, &tcp_recv_len, 5000) == 0) {
         uart_debug.ops->printf(&uart_debug, "\r\nTCP recv:\r\n");
         uart_debug.ops->send_data(&uart_debug, tcp_recv_data, tcp_recv_len);
         uart_debug.ops->printf(&uart_debug, "\r\n");
         parse_weather_forecast_data((const char *)tcp_recv_data, &weather_info);
 	}
 
-    esp8266.ops->tcp_transmit_disconnect(&esp8266);
+    esp8266.ops->exit_transparent_mode(&esp8266);
+    esp8266.ops->tcp_disconnect(&esp8266);
     esp8266.ops->wifi_disconnect(&esp8266);
 
     uart_debug.ops->printf(&uart_debug, "\r\n%s Weather:\r\n", weather_info.city);

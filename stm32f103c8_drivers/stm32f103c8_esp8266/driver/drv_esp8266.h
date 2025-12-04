@@ -4,6 +4,10 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+/* ESP8266 日志开关 */
+#define ESP8266_INFO_ENABLE	1
+
+/* 错误码补充 */
 #ifndef EIO
 #define EIO 11
 #endif
@@ -60,10 +64,12 @@ typedef struct {
 					uint32_t timeout_ms);
 	int (*wifi_connect)(esp8266_dev_t *dev, const char *ssid, const char *pwd);
 	int (*wifi_disconnect)(esp8266_dev_t *dev);
-	int (*tcp_transmit_connect)(esp8266_dev_t *dev, const char *ip, uint16_t port);
-	int (*tcp_transmit_disconnect)(esp8266_dev_t *dev);
-    int (*tcp_send_data)(esp8266_dev_t *dev, uint8_t *data, uint32_t len);
-    int (*tcp_recv_data)(esp8266_dev_t *dev, uint8_t **data, uint32_t *len, uint32_t timeout_ms);
+	int (*tcp_connect)(esp8266_dev_t *dev, const char *ip, uint16_t port);
+	int (*tcp_disconnect)(esp8266_dev_t *dev);
+	int (*enter_transparent_mode)(esp8266_dev_t *dev, uint32_t len);
+	int (*exit_transparent_mode)(esp8266_dev_t *dev);
+    int (*send_data)(esp8266_dev_t *dev, uint8_t *data, uint32_t len);
+    int (*recv_data)(esp8266_dev_t *dev, uint8_t **data, uint32_t *len, uint32_t timeout_ms);
 	int (*deinit)(esp8266_dev_t *dev);
 } esp8266_ops_t;
 
